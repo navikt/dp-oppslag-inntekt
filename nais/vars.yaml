@@ -1,0 +1,4 @@
+app: dp-oppslag-inntekt
+namespace: teamdagpenger
+team: teamdagpenger
+service_user: srvdp-oppslag-inntekt
