@@ -8,10 +8,12 @@ internal class InntektService(rapidsConnection: RapidsConnection) : River.Packet
     init {
         River(rapidsConnection).apply {
             validate {
-                validate { it.demandAllOrAny("@behov", løserBehov) }
-                validate { it.requireKey("@id") }
+//                validate { it.demandAllOrAny("@behov", løserBehov) }
+//                validate { it.requireKey("@id") }
                 validate { it.requireKey("fnr") }
-                validate { it.requireKey("fakta") }
+//                validate { it.requireKey("aktør_id") }
+//                validate { it.requireKey("Virkningstidspunkt") }
+//                validate { it.requireKey("fakta") }
             }
         }.register(this)
     }
@@ -24,5 +26,6 @@ internal class InntektService(rapidsConnection: RapidsConnection) : River.Packet
     override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
         val fnr = packet["fnr"].asText()
         packet["@event_name"] = "faktum_svar"
+        context.send(packet.toJson())
     }
 }
