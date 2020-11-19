@@ -15,11 +15,8 @@ internal class InntektClient {
             responseObject(moshiDeserializerOf(adapter))
         }*/
 
-
-        val inntekt = mapper.readValue("", object : TypeReference<no.nav.dagpenger.events.inntekt.v1.Inntekt>(){})
+        val inntekt = mapper.readValue("", object : TypeReference<no.nav.dagpenger.events.inntekt.v1.Inntekt>() {})
 
         return Inntekt(inntekt)
     }
 }
-
-

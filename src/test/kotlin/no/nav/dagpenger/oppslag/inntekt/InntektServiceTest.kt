@@ -14,7 +14,7 @@ internal class InntektServiceTest {
     fun `skal hente inntekter for riktig pakke`() {
         val testRapid = TestRapid()
         val inntektClient = mockk<InntektClient>().also {
-            every { it.hentKlassifisertInntekt("32542134", LocalDate.parse("2020-11-18")) } returns Inntekt("""{}""")
+            every { it.hentKlassifisertInntekt("32542134", LocalDate.parse("2020-11-18")) } returns mockk(relaxed = true)
         }
 
         InntektService(testRapid, inntektClient)
