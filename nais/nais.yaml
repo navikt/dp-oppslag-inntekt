@@ -1,10 +1,10 @@
 apiVersion: nais.io/v1alpha1
 kind: Application
 metadata:
-  name: {{app}}
-  namespace: {{namespace}}
+  name: dp-oppslag-inntekt
+  namespace: teamdagpenger
   labels:
-    team: {{team}}
+    team: teamdagpenger
 spec:
   image: {{ image }}
   port: 8080
@@ -27,8 +27,3 @@ spec:
       memory: 256Mi
   secureLogs:
     enabled: true
-  vault:
-    enabled: true
-    paths:
-      - kvPath: "serviceuser/data/dev/{{service_user}}"
-        mountPath: "/var/run/secrets/nais.io/service_user"
