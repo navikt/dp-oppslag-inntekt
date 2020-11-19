@@ -39,6 +39,7 @@ tasks.withType<KotlinCompile>().all {
 }
 
 dependencies {
+    implementation(Dagpenger.Biblioteker.Ktor.Client.metrics)
     implementation(Dagpenger.Events)
     implementation(Konfig.konfig)
     implementation(Kotlin.Logging.kotlinLogging)
