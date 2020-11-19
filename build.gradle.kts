@@ -52,7 +52,6 @@ dependencies {
     // logging
     implementation(Kotlin.Logging.kotlinLogging)
 
-
     // testing
     testImplementation(kotlin("test"))
     testImplementation(Junit5.api)

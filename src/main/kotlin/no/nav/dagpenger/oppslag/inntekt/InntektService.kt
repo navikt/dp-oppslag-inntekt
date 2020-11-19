@@ -25,5 +25,4 @@ internal class InntektService(rapidsConnection: RapidsConnection) : River.Packet
         val fnr = packet["fnr"].asText()
         packet["@event_name"] = "faktum_svar"
     }
-
 }
