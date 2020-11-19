@@ -4,7 +4,7 @@ import no.nav.dagpenger.oppslag.inntektimport.InntektClient
 import no.nav.helse.rapids_rivers.RapidApplication
 
 fun main() {
-    RapidApplication.create(Configuration.kafka.rapidApplication).also {
+    RapidApplication.create(Configuration.rapidApplication).also {
         InntektService(it, InntektClient())
     }.start()
 }
