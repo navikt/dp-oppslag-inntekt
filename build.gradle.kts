@@ -46,14 +46,14 @@ dependencies {
     implementation(Ktor.library("client-auth-jvm"))
     implementation(Ktor.library("client-cio"))
     implementation(Ktor.library("client-logging-jvm"))
+    implementation(Ktor.library("client-jackson"))
     implementation(Ktor.serverNetty)
     implementation(RapidAndRivers)
     implementation(kotlin("stdlib"))
 
     testImplementation(Junit5.api)
-    testImplementation(KoTest.assertions)
-    testImplementation(KoTest.runner)
     testImplementation(Mockk.mockk)
+    testImplementation(Ktor.library("client-mock-jvm"))
     testImplementation(kotlin("test"))
     testRuntimeOnly(Junit5.engine)
 }

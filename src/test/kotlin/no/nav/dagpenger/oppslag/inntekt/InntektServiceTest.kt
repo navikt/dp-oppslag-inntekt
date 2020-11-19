@@ -1,9 +1,11 @@
 package no.nav.dagpenger.oppslag.inntekt
 
 import com.fasterxml.jackson.databind.JsonNode
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
+import no.nav.dagpenger.oppslag.inntektimport.InntektClient
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
@@ -18,10 +20,10 @@ internal class InntektServiceTest {
         val testRapid = TestRapid()
         val mockk = mockk<Inntekt>(relaxed = true).also {
             every { it.inntektSiste12mnd(false) } returns BigDecimal.ONE
-            every { it.inntektSiste3år(false) } returns BigDecimal(2)
+            every { it.inntektSiste3år(false) } returns BigDecimal("2.0123543")
         }
         val inntektClient = mockk<InntektClient>().also {
-            every { it.hentKlassifisertInntekt("32542134", LocalDate.parse("2020-11-18")) } returns mockk
+            coEvery { it.hentKlassifisertInntekt("32542134", LocalDate.parse("2020-11-18")) } returns mockk
         }
 
         InntektService(testRapid, inntektClient)
@@ -30,8 +32,8 @@ internal class InntektServiceTest {
 
         assertEquals(1, testRapid.inspektør.size)
         assertEquals(BigDecimal.ONE, testRapid.inspektør.message(0).svar("InntektSiste12Mnd"))
-        assertEquals(BigDecimal(2), testRapid.inspektør.message(0).svar("InntektSiste3År"))
-        verify { inntektClient.hentKlassifisertInntekt("32542134", LocalDate.parse("2020-11-18")) }
+        assertEquals(BigDecimal("2.0123543"), testRapid.inspektør.message(0).svar("InntektSiste3År"))
+        coVerify { inntektClient.hentKlassifisertInntekt("32542134", LocalDate.parse("2020-11-18")) }
     }
 
     private val behovJson =

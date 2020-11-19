@@ -27,6 +27,8 @@ private val localProperties = ConfigurationMap(
         "kafka.reset.policy" to "earliest",
         "nav.truststore.path" to "bla/bla",
         "nav.truststore.password" to "foo",
+        "inntekt.api.url" to "http://localhost/",
+        "inntekt.api.key" to "hunter2",
     )
 )
 private val devProperties = ConfigurationMap(
@@ -60,23 +62,11 @@ private fun config() = when (System.getenv("NAIS_CLUSTER_NAME") ?: System.getPro
     else -> systemProperties() overriding EnvironmentVariables overriding localProperties
 }
 
-data class Configuration(
-    val application: Application = Application(),
-    val database: Database = Database(),
-    val vault: Vault = Vault(),
-    val kafka: Kafka = Kafka()
-) {
-    val testbrukere: Map<String, String> =
-        if (application.profile != Profile.PROD)
-            mapOf(
-                "flere.arbeidsforhold.fnr" to config().getOrElse(
-                    Key("flere.arbeidsforhold.fnr", stringType),
-                    "testBruker1"
-                ),
-                "happy.path.fnr" to config().getOrElse(Key("happy.path.fnr", stringType), "testBruker2")
-            ) else {
-            emptyMap()
-        }
+object Configuration {
+    val application = Application()
+    val kafka = Kafka()
+    val inntektApiUrl = config()[Key("inntekt.api.url", stringType)]
+    val inntektApiKey = config()[Key("inntekt.api.key", stringType)]
 
     data class Application(
         val id: String = config()[Key("application.id", stringType)],
@@ -103,20 +93,6 @@ data class Configuration(
             "NAV_TRUSTSTORE_PASSWORD" to trustStorePassword,
             "KAFKA_RESET_POLICY" to kafkaResetPolicy
         ) + System.getenv().filter { it.key.startsWith("NAIS_") }
-    )
-
-    data class Database(
-        val host: String = config()[Key("database.host", stringType)],
-        val port: String = config()[Key("database.port", stringType)],
-        val name: String = config()[Key("database.name", stringType)],
-        val user: String? = config().getOrNull(Key("database.user", stringType)),
-        val password: String? = config().getOrNull(Key("database.password", stringType)),
-        val flywayLocations: List<String> = config().getOrNull(Key("flyway.locations", stringType))?.split(",")
-            ?: listOf("db/migration")
-    )
-
-    data class Vault(
-        val mountPath: String = config()[Key("vault.mountpath", stringType)]
     )
 }
 
