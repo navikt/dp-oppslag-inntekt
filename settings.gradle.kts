@@ -1,4 +1,4 @@
-rootProject.name = "dp-oppslag-refusjon"
+rootProject.name = "dp-oppslag-inntekt"
 
 pluginManagement {
     repositories {
