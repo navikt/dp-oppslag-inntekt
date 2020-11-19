@@ -30,8 +30,8 @@ internal class InntektService(rapidsConnection: RapidsConnection, private val in
         val virkningsTidspunkt = packet["Virkningstidspunkt"].asLocalDate()
 
         val inntekt = inntektClient.hentKlassifisertInntekt(aktørId, virkningsTidspunkt).let {
-            val inntektSiste3år = it.inntektSiste3år
-            val inntektSiste12mnd = it.inntektSiste12mnd
+            val inntektSiste3år = it.inntektSiste3år()
+            val inntektSiste12mnd = it.inntektSiste12mnd()
 
             packet.leggPåSvar("InntektSiste3År", inntektSiste3år)
             packet.leggPåSvar("InntektSiste12Mnd", inntektSiste12mnd)

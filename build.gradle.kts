@@ -42,6 +42,7 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation(Ktor.serverNetty)
 
+    implementation(Dagpenger.Events)
     // kafka
     implementation(RapidAndRivers)
 
