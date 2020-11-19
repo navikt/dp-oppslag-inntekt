@@ -71,6 +71,13 @@ spotless {
     }
 }
 
+tasks.named("shadowJar") {
+    dependsOn("test")
+}
+
+tasks.named("jar") {
+    dependsOn("test")
+}
 tasks.named("compileKotlin") {
     dependsOn("spotlessCheck")
 }
