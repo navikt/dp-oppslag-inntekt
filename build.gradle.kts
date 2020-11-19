@@ -40,6 +40,7 @@ tasks.withType<KotlinCompile>().all {
 
 dependencies {
     implementation(Dagpenger.Events)
+    implementation(Konfig.konfig)
     implementation(Kotlin.Logging.kotlinLogging)
     implementation(Ktor.library("client-auth-jvm"))
     implementation(Ktor.library("client-cio"))
@@ -47,7 +48,6 @@ dependencies {
     implementation(Ktor.serverNetty)
     implementation(RapidAndRivers)
     implementation(kotlin("stdlib"))
-
 
     testImplementation(Junit5.api)
     testImplementation(KoTest.assertions)
