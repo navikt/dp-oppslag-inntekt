@@ -39,25 +39,21 @@ tasks.withType<KotlinCompile>().all {
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
-    implementation(Ktor.serverNetty)
-
     implementation(Dagpenger.Events)
-    // kafka
-    implementation(RapidAndRivers)
-
-    // config
-    implementation(Konfig.konfig)
-
-    // logging
     implementation(Kotlin.Logging.kotlinLogging)
+    implementation(Ktor.library("client-auth-jvm"))
+    implementation(Ktor.library("client-cio"))
+    implementation(Ktor.library("client-logging-jvm"))
+    implementation(Ktor.serverNetty)
+    implementation(RapidAndRivers)
+    implementation(kotlin("stdlib"))
 
-    // testing
-    testImplementation(kotlin("test"))
+
     testImplementation(Junit5.api)
-    testImplementation(Mockk.mockk)
-    testImplementation(KoTest.runner)
     testImplementation(KoTest.assertions)
+    testImplementation(KoTest.runner)
+    testImplementation(Mockk.mockk)
+    testImplementation(kotlin("test"))
     testRuntimeOnly(Junit5.engine)
 }
 
