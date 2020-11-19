@@ -1,10 +1,12 @@
 package no.nav.dagpenger.oppslag.inntekt
 
+import com.fasterxml.jackson.databind.JsonNode
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import org.junit.jupiter.api.Test
+import java.math.BigDecimal
 import java.time.LocalDate
 import kotlin.test.assertEquals
 
@@ -14,8 +16,12 @@ internal class InntektServiceTest {
     fun `skal hente inntekter for riktig pakke`() {
 
         val testRapid = TestRapid()
+        val mockk = mockk<Inntekt>(relaxed = true).also {
+            every { it.inntektSiste12mnd(false) } returns BigDecimal.ONE
+            every { it.inntektSiste3år(false) } returns BigDecimal(2)
+        }
         val inntektClient = mockk<InntektClient>().also {
-            every { it.hentKlassifisertInntekt("32542134", LocalDate.parse("2020-11-18")) } returns mockk(relaxed = true)
+            every { it.hentKlassifisertInntekt("32542134", LocalDate.parse("2020-11-18")) } returns mockk
         }
 
         InntektService(testRapid, inntektClient)
@@ -23,6 +29,8 @@ internal class InntektServiceTest {
         testRapid.sendTestMessage(behovJson)
 
         assertEquals(1, testRapid.inspektør.size)
+        assertEquals(BigDecimal.ONE, testRapid.inspektør.message(0).svar("InntektSiste12Mnd"))
+        assertEquals(BigDecimal(2), testRapid.inspektør.message(0).svar("InntektSiste3År"))
         verify { inntektClient.hentKlassifisertInntekt("32542134", LocalDate.parse("2020-11-18")) }
     }
 
@@ -55,4 +63,8 @@ internal class InntektServiceTest {
   ]
 }
         """.trimIndent()
+}
+
+private fun JsonNode.svar(behov: String): BigDecimal {
+    return this["fakta"].first { it["behov"].asText() == behov }["svar"].asText().toBigDecimal()
 }

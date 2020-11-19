@@ -1,9 +1,11 @@
 package no.nav.dagpenger.oppslag.inntekt
 
+import com.fasterxml.jackson.databind.node.ObjectNode
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import no.nav.helse.rapids_rivers.asLocalDate
+import java.math.BigDecimal
 
 internal class InntektService(rapidsConnection: RapidsConnection, private val inntektClient: InntektClient) : River.PacketListener {
     init {
@@ -27,11 +29,12 @@ internal class InntektService(rapidsConnection: RapidsConnection, private val in
 
     override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
         val aktørId = packet["aktør_id"].asText()
+        val fangstOgFiske = packet ["FangstOgFiske"].asBoolean()
         val virkningsTidspunkt = packet["Virkningstidspunkt"].asLocalDate()
 
-        val inntekt = inntektClient.hentKlassifisertInntekt(aktørId, virkningsTidspunkt).let {
-            val inntektSiste3år = it.inntektSiste3år()
-            val inntektSiste12mnd = it.inntektSiste12mnd()
+        inntektClient.hentKlassifisertInntekt(aktørId, virkningsTidspunkt).let {
+            val inntektSiste3år = it.inntektSiste3år(fangstOgFiske)
+            val inntektSiste12mnd = it.inntektSiste12mnd(fangstOgFiske)
 
             packet.leggPåSvar("InntektSiste3År", inntektSiste3år)
             packet.leggPåSvar("InntektSiste12Mnd", inntektSiste12mnd)
@@ -42,5 +45,7 @@ internal class InntektService(rapidsConnection: RapidsConnection, private val in
     }
 }
 
-private fun JsonMessage.leggPåSvar(faktaNavn: String, svar: Any) {
+private fun JsonMessage.leggPåSvar(faktaNavn: String, svar: BigDecimal) {
+    (this["fakta"].first { it["behov"].asText() == faktaNavn } as ObjectNode)
+        .put("svar", svar)
 }
