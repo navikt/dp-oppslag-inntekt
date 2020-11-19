@@ -1,7 +1,9 @@
 package no.nav.dagpenger.oppslag.inntektimport
 
 import io.ktor.client.HttpClient
+import io.ktor.client.request.accept
 import io.ktor.client.request.post
+import io.ktor.http.ContentType
 import no.nav.dagpenger.oppslag.inntekt.Configuration
 import no.nav.dagpenger.oppslag.inntekt.Inntekt
 import no.nav.dagpenger.oppslag.inntekt.http.httpClient
@@ -15,6 +17,7 @@ internal class InntektClient(
             this.headers.append("Content-Type", "application/json")
             this.headers.append("X-API-KEY", Configuration.inntektApiKey)
             this.body = InntektRequest(aktørId, "-3000", virkningsTidspunkt)
+            accept(ContentType.Application.Json)
         }
 
         return Inntekt(inntekt)

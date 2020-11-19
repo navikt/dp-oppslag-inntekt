@@ -10,6 +10,7 @@ import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.logging.LogLevel
 import io.ktor.client.features.logging.Logging
+import io.ktor.http.ContentType
 import io.ktor.util.KtorExperimentalAPI
 import no.nav.dagpenger.ktor.client.metrics.PrometheusMetrics
 import no.nav.dagpenger.oppslag.inntekt.objectMapper
@@ -33,6 +34,7 @@ internal fun httpClient(
         }
 
         install(JsonFeature) {
+            accept(ContentType.Application.Json)
             serializer = JacksonSerializer(objectMapper)
         }
 
