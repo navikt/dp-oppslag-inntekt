@@ -1,7 +1,11 @@
 package no.nav.dagpenger.oppslag.inntekt
 
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
 import kotlin.test.assertEquals
 
 internal class InntektServiceTest {
@@ -9,31 +13,44 @@ internal class InntektServiceTest {
     @Test
     fun `skal hente inntekter for riktig pakke`() {
         val testRapid = TestRapid()
+        val inntektClient = mockk<InntektClient>().also {
+            every { it.hentKlassifisertInntekt("32542134", LocalDate.parse("2020-11-18")) } returns """{}"""
+        }
 
-        InntektService(testRapid)
+        InntektService(testRapid, inntektClient)
 
         testRapid.sendTestMessage(behovJson)
 
         assertEquals(1, testRapid.inspektør.size)
+        verify { inntektClient.hentKlassifisertInntekt("32542134", LocalDate.parse("2020-11-18")) }
     }
 
     private val behovJson =
-        """
+        """{
+  "@event_name": "behov",
+  "@opprettet": "2020-11-18T11:04:32.867824",
+  "@id": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
+  "fnr": "123",
+  "Virkningstidspunkt": "2020-11-18",
+  "søknad_uuid": "41621ac0-f5ee-4cce-b1f5-88a79f25f1a5",
+  "aktør_id": "32542134",
+  "fakta": [
     {
-      "@event_name": "behov",
-      "@opprettet": "2020-11-18T11:04:32.867824",
-      "@id": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
-      "fnr": "123",
-      "søknad_uuid": "41621ac0-f5ee-4cce-b1f5-88a79f25f1a5",
-      "fakta": [
-        {
-          "id": "1",
-          "behov": "ØnskerDagpengerFraDato"
-        }],
-      "@behov": [
-        "ØnskerDagpengerFraDato"
-      ],
-      "InnsendtSøknadsId": "123"
+      "id": "7",
+      "behov": "InntektSiste12Mnd"
+    },
+    {
+      "id": "8",
+      "behov": "InntektSiste3År"
+    },
+    {
+      "id": "9",
+      "behov": "hubba"
     }
+  ],
+  "@behov": [
+    "InntektSiste12Mnd", "InntektSiste3År"
+  ]
+}
         """.trimIndent()
 }

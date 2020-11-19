@@ -44,7 +44,6 @@ dependencies {
 
     // kafka
     implementation(RapidAndRivers)
-    implementation(Kafka.streams)
 
     // config
     implementation(Konfig.konfig)
