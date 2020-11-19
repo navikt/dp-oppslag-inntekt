@@ -5,11 +5,6 @@ import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import no.nav.helse.rapids_rivers.asLocalDate
 
-private val String.inntektSiste12mnd: String
-    get() = ""
-private val String.inntektSiste3år: String
-    get() = ""
-
 internal class InntektService(rapidsConnection: RapidsConnection, private val inntektClient: InntektClient) : River.PacketListener {
     init {
         River(rapidsConnection).apply {
@@ -18,6 +13,7 @@ internal class InntektService(rapidsConnection: RapidsConnection, private val in
                 it.requireKey("@id")
                 it.requireKey("fnr")
                 it.requireKey("aktør_id")
+                it.requireKey("FangstOgFiske")
                 it.requireKey("Virkningstidspunkt")
                 it.requireKey("fakta")
             }

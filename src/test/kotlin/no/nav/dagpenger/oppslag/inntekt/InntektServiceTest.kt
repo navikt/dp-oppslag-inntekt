@@ -14,7 +14,7 @@ internal class InntektServiceTest {
     fun `skal hente inntekter for riktig pakke`() {
         val testRapid = TestRapid()
         val inntektClient = mockk<InntektClient>().also {
-            every { it.hentKlassifisertInntekt("32542134", LocalDate.parse("2020-11-18")) } returns """{}"""
+            every { it.hentKlassifisertInntekt("32542134", LocalDate.parse("2020-11-18")) } returns Inntekt("""{}""")
         }
 
         InntektService(testRapid, inntektClient)
@@ -34,6 +34,7 @@ internal class InntektServiceTest {
   "Virkningstidspunkt": "2020-11-18",
   "søknad_uuid": "41621ac0-f5ee-4cce-b1f5-88a79f25f1a5",
   "aktør_id": "32542134",
+  "FangstOgFiske": false,
   "fakta": [
     {
       "id": "7",
