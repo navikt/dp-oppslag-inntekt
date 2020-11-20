@@ -27,3 +27,8 @@ spec:
       memory: 256Mi
   secureLogs:
     enabled: true
+  vault:
+    enabled: true
+    paths:
+      - kvPath: "serviceuser/data/{{env}}/srvdp-arena-sink"
+        mountPath: "/var/run/secrets/nais.io/service_user"

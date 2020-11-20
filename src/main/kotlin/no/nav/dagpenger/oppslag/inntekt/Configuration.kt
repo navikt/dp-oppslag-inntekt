@@ -11,9 +11,9 @@ import no.nav.dagpenger.ktor.auth.ApiKeyVerifier
 private val defaultProperties = ConfigurationMap(
     mapOf(
         "application.id" to "dp-oppslag-inntekt-v1",
-        "inntekt.api.key" to "hunter2",
+        "dp.inntekt.api.key" to "hunter2",
         "inntekt.api.url" to "http://dp-inntekt-api/v1/inntekt/klassifisert",
-        "inntekt.apisecret.key" to "hunter2",
+        "dp.inntekt.api.secret" to "hunter2",
         "kafka.bootstrap.servers" to "localhost:9092",
         "kafka.reset.policy" to "latest",
         "kafka.topic" to "privat-dagpenger-behov-v2",
@@ -40,8 +40,8 @@ private val config = when (System.getenv("NAIS_CLUSTER_NAME") ?: System.getPrope
 
 object Configuration {
 
-    private val apiKeyVerifier = ApiKeyVerifier(config[Key("inntekt.apisecret.key", stringType)])
-    val inntektApiKey = apiKeyVerifier.generate(config[Key("inntekt.api.key", stringType)])
+    private val apiKeyVerifier = ApiKeyVerifier(config[Key("dp.inntekt.api.secret", stringType)])
+    val inntektApiKey = apiKeyVerifier.generate(config[Key("dp.inntekt.api.key", stringType)])
 
     val inntektApiUrl = config[Key("inntekt.api.url", stringType)]
     val rapidApplication: Map<String, String> = mapOf(
