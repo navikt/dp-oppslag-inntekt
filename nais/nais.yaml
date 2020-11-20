@@ -30,5 +30,5 @@ spec:
   vault:
     enabled: true
     paths:
-      - kvPath: "serviceuser/data/{{env}}/srvdp-arena-sink"
+      - kvPath: "serviceuser/data/{{ env }}/srvdp-oppslag-innt"
         mountPath: "/var/run/secrets/nais.io/service_user"
