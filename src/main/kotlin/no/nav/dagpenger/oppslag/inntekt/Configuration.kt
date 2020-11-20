@@ -40,8 +40,8 @@ private val config = when (System.getenv("NAIS_CLUSTER_NAME") ?: System.getPrope
 
 object Configuration {
 
-    private val apiKeyVerifier = ApiKeyVerifier(config[Key("dp.inntekt.api.secret", stringType)])
-    val inntektApiKey = apiKeyVerifier.generate(config[Key("dp.inntekt.api.key", stringType)])
+    val inntektApiKey = ApiKeyVerifier(config[Key("dp.inntekt.api.secret", stringType)])
+        .generate(config[Key("dp.inntekt.api.key", stringType)])
 
     val inntektApiUrl = config[Key("inntekt.api.url", stringType)]
     val rapidApplication: Map<String, String> = mapOf(

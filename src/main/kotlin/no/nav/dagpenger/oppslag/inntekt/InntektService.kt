@@ -2,7 +2,6 @@ package no.nav.dagpenger.oppslag.inntekt
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import kotlinx.coroutines.runBlocking
-import no.nav.dagpenger.oppslag.inntektimport.InntektClient
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
@@ -34,7 +33,7 @@ internal class InntektService(rapidsConnection: RapidsConnection, private val in
         val fangstOgFiske = packet["FangstOgFiske"].asBoolean()
         val virkningsTidspunkt = packet["Virkningstidspunkt"].asLocalDate()
 
-        runBlocking { // TODO: use proper context
+        runBlocking {
             inntektClient.hentKlassifisertInntekt(aktørId, virkningsTidspunkt).let {
                 val inntektSiste3år = it.inntektSiste3år(fangstOgFiske)
                 val inntektSiste12mnd = it.inntektSiste12mnd(fangstOgFiske)

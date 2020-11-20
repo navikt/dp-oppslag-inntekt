@@ -4,8 +4,6 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.features.HttpTimeout
-import io.ktor.client.features.auth.Auth
-import io.ktor.client.features.auth.providers.basic
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.logging.LogLevel
@@ -18,7 +16,6 @@ import java.time.Duration
 
 @KtorExperimentalAPI
 internal fun httpClient(
-    credentials: Pair<String, String>? = null,
     engine: HttpClientEngine = CIO.create { requestTimeout = Long.MAX_VALUE },
     httpMetricsBasename: String? = null
 ): HttpClient {
@@ -41,16 +38,6 @@ internal fun httpClient(
         install(PrometheusMetrics) {
             httpMetricsBasename?.let {
                 baseName = it
-            }
-        }
-
-        credentials?.let {
-            install(Auth) {
-                basic {
-                    this.sendWithoutRequest = true
-                    this.username = credentials.first
-                    this.password = credentials.second
-                }
             }
         }
     }

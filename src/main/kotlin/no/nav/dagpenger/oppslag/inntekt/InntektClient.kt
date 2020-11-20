@@ -1,16 +1,14 @@
-package no.nav.dagpenger.oppslag.inntektimport
+package no.nav.dagpenger.oppslag.inntekt
 
 import io.ktor.client.HttpClient
 import io.ktor.client.request.accept
 import io.ktor.client.request.post
 import io.ktor.http.ContentType
-import no.nav.dagpenger.oppslag.inntekt.Configuration
-import no.nav.dagpenger.oppslag.inntekt.Inntekt
 import no.nav.dagpenger.oppslag.inntekt.http.httpClient
 import java.time.LocalDate
 
 internal class InntektClient(
-    private val httpKlient: HttpClient = httpClient()
+    private val httpKlient: HttpClient = httpClient(httpMetricsBasename = "ktor_client_inntekt_api_metrics")
 ) {
     suspend fun hentKlassifisertInntekt(aktørId: String, virkningsTidspunkt: LocalDate): Inntekt {
         val inntekt = httpKlient.post<no.nav.dagpenger.events.inntekt.v1.Inntekt>(Configuration.inntektApiUrl) {

@@ -6,7 +6,6 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.headersOf
 import kotlinx.coroutines.runBlocking
 import no.nav.dagpenger.oppslag.inntekt.http.httpClient
-import no.nav.dagpenger.oppslag.inntektimport.InntektClient
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.LocalDate
