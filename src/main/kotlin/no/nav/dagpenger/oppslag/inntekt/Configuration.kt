@@ -6,12 +6,14 @@ import com.natpryce.konfig.EnvironmentVariables
 import com.natpryce.konfig.Key
 import com.natpryce.konfig.overriding
 import com.natpryce.konfig.stringType
+import no.nav.dagpenger.ktor.auth.ApiKeyVerifier
 
 private val defaultProperties = ConfigurationMap(
     mapOf(
         "application.id" to "dp-oppslag-inntekt-v1",
         "inntekt.api.key" to "hunter2",
         "inntekt.api.url" to "http://dp-inntekt-api/v1/inntekt/klassifisert",
+        "inntekt.apisecret.key" to "hunter2",
         "kafka.bootstrap.servers" to "localhost:9092",
         "kafka.reset.policy" to "latest",
         "kafka.topic" to "privat-dagpenger-behov-v2",
@@ -37,8 +39,11 @@ private val config = when (System.getenv("NAIS_CLUSTER_NAME") ?: System.getPrope
 }
 
 object Configuration {
+
+    private val apiKeyVerifier = ApiKeyVerifier(config[Key("inntekt.apisecret.key", stringType)])
+    val inntektApiKey = apiKeyVerifier.generate(config[Key("inntekt.api.key", stringType)])
+
     val inntektApiUrl = config[Key("inntekt.api.url", stringType)]
-    val inntektApiKey = config[Key("inntekt.api.key", stringType)]
     val rapidApplication: Map<String, String> = mapOf(
         "RAPID_APP_NAME" to "dp-oppslag-inntekt",
         "KAFKA_BOOTSTRAP_SERVERS" to config[Key("kafka.bootstrap.servers", stringType)],
