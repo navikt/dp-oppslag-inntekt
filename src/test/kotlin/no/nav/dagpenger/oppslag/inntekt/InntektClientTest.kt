@@ -15,15 +15,15 @@ class InntektClientTest {
     @Test
     fun `http call`() = runBlocking {
         val response = InntektClient(
-                httpClient(
-                        engine = MockEngine { request ->
-                            assertEquals(HttpMethod.Post, request.method)
-                            assertEquals("application/json", request.body.contentType.toString())
-                            assertEquals(Configuration.inntektApiUrl, request.url.toString())
-                            assertEquals(Configuration.inntektApiKey, request.headers["X-API-KEY"])
-                            respond(inntektRespons, headers = headersOf("Content-Type", "application/json"))
-                        },
-                ),
+            httpClient(
+                engine = MockEngine { request ->
+                    assertEquals(HttpMethod.Post, request.method)
+                    assertEquals("application/json", request.body.contentType.toString())
+                    assertEquals(Configuration.inntektApiUrl, request.url.toString())
+                    assertEquals(Configuration.inntektApiKey, request.headers["X-API-KEY"])
+                    respond(inntektRespons, headers = headersOf("Content-Type", "application/json"))
+                },
+            ),
         ).hentKlassifisertInntekt("123", LocalDate.now())
         assertEquals(BigDecimal("0"), response.inntektSiste12mnd(false))
         assertEquals(BigDecimal("18900"), response.inntektSiste3år(false))
@@ -31,7 +31,7 @@ class InntektClientTest {
 }
 
 val inntektRespons =
-        """
+    """
 {
   "inntektsId": "12345",
   "sisteAvsluttendeKalenderMåned": "2020-10",
