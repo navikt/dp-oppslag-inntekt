@@ -12,6 +12,7 @@ internal class InntektService(rapidsConnection: RapidsConnection, private val in
         River(rapidsConnection).apply {
             validate {
                 it.demandAllOrAny("@behov", løserBehov)
+                it.demandValue("@event_name", "behov")
                 it.requireKey("@id")
                 it.requireKey("fnr")
                 it.requireKey("aktør_id")
