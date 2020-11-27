@@ -19,8 +19,8 @@ internal class GrunnbeløpServiceTest {
 
         val message = testRapid.inspektør.message(0)
         assertEquals("faktum_svar", message["@event_name"].asText())
-        assertTrue(message["fakta"][0].has("svar")) // 3G
-        assertTrue(message["fakta"][1].has("svar")) // 1_5G
+        assertTrue(message["@løsning"].has("3G")) // 3G
+        assertTrue(message["@løsning"].has("1_5G")) // 1_5G
     }
 }
 
@@ -28,7 +28,7 @@ internal class GrunnbeløpServiceTest {
 private val behovJson =
     """
     {
-      "@event_name": "behov",
+      "@event_name": "faktum_svar",
       "@opprettet": "2020-11-18T11:04:32.867824",
       "@id": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
       "fnr": "123",

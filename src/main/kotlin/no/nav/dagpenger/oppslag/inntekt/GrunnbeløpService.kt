@@ -1,6 +1,6 @@
 package no.nav.dagpenger.oppslag.inntekt
 
-import com.fasterxml.jackson.databind.node.ObjectNode
+import mu.KotlinLogging
 import no.nav.dagpenger.grunnbelop.Regel
 import no.nav.dagpenger.grunnbelop.forDato
 import no.nav.dagpenger.grunnbelop.getGrunnbeløpForRegel
@@ -15,11 +15,16 @@ class GrunnbeløpService(rapidsConnection: RapidsConnection) : River.PacketListe
         River(rapidsConnection).apply {
             validate {
                 it.demandAllOrAny("@behov", løserBehov)
+                it.forbid("@løsning")
                 it.requireKey("@id")
-                it.requireKey("fakta")
                 it.requireKey("Virkningstidspunkt")
+                it.interestedIn("søknad_uuid")
             }
         }.register(this)
+    }
+
+    companion object {
+        private val log = KotlinLogging.logger {}
     }
 
     private val løserBehov = listOf(
@@ -30,20 +35,16 @@ class GrunnbeløpService(rapidsConnection: RapidsConnection) : River.PacketListe
     override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
         val G = getGrunnbeløpForRegel(Regel.Minsteinntekt).forDato(packet["Virkningstidspunkt"].asLocalDate()).verdi
 
-        packet["fakta"]
-            .map { (it as ObjectNode) to it["behov"].asText() }
-            .filter { (_, behov) -> behov in løserBehov }
-            .forEach { (faktum, behov) ->
-                when (behov) {
-                    "3G" -> G * BigDecimal(3)
-                    "1_5G" -> G * BigDecimal(1.5)
-                    else -> throw IllegalArgumentException("Ukjent behov $behov")
-                }.also {
-                    faktum.put("svar", it)
-                }
+        val løsning = packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
+            behov to when (behov) {
+                "3G" -> G * BigDecimal(3)
+                "1_5G" -> G * BigDecimal(1.5)
+                else -> throw IllegalArgumentException("Ukjent behov $behov")
             }
+        }.toMap()
 
-        packet["@event_name"] = "faktum_svar"
+        packet["@løsning"] = løsning
+        log.info { "Løst behov for ${packet["søknad_uuid"]}" }
         context.send(packet.toJson())
     }
 }

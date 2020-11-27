@@ -1,26 +1,26 @@
 package no.nav.dagpenger.oppslag.inntekt
 
-import com.fasterxml.jackson.databind.node.ObjectNode
 import kotlinx.coroutines.runBlocking
-import no.nav.helse.rapids_rivers.JsonMessage
-import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.helse.rapids_rivers.River
-import no.nav.helse.rapids_rivers.asLocalDate
+import mu.KotlinLogging
+import no.nav.helse.rapids_rivers.*
 
 internal class InntektService(rapidsConnection: RapidsConnection, private val inntektClient: InntektClient) : River.PacketListener {
     init {
         River(rapidsConnection).apply {
             validate {
                 it.demandAllOrAny("@behov", løserBehov)
-                it.demandValue("@event_name", "behov")
+                it.forbid("@løsning")
                 it.requireKey("@id")
-                it.requireKey("fnr")
-                it.requireKey("aktør_id")
+                it.requireKey("identer")
                 it.requireKey("FangstOgFiske")
                 it.requireKey("Virkningstidspunkt")
-                it.requireKey("fakta")
+                it.interestedIn("søknad_uuid")
             }
         }.register(this)
+    }
+
+    companion object {
+        private val log = KotlinLogging.logger {}
     }
 
     private val løserBehov = listOf(
@@ -29,7 +29,8 @@ internal class InntektService(rapidsConnection: RapidsConnection, private val in
     )
 
     override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
-        val aktørId = packet["aktør_id"].asText()
+        val aktørId =
+            packet["identer"].first { it["type"].asText() == "aktørid" && !it["historisk"].asBoolean() }["id"].asText()
         val fangstOgFiske = packet["FangstOgFiske"].asBoolean()
         val virkningsTidspunkt = packet["Virkningstidspunkt"].asLocalDate()
 
@@ -37,20 +38,20 @@ internal class InntektService(rapidsConnection: RapidsConnection, private val in
             inntektClient.hentKlassifisertInntekt(aktørId, virkningsTidspunkt)
         }
 
-        packet["fakta"]
-            .map { (it as ObjectNode) to it["behov"].asText() }
-            .filter { (_, behov) -> behov in løserBehov }
-            .forEach { (faktum, behov) ->
-                when (behov) {
-                    "InntektSiste3År" -> inntekt.inntektSiste3år(fangstOgFiske)
-                    "InntektSiste12Mnd" -> inntekt.inntektSiste12mnd(fangstOgFiske)
-                    else -> throw IllegalArgumentException("Ukjent behov $behov")
-                }.also {
-                    faktum.put("svar", it)
-                }
+        val løsning = packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
+            behov to when (behov) {
+                "InntektSiste3År" -> inntekt.inntektSiste3år(fangstOgFiske)
+                "InntektSiste12Mnd" -> inntekt.inntektSiste12mnd(fangstOgFiske)
+                else -> throw IllegalArgumentException("Ukjent behov $behov")
             }
+        }.toMap()
 
-        packet["@event_name"] = "faktum_svar"
+        packet["@løsning"] = løsning
+        log.info { "Løst behov for ${packet["søknad_uuid"]}" }
         context.send(packet.toJson())
+    }
+
+    override fun onError(problems: MessageProblems, context: RapidsConnection.MessageContext) {
+        log.info { problems.toString()}
     }
 }
