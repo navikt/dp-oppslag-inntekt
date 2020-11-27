@@ -2,7 +2,11 @@ package no.nav.dagpenger.oppslag.inntekt
 
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import no.nav.helse.rapids_rivers.*
+import no.nav.helse.rapids_rivers.JsonMessage
+import no.nav.helse.rapids_rivers.MessageProblems
+import no.nav.helse.rapids_rivers.RapidsConnection
+import no.nav.helse.rapids_rivers.River
+import no.nav.helse.rapids_rivers.asLocalDate
 
 internal class InntektService(rapidsConnection: RapidsConnection, private val inntektClient: InntektClient) : River.PacketListener {
     init {
@@ -52,6 +56,6 @@ internal class InntektService(rapidsConnection: RapidsConnection, private val in
     }
 
     override fun onError(problems: MessageProblems, context: RapidsConnection.MessageContext) {
-        log.info { problems.toString()}
+        log.info { problems.toString() }
     }
 }
