@@ -5,6 +5,7 @@ import no.nav.dagpenger.grunnbelop.Regel
 import no.nav.dagpenger.grunnbelop.forDato
 import no.nav.dagpenger.grunnbelop.getGrunnbeløpForRegel
 import no.nav.helse.rapids_rivers.JsonMessage
+import no.nav.helse.rapids_rivers.MessageProblems
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import no.nav.helse.rapids_rivers.asLocalDate
@@ -46,5 +47,9 @@ class GrunnbeløpService(rapidsConnection: RapidsConnection) : River.PacketListe
         packet["@løsning"] = løsning
         log.info { "Løst behov for ${packet["søknad_uuid"]}" }
         context.send(packet.toJson())
+    }
+
+    override fun onError(problems: MessageProblems, context: RapidsConnection.MessageContext) {
+        log.info { problems.toString() }
     }
 }
