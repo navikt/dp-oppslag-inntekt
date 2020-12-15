@@ -43,6 +43,9 @@ dependencies {
     implementation(Dagpenger.Biblioteker.ktorUtils)
     implementation(Dagpenger.Biblioteker.grunnbeløp)
     implementation(Dagpenger.Events)
+
+    implementation(Bekk.nocommons)
+
     implementation(Konfig.konfig)
     implementation(Kotlin.Logging.kotlinLogging)
     implementation(Ktor.library("client-auth-jvm"))
