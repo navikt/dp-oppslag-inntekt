@@ -6,7 +6,6 @@ import no.nav.helse.rapids_rivers.MessageProblems
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import no.nav.helse.rapids_rivers.asLocalDate
-import java.time.LocalDate
 
 internal class InntektsrapporteringsperiodeLøsningService(rapidsConnection: RapidsConnection) : River.PacketListener {
     init {
@@ -31,10 +30,11 @@ internal class InntektsrapporteringsperiodeLøsningService(rapidsConnection: Rap
 
     override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
         val virkningstidspunkt = packet["Virkningstidspunkt"].asLocalDate()
+        val periode = Inntektsrapporteringperiode(virkningstidspunkt)
 
         packet["@løsning"] = mapOf(
-            "InntektsrapporteringsperiodeFom" to LocalDate.now(),
-            "InntektsrapporteringsperiodeTom" to LocalDate.now(),
+            "InntektsrapporteringsperiodeFom" to periode.fom(),
+            "InntektsrapporteringsperiodeTom" to periode.tom(),
         )
 
         context.send(packet.toJson())
