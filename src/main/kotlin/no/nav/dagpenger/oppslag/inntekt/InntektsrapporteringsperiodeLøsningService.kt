@@ -1,7 +1,6 @@
 package no.nav.dagpenger.oppslag.inntekt
 
 import mu.KotlinLogging
-import no.bekk.bekkopen.date.NorwegianDateUtil
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageProblems
 import no.nav.helse.rapids_rivers.RapidsConnection
@@ -26,16 +25,16 @@ internal class InntektsrapporteringsperiodeLøsningService(rapidsConnection: Rap
     }
 
     private val løserBehov = listOf(
-            "InntektsrapporteringsperiodeFom",
-            "InntektsrapporteringsperiodeTom",
+        "InntektsrapporteringsperiodeFom",
+        "InntektsrapporteringsperiodeTom",
     )
 
     override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
         val virkningstidspunkt = packet["Virkningstidspunkt"].asLocalDate()
 
         packet["@løsning"] = mapOf(
-                "InntektsrapporteringsperiodeFom" to LocalDate.now(),
-                "InntektsrapporteringsperiodeTom" to LocalDate.now(),
+            "InntektsrapporteringsperiodeFom" to LocalDate.now(),
+            "InntektsrapporteringsperiodeTom" to LocalDate.now(),
         )
 
         context.send(packet.toJson())
