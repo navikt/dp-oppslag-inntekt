@@ -7,17 +7,17 @@ import java.util.Date
 
 class Inntektsrapporteringperiode(private val dato: LocalDate) {
     fun fom(): LocalDate {
-        val månederTilbake: Long = if (tom().month == dato.month) 2 else 1
-        return rapporteringsfrist(dato.minusMonths(månederTilbake)).plusDays(1)
+        val månederTilbake: Long = if (tom().month == dato.month) -1 else 0
+        return rapporteringsfrist(dato, månedOffset = månederTilbake).plusDays(1)
     }
 
     fun tom() =
         if (dato <= førsteArbeidsdag(dato.withDayOfMonth(5)))
-            førsteArbeidsdag(dato.withDayOfMonth(5))
-        else rapporteringsfrist(dato)
+            rapporteringsfrist(dato)
+        else rapporteringsfrist(dato, månedOffset = 1)
 
-    private fun rapporteringsfrist(dato: LocalDate) =
-        førsteArbeidsdag(dato.plusMonths(1).withDayOfMonth(5))
+    private fun rapporteringsfrist(dato: LocalDate, månedOffset: Long = 0) =
+        førsteArbeidsdag(dato.plusMonths(månedOffset).withDayOfMonth(5))
 
     private fun førsteArbeidsdag(inklusivDato: LocalDate) =
         generateSequence(inklusivDato) {
