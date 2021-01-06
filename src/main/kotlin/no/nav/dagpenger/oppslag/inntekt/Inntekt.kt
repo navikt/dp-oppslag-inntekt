@@ -5,7 +5,7 @@ import no.nav.dagpenger.events.inntekt.v1.InntektKlasse
 import no.nav.dagpenger.events.inntekt.v1.all
 import no.nav.dagpenger.events.inntekt.v1.sumInntekt
 
-internal class Inntekt(inntekt: Inntekt) {
+internal class Inntekt(private val inntekt: Inntekt) {
     private val inntektsPerioder = inntekt.splitIntoInntektsPerioder()
 
     fun inntektSiste12mnd(fangstOgFisk: Boolean) =
@@ -17,4 +17,11 @@ internal class Inntekt(inntekt: Inntekt) {
     private fun inntektsklasser(fangstOgFisk: Boolean) =
         if (fangstOgFisk) listOf(InntektKlasse.ARBEIDSINNTEKT, InntektKlasse.FANGST_FISKE)
         else listOf(InntektKlasse.ARBEIDSINNTEKT)
+
+    fun inneholderSykepenger() =
+        inntekt.inntektsListe.any {
+            it.klassifiserteInntekter.any {
+                it.inntektKlasse in listOf(InntektKlasse.SYKEPENGER, InntektKlasse.SYKEPENGER_FANGST_FISKE)
+            }
+        }
 }

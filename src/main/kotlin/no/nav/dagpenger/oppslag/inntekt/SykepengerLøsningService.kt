@@ -8,7 +8,7 @@ import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import no.nav.helse.rapids_rivers.asLocalDate
 
-internal class InntektService(rapidsConnection: RapidsConnection, private val inntektClient: InntektClient) : River.PacketListener {
+internal class SykepengerLøsningService(rapidsConnection: RapidsConnection, private val inntektClient: InntektClient) : River.PacketListener {
     init {
         River(rapidsConnection).apply {
             validate {
@@ -16,7 +16,6 @@ internal class InntektService(rapidsConnection: RapidsConnection, private val in
                 it.forbid("@løsning")
                 it.requireKey("@id")
                 it.requireKey("identer")
-                it.requireKey("FangstOgFiske")
                 it.requireKey("Virkningstidspunkt")
                 it.interestedIn("søknad_uuid")
             }
@@ -28,24 +27,21 @@ internal class InntektService(rapidsConnection: RapidsConnection, private val in
     }
 
     private val løserBehov = listOf(
-        "InntektSiste3År",
-        "InntektSiste12Mnd"
+        "SykepengerSiste36Måneder",
     )
 
     override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
         val aktørId =
             packet["identer"].first { it["type"].asText() == "aktørid" && !it["historisk"].asBoolean() }["id"].asText()
-        val fangstOgFiske = packet["FangstOgFiske"].asBoolean()
-        val virkningsTidspunkt = packet["Virkningstidspunkt"].asLocalDate()
+        val virkningstidspunkt = packet["Virkningstidspunkt"].asLocalDate()
 
         val inntekt = runBlocking {
-            inntektClient.hentKlassifisertInntekt(aktørId, virkningsTidspunkt)
+            inntektClient.hentKlassifisertInntekt(aktørId, virkningstidspunkt)
         }
 
         val løsning = packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
             behov to when (behov) {
-                "InntektSiste3År" -> inntekt.inntektSiste3år(fangstOgFiske)
-                "InntektSiste12Mnd" -> inntekt.inntektSiste12mnd(fangstOgFiske)
+                "SykepengerSiste36Måneder" -> inntekt.inneholderSykepenger()
                 else -> throw IllegalArgumentException("Ukjent behov $behov")
             }
         }.toMap()
