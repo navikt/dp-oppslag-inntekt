@@ -4,6 +4,7 @@ import no.nav.dagpenger.events.inntekt.v1.Inntekt
 import no.nav.dagpenger.events.inntekt.v1.InntektKlasse
 import no.nav.dagpenger.events.inntekt.v1.all
 import no.nav.dagpenger.events.inntekt.v1.sumInntekt
+import java.time.YearMonth
 
 internal class Inntekt(private val inntekt: Inntekt) {
     private val inntektsPerioder = inntekt.splitIntoInntektsPerioder()
@@ -24,4 +25,7 @@ internal class Inntekt(private val inntekt: Inntekt) {
                 it.inntektKlasse in listOf(InntektKlasse.SYKEPENGER, InntektKlasse.SYKEPENGER_FANGST_FISKE)
             }
         }
+
+    fun harRapportertInntektForMåned(måned: YearMonth) =
+        inntekt.inntektsListe.any { it.årMåned == måned && it.klassifiserteInntekter.isNotEmpty() }
 }

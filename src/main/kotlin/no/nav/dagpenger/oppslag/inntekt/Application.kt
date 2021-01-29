@@ -6,6 +6,7 @@ fun main() {
     val inntektClient = InntektClient()
     RapidApplication.create(Configuration.rapidApplication).also {
         InntektService(it, inntektClient)
+        InntektNesteMånedService(it, inntektClient)
         SykepengerLøsningService(it, inntektClient)
         InntektsrapporteringsperiodeLøsningService(it)
         GrunnbeløpService(it)
