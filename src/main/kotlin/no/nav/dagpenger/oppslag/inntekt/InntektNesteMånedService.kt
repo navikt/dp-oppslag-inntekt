@@ -38,7 +38,7 @@ internal class InntektNesteMånedService(rapidsConnection: RapidsConnection, pri
         val virkningstidspunkt = packet["Virkningstidspunkt"].asLocalDate()
 
         val inntekt = runBlocking {
-            inntektClient.hentKlassifisertInntekt(aktørId, virkningstidspunkt)
+            inntektClient.hentKlassifisertInntekt(aktørId, virkningstidspunkt.plusMonths(1))
         }
 
         val løsning = packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->

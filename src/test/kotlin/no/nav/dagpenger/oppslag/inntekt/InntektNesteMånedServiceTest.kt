@@ -40,7 +40,7 @@ class InntektNesteMånedServiceTest {
         )
 
         val inntektClient = mockk<InntektClient>().also {
-            coEvery { it.hentKlassifisertInntekt("32542134", LocalDate.parse("2021-04-02")) } returns inntekt
+            coEvery { it.hentKlassifisertInntekt("32542134", LocalDate.parse("2021-05-02")) } returns inntekt
         }
 
         InntektNesteMånedService(testRapid, inntektClient)
