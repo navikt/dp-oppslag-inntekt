@@ -35,15 +35,15 @@ internal class InntektNesteMånedService(rapidsConnection: RapidsConnection, pri
         val aktørId =
             packet["identer"].first { it["type"].asText() == "aktørid" && !it["historisk"].asBoolean() }["id"].asText()
 
-        val nesteMåned = packet["Virkningstidspunkt"].asLocalDate().plusMonths(1)
+        val virkningstidspunkt = packet["Virkningstidspunkt"].asLocalDate()
 
         val inntekt = runBlocking {
-            inntektClient.hentKlassifisertInntekt(aktørId, nesteMåned)
+            inntektClient.hentKlassifisertInntekt(aktørId, virkningstidspunkt)
         }
 
         val løsning = packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
             behov to when (behov) {
-                "HarRapportertInntektNesteMåned" -> inntekt.harRapportertInntektForMåned(YearMonth.from(nesteMåned))
+                "HarRapportertInntektNesteMåned" -> inntekt.harRapportertInntektForMåned(YearMonth.from(Inntektsrapporteringperiode(virkningstidspunkt).fom()))
                 else -> throw IllegalArgumentException("Ukjent behov $behov")
             }
         }.toMap()
