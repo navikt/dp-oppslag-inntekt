@@ -4,8 +4,11 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.accept
 import io.ktor.client.request.post
 import io.ktor.http.ContentType
+import mu.KotlinLogging
 import no.nav.dagpenger.oppslag.inntekt.http.httpClient
 import java.time.LocalDate
+
+private val sikkerLogg = KotlinLogging.logger("tjenestekall")
 
 internal class InntektClient(
     private val httpKlient: HttpClient = httpClient(httpMetricsBasename = "ktor_client_inntekt_api_metrics")
@@ -17,7 +20,7 @@ internal class InntektClient(
             this.body = InntektRequest(aktørId, "-3000", virkningsTidspunkt)
             accept(ContentType.Application.Json)
         }
-
+        sikkerLogg.info { inntekt }
         return Inntekt(inntekt)
     }
 }
