@@ -19,8 +19,7 @@ internal class GrunnbeløpServiceTest {
 
         val message = testRapid.inspektør.message(0)
         assertEquals("faktum_svar", message["@event_name"].asText())
-        assertTrue(message["@løsning"].has("3G")) // 3G
-        assertTrue(message["@løsning"].has("1_5G")) // 1_5G
+        assertTrue(message["@løsning"].has("Grunnbeløp"))
     }
 }
 
@@ -35,14 +34,11 @@ private val behovJson =
       "søknad_uuid": "41621ac0-f5ee-4cce-b1f5-88a79f25f1a5",
       "fakta": [
         {
-          "behov": "3G"
-        },
-        {
-          "behov": "1_5G"
+          "behov": "Grunnbeløp"
         }
       ],
       "@behov": [
-        "3G", "1_5G"
+        "Grunnbeløp"
       ],
       "Virkningstidspunkt": "2020-01-01"
     }

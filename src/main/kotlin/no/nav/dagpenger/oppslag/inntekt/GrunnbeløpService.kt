@@ -9,13 +9,12 @@ import no.nav.helse.rapids_rivers.MessageProblems
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import no.nav.helse.rapids_rivers.asLocalDate
-import java.math.BigDecimal
 
 class GrunnbeløpService(rapidsConnection: RapidsConnection) : River.PacketListener {
     init {
         River(rapidsConnection).apply {
             validate {
-                it.demandAllOrAny("@behov", løserBehov)
+                it.demandAllOrAny("@behov", listOf("Grunnbeløp"))
                 it.forbid("@løsning")
                 it.requireKey("@id")
                 it.requireKey("Virkningstidspunkt")
@@ -28,24 +27,13 @@ class GrunnbeløpService(rapidsConnection: RapidsConnection) : River.PacketListe
         private val log = KotlinLogging.logger {}
     }
 
-    private val løserBehov = listOf(
-        "3G",
-        "1_5G"
-    )
-
     override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
         val G = getGrunnbeløpForRegel(Regel.Minsteinntekt).forDato(packet["Virkningstidspunkt"].asLocalDate()).verdi
 
-        val løsning = packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
-            behov to when (behov) {
-                "3G" -> G * BigDecimal(3)
-                "1_5G" -> G * BigDecimal(1.5)
-                else -> throw IllegalArgumentException("Ukjent behov $behov")
-            }
-        }.toMap()
+        packet["@løsning"] = mapOf(
+            "Grunnbeløp" to G,
+        )
 
-        packet["@løsning"] = løsning
-        log.info { "Løst behov for ${packet["søknad_uuid"]}" }
         context.send(packet.toJson())
     }
 
