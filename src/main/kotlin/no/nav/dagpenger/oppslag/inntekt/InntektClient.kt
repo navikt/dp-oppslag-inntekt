@@ -17,7 +17,7 @@ internal class InntektClient(
         val inntekt = httpKlient.post<no.nav.dagpenger.events.inntekt.v1.Inntekt>(Configuration.inntektApiUrl) {
             this.headers.append("Content-Type", "application/json")
             this.headers.append("X-API-KEY", Configuration.inntektApiKey)
-            this.body = InntektRequest(aktørId, "-3000", virkningsTidspunkt)
+            this.body = InntektRequest(aktørId, RegelKontekst(id = "-3000", type = "SAKSBEHANDLING"), virkningsTidspunkt)
             accept(ContentType.Application.Json)
         }
         sikkerLogg.info { inntekt }
@@ -25,4 +25,6 @@ internal class InntektClient(
     }
 }
 
-private data class InntektRequest(val aktørId: String, val vedtakId: String, val beregningsDato: LocalDate)
+internal data class InntektRequest(val aktørId: String, val regelkontekst: RegelKontekst, val beregningsDato: LocalDate)
+
+data class RegelKontekst(val id: String, val type: String)

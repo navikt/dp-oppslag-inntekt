@@ -22,7 +22,7 @@ class InntektClientTest {
                     assertEquals(Configuration.inntektApiUrl, request.url.toString())
                     assertEquals(Configuration.inntektApiKey, request.headers["X-API-KEY"])
                     respond(inntektRespons, headers = headersOf("Content-Type", "application/json"))
-                },
+                }
             ),
         ).hentKlassifisertInntekt("123", LocalDate.now())
         assertEquals(BigDecimal("0"), response.inntektSiste12mnd(false))
