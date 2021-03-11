@@ -28,7 +28,8 @@ spec:
   secureLogs:
     enabled: true
   env:
-    KAFKA_PREFER_ON_PREM: true
+    - name: KAFKA_PREFER_ON_PREM
+      value: true
   vault:
     enabled: true
     paths:
