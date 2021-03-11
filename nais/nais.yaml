@@ -29,7 +29,7 @@ spec:
     enabled: true
   env:
     - name: KAFKA_PREFER_ON_PREM
-      value: true
+      value: "true"
   vault:
     enabled: true
     paths:
