@@ -3,6 +3,7 @@ package no.nav.dagpenger.oppslag.inntekt
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
+import no.nav.helse.rapids_rivers.MessageContext
 import no.nav.helse.rapids_rivers.MessageProblems
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
@@ -32,7 +33,7 @@ internal class InntektService(rapidsConnection: RapidsConnection, private val in
         "InntektSiste12Mnd"
     )
 
-    override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
+    override fun onPacket(packet: JsonMessage, context: MessageContext) {
         val aktørId =
             packet["identer"].first { it["type"].asText() == "aktørid" && !it["historisk"].asBoolean() }["id"].asText()
         val fangstOgFiske = packet["FangstOgFiske"].asBoolean()
@@ -52,10 +53,10 @@ internal class InntektService(rapidsConnection: RapidsConnection, private val in
 
         packet["@løsning"] = løsning
         log.info { "Løst behov for ${packet["søknad_uuid"]}" }
-        context.send(packet.toJson())
+        context.publish(packet.toJson())
     }
 
-    override fun onError(problems: MessageProblems, context: RapidsConnection.MessageContext) {
+    override fun onError(problems: MessageProblems, context: MessageContext) {
         log.info { problems.toString() }
     }
 }

@@ -2,6 +2,7 @@ package no.nav.dagpenger.oppslag.inntekt
 
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
+import no.nav.helse.rapids_rivers.MessageContext
 import no.nav.helse.rapids_rivers.MessageProblems
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
@@ -28,7 +29,7 @@ internal class InntektsrapporteringsperiodeLøsningService(rapidsConnection: Rap
         "InntektsrapporteringsperiodeTom",
     )
 
-    override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
+    override fun onPacket(packet: JsonMessage, context: MessageContext) {
         val virkningstidspunkt = packet["Virkningstidspunkt"].asLocalDate()
         val periode = Inntektsrapporteringperiode(virkningstidspunkt)
 
@@ -37,10 +38,10 @@ internal class InntektsrapporteringsperiodeLøsningService(rapidsConnection: Rap
             "InntektsrapporteringsperiodeTom" to periode.tom(),
         )
 
-        context.send(packet.toJson())
+        context.publish(packet.toJson())
     }
 
-    override fun onError(problems: MessageProblems, context: RapidsConnection.MessageContext) {
+    override fun onError(problems: MessageProblems, context: MessageContext) {
         log.info { problems.toString() }
     }
 }
