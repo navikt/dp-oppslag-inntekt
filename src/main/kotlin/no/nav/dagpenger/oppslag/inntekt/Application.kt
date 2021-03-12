@@ -4,7 +4,7 @@ import no.nav.helse.rapids_rivers.RapidApplication
 
 fun main() {
     val inntektClient = InntektClient()
-    RapidApplication.create(Configuration.rapidApplication).also {
+    RapidApplication.create(Configuration.asMap()).also {
         InntektService(it, inntektClient)
         InntektNesteMånedService(it, inntektClient)
         SykepengerLøsningService(it, inntektClient)

@@ -25,13 +25,9 @@ spec:
     requests:
       cpu: 200m
       memory: 256Mi
+  kafka:
+    pool: {{ kafka_pool }}
   secureLogs:
     enabled: true
-  env:
-    - name: KAFKA_PREFER_ON_PREM
-      value: "true"
   vault:
     enabled: true
-    paths:
-      - kvPath: "serviceuser/data/{{ env }}/srvdp-oppslag-innt"
-        mountPath: "/var/run/secrets/nais.io/service_user"
