@@ -16,6 +16,8 @@ class Inntektsrapporteringperiode(private val dato: LocalDate) {
             rapporteringsfrist(dato)
         else rapporteringsfrist(dato, månedOffset = 1)
 
+    fun neste(): Inntektsrapporteringperiode = Inntektsrapporteringperiode(tom().plusDays(1))
+
     private fun rapporteringsfrist(dato: LocalDate, månedOffset: Long = 0) =
         førsteArbeidsdag(dato.plusMonths(månedOffset).withDayOfMonth(5))
 
