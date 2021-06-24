@@ -21,7 +21,7 @@ apply {
 
 repositories {
     jcenter()
-    maven(url = "http://packages.confluent.io/maven/")
+    maven(url = "https://packages.confluent.io/maven/")
     maven("https://jitpack.io")
 }
 
@@ -77,9 +77,6 @@ tasks.named("shadowJar") {
     dependsOn("test")
 }
 
-tasks.named("jar") {
-    dependsOn("test")
-}
 tasks.named("compileKotlin") {
     dependsOn("spotlessCheck")
 }
