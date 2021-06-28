@@ -41,7 +41,7 @@ tasks.withType<KotlinCompile>().all {
 dependencies {
     implementation(Dagpenger.Biblioteker.Ktor.Client.metrics)
     implementation(Dagpenger.Biblioteker.ktorUtils)
-    implementation(Dagpenger.Biblioteker.grunnbeløp)
+    implementation(Dagpenger.Grunnbeløp)
     implementation(Dagpenger.Events)
 
     implementation(Bekk.nocommons)
