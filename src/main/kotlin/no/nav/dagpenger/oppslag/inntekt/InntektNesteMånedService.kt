@@ -18,7 +18,7 @@ internal class InntektNesteMånedService(rapidsConnection: RapidsConnection, pri
                 it.forbid("@løsning")
                 it.requireKey("@id")
                 it.requireKey("identer")
-                it.requireKey("Virkningstidspunkt")
+                it.requireKey("Behandlingsdato")
                 it.interestedIn("søknad_uuid")
             }
         }.register(this)
