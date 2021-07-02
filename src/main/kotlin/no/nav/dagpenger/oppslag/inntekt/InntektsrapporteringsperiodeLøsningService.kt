@@ -12,7 +12,7 @@ internal class InntektsrapporteringsperiodeLøsningService(rapidsConnection: Rap
     init {
         River(rapidsConnection).apply {
             validate {
-                it.demandAll("@behov", løserBehov)
+                it.demandAllOrAny("@behov", løserBehov)
                 it.forbid("@løsning")
                 it.requireKey("Virkningstidspunkt")
                 it.interestedIn("søknad_uuid")
@@ -33,10 +33,15 @@ internal class InntektsrapporteringsperiodeLøsningService(rapidsConnection: Rap
         val virkningstidspunkt = packet["Virkningstidspunkt"].asLocalDate()
         val periode = Inntektsrapporteringperiode(virkningstidspunkt)
 
-        packet["@løsning"] = mapOf(
-            "InntektsrapporteringsperiodeFom" to periode.fom(),
-            "InntektsrapporteringsperiodeTom" to periode.tom(),
-        )
+        val løsning = packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
+            behov to when (behov) {
+                "InntektsrapporteringsperiodeFom" -> periode.fom()
+                "InntektsrapporteringsperiodeTom" -> periode.tom()
+                else -> throw IllegalArgumentException("Ukjent behov $behov")
+            }
+        }.toMap()
+
+        packet["@løsning"] = løsning
 
         context.publish(packet.toJson())
     }
