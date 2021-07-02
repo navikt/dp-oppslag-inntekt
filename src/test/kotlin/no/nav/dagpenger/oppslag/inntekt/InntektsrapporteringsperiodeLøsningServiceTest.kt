@@ -43,6 +43,6 @@ private val behovJson =
       "@behov": [
         "InntektsrapporteringsperiodeFom", "InntektsrapporteringsperiodeTom"
       ],
-      "Virkningstidspunkt": "2020-12-15"
+      "Behandlingsdato": "2020-12-15"
     }
     """.trimIndent()

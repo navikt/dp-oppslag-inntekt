@@ -14,7 +14,7 @@ internal class InntektsrapporteringsperiodeLøsningService(rapidsConnection: Rap
             validate {
                 it.demandAllOrAny("@behov", løserBehov)
                 it.forbid("@løsning")
-                it.requireKey("Virkningstidspunkt")
+                it.requireKey("Behandlingsdato")
                 it.interestedIn("søknad_uuid")
             }
         }.register(this)
@@ -30,7 +30,7 @@ internal class InntektsrapporteringsperiodeLøsningService(rapidsConnection: Rap
     )
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
-        val virkningstidspunkt = packet["Virkningstidspunkt"].asLocalDate()
+        val virkningstidspunkt = packet["Behandlingsdato"].asLocalDate()
         val periode = Inntektsrapporteringperiode(virkningstidspunkt)
 
         val løsning = packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
