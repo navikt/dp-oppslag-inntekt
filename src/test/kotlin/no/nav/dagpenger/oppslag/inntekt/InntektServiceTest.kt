@@ -43,7 +43,7 @@ internal class InntektServiceTest {
   "Virkningstidspunkt": "2020-11-18",
   "søknad_uuid": "41621ac0-f5ee-4cce-b1f5-88a79f25f1a5",
   "identer":[{"id":"32542134","type":"aktørid","historisk":false}],
-  "FangstOgFiske": false,
+  "FangstOgFiskeInntektSiste36mnd": false,
   "fakta": [
     {
       "id": "7",

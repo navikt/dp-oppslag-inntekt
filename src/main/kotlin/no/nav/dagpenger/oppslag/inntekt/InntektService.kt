@@ -17,8 +17,7 @@ internal class InntektService(rapidsConnection: RapidsConnection, private val in
                 it.forbid("@løsning")
                 it.requireKey("@id")
                 it.requireKey("identer")
-                it.interestedIn("FangstOgFiskeInntektSiste36mnd")
-                it.interestedIn("FangstOgFiske")
+                it.requireKey("FangstOgFiskeInntektSiste36mnd")
                 it.requireKey("Virkningstidspunkt")
                 it.interestedIn("søknad_uuid")
             }
@@ -37,7 +36,7 @@ internal class InntektService(rapidsConnection: RapidsConnection, private val in
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
         val aktørId =
             packet["identer"].first { it["type"].asText() == "aktørid" && !it["historisk"].asBoolean() }["id"].asText()
-        val fangstOgFiske = if (packet["FangstOgFiskeInntektSiste36mnd"].isBoolean) packet["FangstOgFiskeInntektSiste36mnd"].asBoolean() else packet["FangstOgFiske"].asBoolean()
+        val fangstOgFiske = packet["FangstOgFiskeInntektSiste36mnd"].asBoolean()
         val virkningsTidspunkt = packet["Virkningstidspunkt"].asLocalDate()
 
         val inntekt = runBlocking {
