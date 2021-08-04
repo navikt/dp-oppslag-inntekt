@@ -10,5 +10,6 @@ fun main() {
         SykepengerLøsningService(it, inntektClient)
         InntektsrapporteringsperiodeLøsningService(it)
         GrunnbeløpService(it)
+        FangstOgFiskeInntektLøsningService(it, inntektClient)
     }.start()
 }

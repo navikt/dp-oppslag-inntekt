@@ -9,7 +9,7 @@ import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import no.nav.helse.rapids_rivers.asLocalDate
 
-internal class InntektService(rapidsConnection: RapidsConnection, private val inntektClient: InntektClient) : River.PacketListener {
+internal class FangstOgFiskeInntektLøsningService(rapidsConnection: RapidsConnection, private val inntektClient: InntektClient) : River.PacketListener {
     init {
         River(rapidsConnection).apply {
             validate {
@@ -17,8 +17,6 @@ internal class InntektService(rapidsConnection: RapidsConnection, private val in
                 it.forbid("@løsning")
                 it.requireKey("@id")
                 it.requireKey("identer")
-                it.interestedIn("FangstOgFiskeInntektSiste36mnd")
-                it.interestedIn("FangstOgFiske")
                 it.requireKey("Virkningstidspunkt")
                 it.interestedIn("søknad_uuid")
             }
@@ -30,24 +28,21 @@ internal class InntektService(rapidsConnection: RapidsConnection, private val in
     }
 
     private val løserBehov = listOf(
-        "InntektSiste3År",
-        "InntektSiste12Mnd"
+        "FangstOgFiskeInntektSiste36mnd",
     )
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
         val aktørId =
             packet["identer"].first { it["type"].asText() == "aktørid" && !it["historisk"].asBoolean() }["id"].asText()
-        val fangstOgFiske = if (packet["FangstOgFiskeInntektSiste36mnd"].isBoolean) packet["FangstOgFiskeInntektSiste36mnd"].asBoolean() else packet["FangstOgFiske"].asBoolean()
-        val virkningsTidspunkt = packet["Virkningstidspunkt"].asLocalDate()
+        val virkningstidspunkt = packet["Virkningstidspunkt"].asLocalDate()
 
         val inntekt = runBlocking {
-            inntektClient.hentKlassifisertInntekt(aktørId, virkningsTidspunkt)
+            inntektClient.hentKlassifisertInntekt(aktørId, virkningstidspunkt)
         }
 
         val løsning = packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
             behov to when (behov) {
-                "InntektSiste3År" -> inntekt.inntektSiste3år(fangstOgFiske)
-                "InntektSiste12Mnd" -> inntekt.inntektSiste12mnd(fangstOgFiske)
+                "FangstOgFiskeInntektSiste36mnd" -> inntekt.inneholderFangstOgFiske()
                 else -> throw IllegalArgumentException("Ukjent behov $behov")
             }
         }.toMap()
