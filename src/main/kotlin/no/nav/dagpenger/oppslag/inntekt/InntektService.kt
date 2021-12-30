@@ -34,13 +34,14 @@ internal class InntektService(rapidsConnection: RapidsConnection, private val in
     )
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
+        val søknadUUID = packet["søknad_uuid"].asUUID()
         val aktørId =
             packet["identer"].first { it["type"].asText() == "aktørid" && !it["historisk"].asBoolean() }["id"].asText()
         val fangstOgFiske = packet["FangstOgFiskeInntektSiste36mnd"].asBoolean()
         val virkningsTidspunkt = packet["Virkningstidspunkt"].asLocalDate()
 
         val inntekt = runBlocking {
-            inntektClient.hentKlassifisertInntekt(aktørId, virkningsTidspunkt)
+            inntektClient.hentKlassifisertInntekt(søknadUUID = søknadUUID, aktørId = aktørId, virkningsTidspunkt = virkningsTidspunkt)
         }
 
         val løsning = packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
@@ -52,7 +53,7 @@ internal class InntektService(rapidsConnection: RapidsConnection, private val in
         }.toMap()
 
         packet["@løsning"] = løsning
-        log.info { "Løst behov for ${packet["søknad_uuid"]}" }
+        log.info { "Løst behov for $søknadUUID" }
         context.publish(packet.toJson())
     }
 

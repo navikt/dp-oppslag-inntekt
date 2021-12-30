@@ -9,12 +9,10 @@ import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.logging.LogLevel
 import io.ktor.client.features.logging.Logging
 import io.ktor.http.ContentType
-import io.ktor.util.KtorExperimentalAPI
 import no.nav.dagpenger.ktor.client.metrics.PrometheusMetrics
 import no.nav.dagpenger.oppslag.inntekt.objectMapper
 import java.time.Duration
 
-@KtorExperimentalAPI
 internal fun httpClient(
     engine: HttpClientEngine = CIO.create { requestTimeout = Long.MAX_VALUE },
     httpMetricsBasename: String? = null

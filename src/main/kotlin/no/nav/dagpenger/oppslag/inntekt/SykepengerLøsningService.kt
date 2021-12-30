@@ -32,12 +32,13 @@ internal class SykepengerLøsningService(rapidsConnection: RapidsConnection, pri
     )
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
+        val søknadUUID = packet["søknad_uuid"].asUUID()
         val aktørId =
             packet["identer"].first { it["type"].asText() == "aktørid" && !it["historisk"].asBoolean() }["id"].asText()
         val virkningstidspunkt = packet["Virkningstidspunkt"].asLocalDate()
 
         val inntekt = runBlocking {
-            inntektClient.hentKlassifisertInntekt(aktørId, virkningstidspunkt)
+            inntektClient.hentKlassifisertInntekt(søknadUUID = søknadUUID, aktørId = aktørId, virkningsTidspunkt = virkningstidspunkt)
         }
 
         val løsning = packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
@@ -48,7 +49,7 @@ internal class SykepengerLøsningService(rapidsConnection: RapidsConnection, pri
         }.toMap()
 
         packet["@løsning"] = løsning
-        log.info { "Løst behov for ${packet["søknad_uuid"]}" }
+        log.info { "Løst behov for $søknadUUID" }
         context.publish(packet.toJson())
     }
 

@@ -33,13 +33,14 @@ internal class InntektNesteMånedService(rapidsConnection: RapidsConnection, pri
     )
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
+        val søknadUUID = packet["søknad_uuid"].asUUID()
         val aktørId =
             packet["identer"].first { it["type"].asText() == "aktørid" && !it["historisk"].asBoolean() }["id"].asText()
 
         val inntektsrapporteringsperiode = Inntektsrapporteringperiode(packet["Virkningstidspunkt"].asLocalDate())
 
         val inntekt = runBlocking {
-            inntektClient.hentKlassifisertInntekt(aktørId, inntektsrapporteringsperiode.neste().fom())
+            inntektClient.hentKlassifisertInntekt(søknadUUID = søknadUUID, aktørId = aktørId, virkningsTidspunkt = inntektsrapporteringsperiode.neste().fom())
         }
 
         val løsning = packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
@@ -50,7 +51,7 @@ internal class InntektNesteMånedService(rapidsConnection: RapidsConnection, pri
         }.toMap()
 
         packet["@løsning"] = løsning
-        log.info { "Løst behov for ${packet["søknad_uuid"]}" }
+        log.info { "Løst behov for $søknadUUID" }
         context.publish(packet.toJson())
     }
 

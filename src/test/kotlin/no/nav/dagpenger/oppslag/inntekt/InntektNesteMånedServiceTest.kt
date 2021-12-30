@@ -10,9 +10,11 @@ import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.YearMonth
+import java.util.UUID
 import kotlin.test.assertEquals
 
 class InntektNesteMånedServiceTest {
+    private val søknadUUID = UUID.fromString("41621ac0-f5ee-4cce-b1f5-88a79f25f1a5")
 
     @Test
     fun `skal sjekke om det finnes inntekt for neste måned`() {
@@ -40,7 +42,7 @@ class InntektNesteMånedServiceTest {
         )
 
         val inntektClient = mockk<InntektClient>().also {
-            coEvery { it.hentKlassifisertInntekt("32542134", LocalDate.parse("2021-06-08")) } returns inntekt
+            coEvery { it.hentKlassifisertInntekt(søknadUUID, "32542134", LocalDate.parse("2021-06-08")) } returns inntekt
         }
 
         InntektNesteMånedService(testRapid, inntektClient)
@@ -56,7 +58,7 @@ class InntektNesteMånedServiceTest {
   "@opprettet": "2021-11-18T11:04:32.867824",
   "@id": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
   "Virkningstidspunkt": "2021-05-06",
-  "søknad_uuid": "41621ac0-f5ee-4cce-b1f5-88a79f25f1a5",
+  "søknad_uuid": "$søknadUUID",
   "identer":[{"id":"32542134","type":"aktørid","historisk":false}],
   "FangstOgFiske": false,
   "fakta": [
