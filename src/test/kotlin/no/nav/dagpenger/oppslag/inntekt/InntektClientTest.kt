@@ -7,7 +7,9 @@ import io.ktor.http.content.TextContent
 import io.ktor.http.headersOf
 import kotlinx.coroutines.runBlocking
 import no.nav.dagpenger.oppslag.inntekt.http.httpClient
+import no.nav.helse.rapids_rivers.asLocalDate
 import org.junit.jupiter.api.Test
+import java.io.ByteArrayInputStream
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.UUID
@@ -16,6 +18,7 @@ import kotlin.test.assertEquals
 class InntektClientTest {
     @Test
     fun `http call`() = runBlocking {
+        val id = "41621ac0-f5ee-4cce-b1f5-88a79f25f1a5"
         val response = InntektClient(
             httpClient(
                 engine = MockEngine { request ->
@@ -23,14 +26,16 @@ class InntektClientTest {
                     assertEquals("application/json", request.body.contentType.toString())
                     assertEquals(Configuration.inntektApiUrl, request.url.toString())
                     assertEquals(Configuration.inntektApiKey, request.headers["X-API-KEY"])
-                    assertEquals(
-                        """{"aktørId":"123","regelkontekst":{"id":"41621ac0-f5ee-4cce-b1f5-88a79f25f1a5","type":"saksbehandling"},"beregningsDato":"2021-12-30"}""",
-                        String((request.body as TextContent).bytes())
-                    )
+
+                    val requestBody =  objectMapper.readTree(ByteArrayInputStream((request.body as TextContent).bytes()))
+                    assertEquals("123", requestBody["aktørId"].asText())
+                    assertEquals(id, requestBody["regelkontekst"]["id"].asText())
+                    assertEquals("saksbehandling", requestBody["regelkontekst"]["type"].asText())
+                    assertEquals(LocalDate.now(), requestBody["beregningsDato"].asLocalDate())
                     respond(inntektRespons, headers = headersOf("Content-Type", "application/json"))
                 }
             ),
-        ).hentKlassifisertInntekt(UUID.fromString("41621ac0-f5ee-4cce-b1f5-88a79f25f1a5"), "123", LocalDate.now())
+        ).hentKlassifisertInntekt(UUID.fromString(id), "123", LocalDate.now())
         assertEquals(BigDecimal("0"), response.inntektSiste12mnd(false))
         assertEquals(BigDecimal("18900"), response.inntektSiste3år(false))
     }

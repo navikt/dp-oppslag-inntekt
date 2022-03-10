@@ -16,7 +16,12 @@ internal class SykepengerLøsningService(rapidsConnection: RapidsConnection, pri
                 it.demandAllOrAny("@behov", løserBehov)
                 it.forbid("@løsning")
                 it.requireKey("@id")
-                it.requireKey("identer")
+                it.requireArray("identer") {
+                    requireKey("type", "historisk", "id")
+                }
+                it.require("identer") { identer ->
+                    if(!identer.any { ident -> ident["type"].asText() == "aktørid" }) throw IllegalArgumentException("Mangler aktørid i identer")
+                }
                 it.requireKey("Virkningstidspunkt")
                 it.interestedIn("søknad_uuid")
             }
