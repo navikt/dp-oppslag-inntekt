@@ -9,7 +9,6 @@ repositories {
 }
 
 application {
-    applicationName = "dp-oppslag-inntekt"
     mainClass.set("no.nav.dagpenger.oppslag.inntekt.ApplicationKt")
 }
 
