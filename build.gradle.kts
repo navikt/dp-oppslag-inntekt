@@ -15,13 +15,13 @@ application {
 
 dependencies {
     implementation(Dagpenger.Biblioteker.Ktor.Client.metrics)
-    implementation(Dagpenger.Biblioteker.ktorUtils)
     implementation(Dagpenger.Grunnbeløp)
     implementation(Dagpenger.Events)
 
     implementation(Bekk.nocommons)
 
     implementation(Konfig.konfig)
+    implementation("com.github.navikt.dp-biblioteker:oauth2-klient:2022.02.05-16.32.da1deab37b31")
     implementation(Kotlin.Logging.kotlinLogging)
     implementation(Ktor.library("client-auth-jvm"))
     implementation(Ktor.library("client-cio"))

@@ -31,3 +31,9 @@ spec:
     enabled: true
   vault:
     enabled: true
+  azure:
+    application:
+      enabled: true
+  env:
+    - name: DP_INNTEKT_API_SCOPE
+      value: {{dp_inntekt_api_scope}}

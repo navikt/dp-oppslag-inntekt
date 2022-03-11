@@ -1,1 +1,2 @@
 kafka_pool: nav-prod
+dp_inntekt_api_scope: api://prod-fss.teamdagpenger.dp-inntekt-api/.default

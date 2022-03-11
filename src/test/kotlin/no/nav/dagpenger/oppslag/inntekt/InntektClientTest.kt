@@ -2,6 +2,7 @@ package no.nav.dagpenger.oppslag.inntekt
 
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.content.TextContent
 import io.ktor.http.headersOf
@@ -25,9 +26,9 @@ class InntektClientTest {
                     assertEquals(HttpMethod.Post, request.method)
                     assertEquals("application/json", request.body.contentType.toString())
                     assertEquals(Configuration.inntektApiUrl, request.url.toString())
-                    assertEquals(Configuration.inntektApiKey, request.headers["X-API-KEY"])
+                    assertEquals("Bearer token", request.headers[HttpHeaders.Authorization])
 
-                    val requestBody =  objectMapper.readTree(ByteArrayInputStream((request.body as TextContent).bytes()))
+                    val requestBody = objectMapper.readTree(ByteArrayInputStream((request.body as TextContent).bytes()))
                     assertEquals("123", requestBody["aktørId"].asText())
                     assertEquals(id, requestBody["regelkontekst"]["id"].asText())
                     assertEquals("saksbehandling", requestBody["regelkontekst"]["type"].asText())
@@ -35,6 +36,7 @@ class InntektClientTest {
                     respond(inntektRespons, headers = headersOf("Content-Type", "application/json"))
                 }
             ),
+            tokenProvider = { "token" }
         ).hentKlassifisertInntekt(UUID.fromString(id), "123", LocalDate.now())
         assertEquals(BigDecimal("0"), response.inntektSiste12mnd(false))
         assertEquals(BigDecimal("18900"), response.inntektSiste3år(false))
