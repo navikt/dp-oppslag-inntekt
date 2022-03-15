@@ -6,11 +6,9 @@ import com.natpryce.konfig.EnvironmentVariables
 import com.natpryce.konfig.Key
 import com.natpryce.konfig.overriding
 import com.natpryce.konfig.stringType
-import io.ktor.client.engine.cio.CIO
 import mu.KotlinLogging
 import no.nav.dagpenger.oauth2.CachedOauth2Client
 import no.nav.dagpenger.oauth2.OAuth2Config
-import no.nav.dagpenger.oauth2.defaultHttpClient
 
 private val sikkerlogg = KotlinLogging.logger("tjenestekall")
 
@@ -46,7 +44,6 @@ internal object Configuration {
         return CachedOauth2Client(
             tokenEndpointUrl = azureAd.tokenEndpointUrl,
             authType = azureAd.clientSecret(),
-            httpClient = defaultHttpClient(CIO.create())
         )
     }
 
