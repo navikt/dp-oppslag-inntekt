@@ -18,5 +18,9 @@ COPY --from=jre-build /javaruntime $JAVA_HOME
 
 COPY build/install/* build/install/* /
 
+RUN mkdir /secure-logs
+RUN chown -R nobody /secure-logs
+
 USER nobody
+
 CMD ["dp-oppslag-inntekt"]
