@@ -1,26 +1,14 @@
 package no.nav.dagpenger.oppslag.inntekt
 
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.DeserializationFeature
 import com.natpryce.konfig.ConfigurationMap
 import com.natpryce.konfig.ConfigurationProperties.Companion.systemProperties
 import com.natpryce.konfig.EnvironmentVariables
 import com.natpryce.konfig.Key
 import com.natpryce.konfig.overriding
 import com.natpryce.konfig.stringType
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.ProxyBuilder
-import io.ktor.client.engine.http
-import io.ktor.client.features.json.JacksonSerializer
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.logging.DEFAULT
-import io.ktor.client.features.logging.LogLevel
-import io.ktor.client.features.logging.Logger
-import io.ktor.client.features.logging.Logging
 import mu.KotlinLogging
 import no.nav.dagpenger.oauth2.CachedOauth2Client
 import no.nav.dagpenger.oauth2.OAuth2Config
-import no.nav.dagpenger.oppslag.inntekt.http.httpClient
 
 private val sikkerlogg = KotlinLogging.logger("tjenestekall")
 
@@ -56,29 +44,6 @@ internal object Configuration {
         return CachedOauth2Client(
             tokenEndpointUrl = azureAd.tokenEndpointUrl,
             authType = azureAd.clientSecret(),
-            httpClient = HttpClient() {
-                install(JsonFeature) {
-                    serializer = JacksonSerializer {
-                        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                        setSerializationInclusion(JsonInclude.Include.NON_NULL)
-                    }
-                }
-                install(Logging) {
-                    logger = object : Logger {
-                        override fun log(message: String) {
-                            sikkerlogg.info { message }
-                        }
-                    }
-                    level = LogLevel.HEADERS
-                }
-
-                engine {
-                    System.getenv("HTTP_PROXY")?.let {
-                        sikkerlogg.info { "MED PROXY: $it" }
-                        this.proxy = ProxyBuilder.http(it)
-                    }
-                }
-            }
         )
     }
 
