@@ -17,8 +17,6 @@ import mu.KotlinLogging
 import no.nav.dagpenger.oauth2.CachedOauth2Client
 import no.nav.dagpenger.oauth2.OAuth2Config
 
-private val sikkerlogg = KotlinLogging.logger("tjenestekall")
-
 internal object Configuration {
 
     private val defaultProperties = ConfigurationMap(
@@ -44,11 +42,9 @@ internal object Configuration {
     val dpInntektApiScope by lazy { properties[Key("DP_INNTEKT_API_SCOPE", stringType)] }
 
 
-    fun dpInntektApiTokenProvider(): CachedOauth2Client {
+    val dpInntektApiTokenProvider by lazy {
         val azureAd = OAuth2Config.AzureAd(properties)
-
-        sikkerlogg.info { "Token endpoint url: ${azureAd.tokenEndpointUrl}" }
-        return CachedOauth2Client(
+        CachedOauth2Client(
             tokenEndpointUrl = azureAd.tokenEndpointUrl,
             authType = azureAd.clientSecret(),
             httpClient = HttpClient() {
@@ -66,15 +62,5 @@ internal object Configuration {
             }
         )
     }
-
-    // val dpInntektApiTokenProvider by lazy {
-    //     val azureAd = OAuth2Config.AzureAd(properties)
-    //
-    //     sikkerlogg.info { "Token endpoint url: ${azureAd.tokenEndpointUrl}" }
-    //     CachedOauth2Client(
-    //         tokenEndpointUrl = azureAd.tokenEndpointUrl,
-    //         authType = azureAd.clientSecret(),
-    //     )
-    // }
 
 }
