@@ -36,14 +36,25 @@ internal object Configuration {
 
     val dpInntektApiScope by lazy { properties[Key("DP_INNTEKT_API_SCOPE", stringType)] }
 
-    val dpInntektApiTokenProvider by lazy {
+
+    fun dpInntektApiTokenProvider(): CachedOauth2Client {
         val azureAd = OAuth2Config.AzureAd(properties)
 
         sikkerlogg.info { "Token endpoint url: ${azureAd.tokenEndpointUrl}" }
-        CachedOauth2Client(
+        return CachedOauth2Client(
             tokenEndpointUrl = azureAd.tokenEndpointUrl,
             authType = azureAd.clientSecret(),
         )
     }
+
+    // val dpInntektApiTokenProvider by lazy {
+    //     val azureAd = OAuth2Config.AzureAd(properties)
+    //
+    //     sikkerlogg.info { "Token endpoint url: ${azureAd.tokenEndpointUrl}" }
+    //     CachedOauth2Client(
+    //         tokenEndpointUrl = azureAd.tokenEndpointUrl,
+    //         authType = azureAd.clientSecret(),
+    //     )
+    // }
 
 }
