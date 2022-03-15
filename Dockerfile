@@ -1,3 +1,26 @@
-FROM navikt/java:17
+FROM eclipse-temurin:17 as jre-build
 
-COPY build/libs/dp-oppslag-inntekt.jar app.jar
+# Create a custom Java runtime
+RUN $JAVA_HOME/bin/jlink \
+         --add-modules ALL-MODULE-PATH \
+         --strip-debug \
+         --no-man-pages \
+         --no-header-files \
+         --compress=2 \
+         --output /javaruntime
+
+# Runtime
+FROM debian:buster-slim
+ENV TZ="Europe/Oslo"
+ENV JAVA_HOME=/opt/java/openjdk
+ENV PATH "${JAVA_HOME}/bin:${PATH}"
+COPY --from=jre-build /javaruntime $JAVA_HOME
+
+COPY build/install/* build/install/* /
+
+RUN mkdir /secure-logs
+RUN chown -R nobody /secure-logs
+
+USER nobody
+
+CMD ["dp-oppslag-inntekt"]
