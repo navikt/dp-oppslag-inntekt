@@ -23,11 +23,7 @@ internal fun httpClient(
             requestTimeoutMillis = Duration.ofSeconds(30).toMillis()
             socketTimeoutMillis = Duration.ofSeconds(30).toMillis()
         }
-
-        install(Logging) {
-            level = LogLevel.INFO
-        }
-
+        
         install(JsonFeature) {
             accept(ContentType.Application.Json)
             serializer = JacksonSerializer(objectMapper)
