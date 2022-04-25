@@ -43,7 +43,7 @@ object Dagpenger {
             const val client = "com.github.navikt.dp-biblioteker:soap-client:$version"
         }
     }
-    const val Grunnbeløp = "com.github.navikt:dp-grunnbelop:2021.06.25-11.51.bdc7c826c404"
+    const val Grunnbeløp = "com.github.navikt:dp-grunnbelop:2022.04.25-08.32.f0b301fea096"
     const val Streams = "com.github.navikt:dagpenger-streams:2021.12.29-13.08.7857ff52b457"
     const val Events = "com.github.navikt:dagpenger-events:2021.12.14-09.45.e24e8c813b27"
 }
