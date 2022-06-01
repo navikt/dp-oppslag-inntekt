@@ -8,19 +8,21 @@ import no.nav.helse.rapids_rivers.MessageProblems
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import no.nav.helse.rapids_rivers.asLocalDate
+import no.nav.helse.rapids_rivers.withMDC
 
-internal class InntektService(rapidsConnection: RapidsConnection, private val inntektClient: InntektClient) : River.PacketListener {
+internal class InntektService(rapidsConnection: RapidsConnection, private val inntektClient: InntektClient) :
+    River.PacketListener {
     init {
         River(rapidsConnection).apply {
             validate {
                 it.demandAllOrAny("@behov", løserBehov)
                 it.forbid("@løsning")
-                it.requireKey("@id")
+                it.requireKey("@id", "@behovId")
                 it.requireArray("identer") {
                     requireKey("type", "historisk", "id")
                 }
                 it.require("identer") { identer ->
-                    if(!identer.any { ident -> ident["type"].asText() == "aktørid" }) throw IllegalArgumentException("Mangler aktørid i identer")
+                    if (!identer.any { ident -> ident["type"].asText() == "aktørid" }) throw IllegalArgumentException("Mangler aktørid i identer")
                 }
                 it.requireKey("FangstOgFiskeInntektSiste36mnd")
                 it.requireKey("Virkningstidspunkt")
@@ -40,26 +42,37 @@ internal class InntektService(rapidsConnection: RapidsConnection, private val in
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
         val søknadUUID = packet["søknad_uuid"].asUUID()
-        val aktørId =
-            packet["identer"].first { it["type"].asText() == "aktørid" && !it["historisk"].asBoolean() }["id"].asText()
-        val fangstOgFiske = packet["FangstOgFiskeInntektSiste36mnd"].asBoolean()
-        val virkningsTidspunkt = packet["Virkningstidspunkt"].asLocalDate()
+        withMDC(
+            mapOf(
+                "behovId" to packet["@behovId"].asText(),
+                "søknad_uuid" to søknadUUID.toString(),
+            )
+        ) {
+            val aktørId =
+                packet["identer"].first { it["type"].asText() == "aktørid" && !it["historisk"].asBoolean() }["id"].asText()
+            val fangstOgFiske = packet["FangstOgFiskeInntektSiste36mnd"].asBoolean()
+            val virkningsTidspunkt = packet["Virkningstidspunkt"].asLocalDate()
 
-        val inntekt = runBlocking {
-            inntektClient.hentKlassifisertInntekt(søknadUUID = søknadUUID, aktørId = aktørId, virkningsTidspunkt = virkningsTidspunkt)
-        }
-
-        val løsning = packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
-            behov to when (behov) {
-                "InntektSiste3År" -> inntekt.inntektSiste3år(fangstOgFiske)
-                "InntektSiste12Mnd" -> inntekt.inntektSiste12mnd(fangstOgFiske)
-                else -> throw IllegalArgumentException("Ukjent behov $behov")
+            val inntekt = runBlocking {
+                inntektClient.hentKlassifisertInntekt(
+                    søknadUUID = søknadUUID,
+                    aktørId = aktørId,
+                    virkningsTidspunkt = virkningsTidspunkt
+                )
             }
-        }.toMap()
 
-        packet["@løsning"] = løsning
-        log.info { "Løst behov for $søknadUUID" }
-        context.publish(packet.toJson())
+            val løsning = packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
+                behov to when (behov) {
+                    "InntektSiste3År" -> inntekt.inntektSiste3år(fangstOgFiske)
+                    "InntektSiste12Mnd" -> inntekt.inntektSiste12mnd(fangstOgFiske)
+                    else -> throw IllegalArgumentException("Ukjent behov $behov")
+                }
+            }.toMap()
+
+            packet["@løsning"] = løsning
+            log.info { "Løst behov for $søknadUUID" }
+            context.publish(packet.toJson())
+        }
     }
 
     override fun onError(problems: MessageProblems, context: MessageContext) {

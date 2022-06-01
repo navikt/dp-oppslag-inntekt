@@ -30,6 +30,7 @@ private val behovJson =
       "@event_name": "faktum_svar",
       "@opprettet": "2020-11-18T11:04:32.867824",
       "@id": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
+      "@behovId": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
       "fnr": "123",
       "søknad_uuid": "41621ac0-f5ee-4cce-b1f5-88a79f25f1a5",
       "fakta": [

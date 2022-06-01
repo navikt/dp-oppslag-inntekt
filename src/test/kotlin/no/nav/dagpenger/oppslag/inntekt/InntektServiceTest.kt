@@ -62,6 +62,7 @@ internal class InntektServiceTest {
   "@event_name": "faktum_svar",
   "@opprettet": "2020-11-18T11:04:32.867824",
   "@id": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
+  "@behovId": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
   "Virkningstidspunkt": "2020-11-18",
   "søknad_uuid": "$søknadUUID",
   "identer": [
@@ -99,6 +100,7 @@ internal class InntektServiceTest {
   "@event_name": "faktum_svar",
   "@opprettet": "2020-11-18T11:04:32.867824",
   "@id": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
+  "@behovId": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
   "Virkningstidspunkt": "2020-11-18",
   "søknad_uuid": "$søknadUUID",
   "identer":[{"id":"32542134","type":"folkeregisterident","historisk":false}],
