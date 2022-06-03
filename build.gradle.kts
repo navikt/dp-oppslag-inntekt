@@ -28,7 +28,6 @@ dependencies {
     implementation(Ktor2.Client.library("apache"))
     implementation(Ktor2.Client.library("core"))
     implementation(Ktor2.Client.library("logging-jvm"))
-    // implementation(Ktor2.Client.library("jackson"))
     implementation(Ktor2.Server.library("netty"))
     implementation(Ktor2.Client.library("content-negotiation"))
     implementation("io.ktor:ktor-serialization-jackson:${Ktor2.version}")
