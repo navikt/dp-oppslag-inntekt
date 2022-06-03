@@ -10,6 +10,7 @@ import com.natpryce.konfig.overriding
 import com.natpryce.konfig.stringType
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.ProxyBuilder
+import io.ktor.client.engine.apache.Apache
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.engine.http
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -46,7 +47,7 @@ internal object Configuration {
         CachedOauth2Client(
             tokenEndpointUrl = azureAd.tokenEndpointUrl,
             authType = azureAd.clientSecret(),
-            httpClient =  HttpClient(CIO.create()) {
+            httpClient =  HttpClient(Apache) {
                 install(ContentNegotiation) {
                     jackson {
                         configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
