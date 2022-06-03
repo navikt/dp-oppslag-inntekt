@@ -6,7 +6,7 @@ import no.nav.dagpenger.events.inntekt.v1.all
 import no.nav.dagpenger.events.inntekt.v1.sumInntekt
 import java.time.YearMonth
 
-internal class Inntekt(private val inntekt: Inntekt) {
+internal class OppslagInntekt(private val inntekt: Inntekt) {
     private val inntektsPerioder = inntekt.splitIntoInntektsPerioder()
 
     fun inntektSiste12mnd(fangstOgFisk: Boolean) =

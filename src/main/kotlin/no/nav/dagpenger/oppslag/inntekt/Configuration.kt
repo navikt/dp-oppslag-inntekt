@@ -10,10 +10,10 @@ import com.natpryce.konfig.overriding
 import com.natpryce.konfig.stringType
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.ProxyBuilder
+import io.ktor.client.engine.cio.CIO
 import io.ktor.client.engine.http
-import io.ktor.client.features.json.JacksonSerializer
-import io.ktor.client.features.json.JsonFeature
-import mu.KotlinLogging
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.serialization.jackson.jackson
 import no.nav.dagpenger.oauth2.CachedOauth2Client
 import no.nav.dagpenger.oauth2.OAuth2Config
 
@@ -41,15 +41,14 @@ internal object Configuration {
 
     val dpInntektApiScope by lazy { properties[Key("DP_INNTEKT_API_SCOPE", stringType)] }
 
-
     val dpInntektApiTokenProvider by lazy {
         val azureAd = OAuth2Config.AzureAd(properties)
         CachedOauth2Client(
             tokenEndpointUrl = azureAd.tokenEndpointUrl,
             authType = azureAd.clientSecret(),
-            httpClient = HttpClient() {
-                install(JsonFeature) {
-                    serializer = JacksonSerializer {
+            httpClient =  HttpClient(CIO.create()) {
+                install(ContentNegotiation) {
+                    jackson {
                         configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                         setSerializationInclusion(JsonInclude.Include.NON_NULL)
                     }
@@ -62,5 +61,4 @@ internal object Configuration {
             }
         )
     }
-
 }

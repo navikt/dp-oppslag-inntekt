@@ -27,7 +27,7 @@ internal class FangstOgFiskeInntektLøsningServiceTest {
     fun `skal besvare behov om inntekt inneholder fangst og fiske siste 36 mnd`() {
 
 
-        val mockk = mockk<Inntekt>(relaxed = true).also {
+        val mockk = mockk<OppslagInntekt>(relaxed = true).also {
             every { it.inneholderFangstOgFiske() } returns true
         }
         val inntektClient = mockk<InntektClient>().also {
