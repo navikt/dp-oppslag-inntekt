@@ -28,7 +28,7 @@ class InntektNesteMånedServiceTest {
 
     @Test
     fun `skal sjekke om det finnes inntekt for neste måned`() {
-        val inntekt = OppslagInntekt(
+        val inntekt = Inntekt(
             no.nav.dagpenger.events.inntekt.v1.Inntekt(
                 "123",
                 listOf(

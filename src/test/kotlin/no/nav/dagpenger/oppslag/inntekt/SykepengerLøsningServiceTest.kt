@@ -26,7 +26,7 @@ internal class SykepengerLøsningServiceTest {
     @Test
     fun `skal besvare behov om inntekt inneholder sykepenger siste 36 mnd`() {
         
-        val mockk = mockk<OppslagInntekt>(relaxed = true).also {
+        val mockk = mockk<Inntekt>(relaxed = true).also {
             every { it.inneholderSykepenger() } returns true
         }
         val inntektClient = mockk<InntektClient>().also {

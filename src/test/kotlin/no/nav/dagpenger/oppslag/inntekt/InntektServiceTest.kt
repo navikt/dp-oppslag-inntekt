@@ -25,7 +25,7 @@ internal class InntektServiceTest {
 
     @Test
     fun `skal hente inntekter for riktig pakke`() {
-        val mockk = mockk<OppslagInntekt>(relaxed = true).also {
+        val mockk = mockk<Inntekt>(relaxed = true).also {
             every { it.inntektSiste12mnd(false) } returns BigDecimal.ONE
             every { it.inntektSiste3år(false) } returns BigDecimal("2.0123543")
         }

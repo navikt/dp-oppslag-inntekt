@@ -14,29 +14,27 @@ application {
 }
 
 dependencies {
-    implementation("com.github.navikt.dp-biblioteker:ktor-client-metrics:2022.06.02-09.13.7b5fc99c5517")
+    implementation(Dagpenger.Biblioteker.Ktor.Client.metrics)
     implementation(Dagpenger.Grunnbeløp)
     implementation(Dagpenger.Events)
 
     implementation(Bekk.nocommons)
 
     implementation(Konfig.konfig)
-    implementation("com.github.navikt.dp-biblioteker:oauth2-klient:2022.05.30-09.37.623ee13a49dd")
+    implementation("com.github.navikt.dp-biblioteker:oauth2-klient:2022.02.05-16.32.da1deab37b31")
     implementation(Kotlin.Logging.kotlinLogging)
-    implementation(Ktor2.Client.library("auth-jvm"))
-    implementation(Ktor2.Client.library("cio"))
-    implementation(Ktor2.Client.library("core"))
-    implementation(Ktor2.Client.library("logging-jvm"))
-    // implementation(Ktor2.Client.library("jackson"))
-    implementation(Ktor2.Server.library("netty"))
-    implementation(Ktor2.Client.library("content-negotiation"))
-    implementation("io.ktor:ktor-serialization-jackson:${Ktor2.version}")
-    implementation(RapidAndRiversKtor2)
+    implementation(Ktor.library("client-auth-jvm"))
+    implementation(Ktor.library("client-cio"))
+    implementation(Ktor.library("client-core"))
+    implementation(Ktor.library("client-logging-jvm"))
+    implementation(Ktor.library("client-jackson"))
+    implementation(Ktor.serverNetty)
+    implementation(RapidAndRivers)
     implementation(kotlin("stdlib"))
 
     testImplementation(Junit5.api)
     testImplementation(Mockk.mockk)
-    testImplementation(Ktor2.Client.library("mock-jvm"))
+    testImplementation(Ktor.library("client-mock-jvm"))
     testImplementation(kotlin("test"))
     testRuntimeOnly(Junit5.engine)
 }

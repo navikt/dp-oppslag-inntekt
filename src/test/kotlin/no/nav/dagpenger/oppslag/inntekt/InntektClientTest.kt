@@ -2,9 +2,9 @@ package no.nav.dagpenger.oppslag.inntekt
 
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
-import io.ktor.client.engine.mock.toByteArray
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
+import io.ktor.http.content.TextContent
 import io.ktor.http.headersOf
 import kotlinx.coroutines.runBlocking
 import no.nav.dagpenger.oppslag.inntekt.http.httpClient
@@ -28,7 +28,7 @@ class InntektClientTest {
                     assertEquals(Configuration.inntektApiUrl, request.url.toString())
                     assertEquals("Bearer token", request.headers[HttpHeaders.Authorization])
 
-                    val requestBody = JsonMapper.objectMapper.readTree(ByteArrayInputStream((request.body.toByteArray())))
+                    val requestBody = objectMapper.readTree(ByteArrayInputStream((request.body as TextContent).bytes()))
                     assertEquals("123", requestBody["aktørId"].asText())
                     assertEquals(id, requestBody["regelkontekst"]["id"].asText())
                     assertEquals("saksbehandling", requestBody["regelkontekst"]["type"].asText())
