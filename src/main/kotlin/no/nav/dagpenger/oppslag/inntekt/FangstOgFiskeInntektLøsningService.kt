@@ -2,13 +2,14 @@ package no.nav.dagpenger.oppslag.inntekt
 
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import mu.withLoggingContext
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageContext
 import no.nav.helse.rapids_rivers.MessageProblems
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import no.nav.helse.rapids_rivers.asLocalDate
-import no.nav.helse.rapids_rivers.withMDC
+import java.util.UUID
 
 internal class FangstOgFiskeInntektLøsningService(
     rapidsConnection: RapidsConnection,
@@ -37,30 +38,24 @@ internal class FangstOgFiskeInntektLøsningService(
     }
 
     private val løserBehov = listOf(
-        "FangstOgFiskeInntektSiste36mnd",
+        "FangstOgFiskeInntektSiste36mnd"
     )
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
-        withMDC(
-            mapOf(
-                "behovId" to packet["@behovId"].asText(),
-                "søknad_uuid" to packet["søknad_uuid"].asText(),
-            )
-        ) {
+        val callId = "dp-oppslag-inntekt-${UUID.randomUUID()}"
 
+        withLoggingContext(
+            "behovId" to packet["@behovId"].asText(),
+            "søknad_uuid" to packet["søknad_uuid"].asText(),
+            "callId" to callId
+        ) {
             val søknadUUID = packet["søknad_uuid"].asUUID()
             val aktørId =
                 packet["identer"].first { it["type"].asText() == "aktørid" && !it["historisk"].asBoolean() }["id"].asText()
             val virkningstidspunkt = packet["Virkningstidspunkt"].asLocalDate()
-
             val inntekt = runBlocking {
-                inntektClient.hentKlassifisertInntekt(
-                    søknadUUID = søknadUUID,
-                    aktørId = aktørId,
-                    virkningsTidspunkt = virkningstidspunkt
-                )
+                inntektClient.hentKlassifisertInntekt(søknadUUID, aktørId, virkningstidspunkt, callId)
             }
-
             val løsning = packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
                 behov to when (behov) {
                     "FangstOgFiskeInntektSiste36mnd" -> inntekt.inneholderFangstOgFiske()

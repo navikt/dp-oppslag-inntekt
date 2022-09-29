@@ -13,9 +13,7 @@ import java.util.UUID
 import kotlin.test.assertEquals
 
 internal class InntektServiceTest {
-
     private val søknadUUID = UUID.fromString("41621ac0-f5ee-4cce-b1f5-88a79f25f1a5")
-
     private val testRapid = TestRapid()
 
     @AfterEach
@@ -30,7 +28,14 @@ internal class InntektServiceTest {
             every { it.inntektSiste3år(false) } returns BigDecimal("2.0123543")
         }
         val inntektClient = mockk<InntektClient>().also {
-            coEvery { it.hentKlassifisertInntekt(søknadUUID, "32542134", LocalDate.parse("2020-11-18")) } returns mockk
+            coEvery {
+                it.hentKlassifisertInntekt(
+                    søknadUUID,
+                    "32542134",
+                    LocalDate.parse("2020-11-18"),
+                    callId = any()
+                )
+            } returns mockk
         }
 
         InntektService(testRapid, inntektClient)
@@ -46,7 +51,14 @@ internal class InntektServiceTest {
             BigDecimal("2.0123543"),
             testRapid.inspektør.message(0)["@løsning"]["InntektSiste3År"].asText().toBigDecimal()
         )
-        coVerify { inntektClient.hentKlassifisertInntekt(søknadUUID, "32542134", LocalDate.parse("2020-11-18")) }
+        coVerify {
+            inntektClient.hentKlassifisertInntekt(
+                søknadUUID,
+                "32542134",
+                LocalDate.parse("2020-11-18"),
+                callId = any()
+            )
+        }
     }
 
     @Test
@@ -125,4 +137,3 @@ internal class InntektServiceTest {
 }
         """.trimIndent()
 }
-

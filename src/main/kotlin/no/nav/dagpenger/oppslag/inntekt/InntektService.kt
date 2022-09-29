@@ -2,13 +2,14 @@ package no.nav.dagpenger.oppslag.inntekt
 
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import mu.withLoggingContext
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageContext
 import no.nav.helse.rapids_rivers.MessageProblems
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import no.nav.helse.rapids_rivers.asLocalDate
-import no.nav.helse.rapids_rivers.withMDC
+import java.util.UUID
 
 internal class InntektService(rapidsConnection: RapidsConnection, private val inntektClient: InntektClient) :
     River.PacketListener {
@@ -42,25 +43,20 @@ internal class InntektService(rapidsConnection: RapidsConnection, private val in
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
         val søknadUUID = packet["søknad_uuid"].asUUID()
-        withMDC(
-            mapOf(
-                "behovId" to packet["@behovId"].asText(),
-                "søknad_uuid" to søknadUUID.toString(),
-            )
+        val callId = "dp-oppslag-inntekt-${UUID.randomUUID()}"
+
+        withLoggingContext(
+            "behovId" to packet["@behovId"].asText(),
+            "søknad_uuid" to søknadUUID.toString(),
+            "callId" to callId
         ) {
             val aktørId =
                 packet["identer"].first { it["type"].asText() == "aktørid" && !it["historisk"].asBoolean() }["id"].asText()
             val fangstOgFiske = packet["FangstOgFiskeInntektSiste36mnd"].asBoolean()
             val virkningsTidspunkt = packet["Virkningstidspunkt"].asLocalDate()
-
             val inntekt = runBlocking {
-                inntektClient.hentKlassifisertInntekt(
-                    søknadUUID = søknadUUID,
-                    aktørId = aktørId,
-                    virkningsTidspunkt = virkningsTidspunkt
-                )
+                inntektClient.hentKlassifisertInntekt(søknadUUID, aktørId, virkningsTidspunkt, callId)
             }
-
             val løsning = packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
                 behov to when (behov) {
                     "InntektSiste3År" -> inntekt.inntektSiste3år(fangstOgFiske)
