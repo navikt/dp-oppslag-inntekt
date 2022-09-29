@@ -13,10 +13,8 @@ import java.util.UUID
 import kotlin.test.assertEquals
 
 internal class FangstOgFiskeInntektLøsningServiceTest {
-
     private val søknadUUID = UUID.fromString("41621ac0-f5ee-4cce-b1f5-88a79f25f1a5")
-
-    private         val testRapid = TestRapid()
+    private val testRapid = TestRapid()
 
     @AfterEach
     fun reset() {
@@ -25,13 +23,11 @@ internal class FangstOgFiskeInntektLøsningServiceTest {
 
     @Test
     fun `skal besvare behov om inntekt inneholder fangst og fiske siste 36 mnd`() {
-
-
         val mockk = mockk<OppslagInntekt>(relaxed = true).also {
             every { it.inneholderFangstOgFiske() } returns true
         }
         val inntektClient = mockk<InntektClient>().also {
-            coEvery { it.hentKlassifisertInntekt(søknadUUID, "32542134", LocalDate.parse("2020-11-18")) } returns mockk
+            coEvery { it.hentKlassifisertInntekt(søknadUUID, "32542134", LocalDate.parse("2020-11-18"), callId = any()) } returns mockk
         }
 
         FangstOgFiskeInntektLøsningService(testRapid, inntektClient)
@@ -40,7 +36,7 @@ internal class FangstOgFiskeInntektLøsningServiceTest {
 
         assertEquals(1, testRapid.inspektør.size)
         assertTrue(testRapid.inspektør.message(0)["@løsning"]["FangstOgFiskeInntektSiste36mnd"].asBoolean())
-        coVerify { inntektClient.hentKlassifisertInntekt(søknadUUID, "32542134", LocalDate.parse("2020-11-18")) }
+        coVerify { inntektClient.hentKlassifisertInntekt(søknadUUID, "32542134", LocalDate.parse("2020-11-18"), callId = any()) }
     }
 
     @Test
@@ -49,7 +45,6 @@ internal class FangstOgFiskeInntektLøsningServiceTest {
         testRapid.sendTestMessage(behovUtenAktørIdJson)
         assertEquals(0, testRapid.inspektør.size)
     }
-
 
     // language=JSON
     private val behovJson =

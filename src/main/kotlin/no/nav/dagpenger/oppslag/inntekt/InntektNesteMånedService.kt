@@ -2,14 +2,15 @@ package no.nav.dagpenger.oppslag.inntekt
 
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import mu.withLoggingContext
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageContext
 import no.nav.helse.rapids_rivers.MessageProblems
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import no.nav.helse.rapids_rivers.asLocalDate
-import no.nav.helse.rapids_rivers.withMDC
 import java.time.YearMonth
+import java.util.UUID
 
 internal class InntektNesteMånedService(rapidsConnection: RapidsConnection, private val inntektClient: InntektClient) :
     River.PacketListener {
@@ -36,31 +37,29 @@ internal class InntektNesteMånedService(rapidsConnection: RapidsConnection, pri
     }
 
     private val løserBehov = listOf(
-        "HarRapportertInntektNesteMåned",
+        "HarRapportertInntektNesteMåned"
     )
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
         val søknadUUID = packet["søknad_uuid"].asUUID()
-        withMDC(
-            mapOf(
-                "behovId" to packet["@behovId"].asText(),
-                "søknad_uuid" to søknadUUID.toString(),
-            )
-        ) {
+        val callId = "dp-oppslag-inntekt-${UUID.randomUUID()}"
 
+        withLoggingContext(
+            "behovId" to packet["@behovId"].asText(),
+            "søknad_uuid" to søknadUUID.toString(),
+            "callId" to callId
+        ) {
             val aktørId =
                 packet["identer"].first { it["type"].asText() == "aktørid" && !it["historisk"].asBoolean() }["id"].asText()
-
             val inntektsrapporteringsperiode = Inntektsrapporteringperiode(packet["Virkningstidspunkt"].asLocalDate())
-
             val inntekt = runBlocking {
                 inntektClient.hentKlassifisertInntekt(
-                    søknadUUID = søknadUUID,
-                    aktørId = aktørId,
-                    virkningsTidspunkt = inntektsrapporteringsperiode.neste().fom()
+                    søknadUUID,
+                    aktørId,
+                    inntektsrapporteringsperiode.neste().fom(),
+                    callId
                 )
             }
-
             val løsning = packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
                 behov to when (behov) {
                     "HarRapportertInntektNesteMåned" -> inntekt.harRapportertInntektForMåned(

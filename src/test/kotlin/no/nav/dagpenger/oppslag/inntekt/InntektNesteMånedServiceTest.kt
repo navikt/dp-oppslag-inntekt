@@ -16,15 +16,12 @@ import kotlin.test.assertEquals
 
 class InntektNesteMånedServiceTest {
     private val søknadUUID = UUID.fromString("41621ac0-f5ee-4cce-b1f5-88a79f25f1a5")
-
-
     private val testRapid = TestRapid()
 
     @AfterEach
     fun reset() {
         testRapid.reset()
     }
-
 
     @Test
     fun `skal sjekke om det finnes inntekt for neste måned`() {
@@ -48,9 +45,15 @@ class InntektNesteMånedServiceTest {
                 sisteAvsluttendeKalenderMåned = YearMonth.of(2021, 3)
             )
         )
-
         val inntektClient = mockk<InntektClient>().also {
-            coEvery { it.hentKlassifisertInntekt(søknadUUID, "32542134", LocalDate.parse("2021-06-08")) } returns inntekt
+            coEvery {
+                it.hentKlassifisertInntekt(
+                    søknadUUID,
+                    "32542134",
+                    LocalDate.parse("2021-06-08"),
+                    callId = any()
+                )
+            } returns inntekt
         }
 
         InntektNesteMånedService(testRapid, inntektClient)
@@ -60,14 +63,12 @@ class InntektNesteMånedServiceTest {
         assertEquals(true, testRapid.inspektør.message(0)["@løsning"]["HarRapportertInntektNesteMåned"].asBoolean())
     }
 
-
     @Test
     fun `skal droppe behov hvor aktørid mangler`() {
         InntektService(testRapid, mockk())
         testRapid.sendTestMessage(behovUtenAktørIdJson)
         assertEquals(0, testRapid.inspektør.size)
     }
-
 
     // language=JSON
     private val behovForInntektNesteMåned =
@@ -91,7 +92,6 @@ class InntektNesteMånedServiceTest {
   ]
 }
         """.trimIndent()
-
 
     // language=JSON
     private val behovUtenAktørIdJson =

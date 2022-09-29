@@ -13,24 +13,28 @@ import java.util.UUID
 import kotlin.test.assertEquals
 
 internal class SykepengerLøsningServiceTest {
-
     private val søknadUUID = UUID.fromString("41621ac0-f5ee-4cce-b1f5-88a79f25f1a5")
-
     private val testRapid = TestRapid()
 
     @AfterEach
     fun reset() {
         testRapid.reset()
     }
-    
+
     @Test
     fun `skal besvare behov om inntekt inneholder sykepenger siste 36 mnd`() {
-        
         val mockk = mockk<OppslagInntekt>(relaxed = true).also {
             every { it.inneholderSykepenger() } returns true
         }
         val inntektClient = mockk<InntektClient>().also {
-            coEvery { it.hentKlassifisertInntekt(søknadUUID, "32542134", LocalDate.parse("2020-11-18")) } returns mockk
+            coEvery {
+                it.hentKlassifisertInntekt(
+                    søknadUUID,
+                    "32542134",
+                    LocalDate.parse("2020-11-18"),
+                    callId = any()
+                )
+            } returns mockk
         }
 
         SykepengerLøsningService(testRapid, inntektClient)
@@ -39,7 +43,14 @@ internal class SykepengerLøsningServiceTest {
 
         assertEquals(1, testRapid.inspektør.size)
         assertTrue(testRapid.inspektør.message(0)["@løsning"]["SykepengerSiste36Måneder"].asBoolean())
-        coVerify { inntektClient.hentKlassifisertInntekt(søknadUUID, "32542134", LocalDate.parse("2020-11-18")) }
+        coVerify {
+            inntektClient.hentKlassifisertInntekt(
+                søknadUUID,
+                "32542134",
+                LocalDate.parse("2020-11-18"),
+                callId = any()
+            )
+        }
     }
 
     @Test
