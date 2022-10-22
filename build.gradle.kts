@@ -21,7 +21,7 @@ dependencies {
     implementation(Bekk.nocommons)
 
     implementation(Konfig.konfig)
-    implementation("com.github.navikt.dp-biblioteker:oauth2-klient:2022.05.30-09.37.623ee13a49dd")
+    implementation("com.github.navikt.dp-biblioteker:oauth2-klient:2022.10.22-09.05.6fcf3395aa4f")
     implementation(Kotlin.Logging.kotlinLogging)
     implementation(Ktor2.Client.library("auth-jvm"))
     implementation(Ktor2.Client.library("cio"))
