@@ -13,15 +13,17 @@ application {
     mainClass.set("no.nav.dagpenger.oppslag.inntekt.ApplicationKt")
 }
 
+val dpBibliotekerVersjon = Dagpenger.Biblioteker.version
+
 dependencies {
-    implementation("com.github.navikt.dp-biblioteker:ktor-client-metrics:2022.06.02-09.13.7b5fc99c5517")
+    implementation("com.github.navikt.dp-biblioteker:ktor-client-metrics:$dpBibliotekerVersjon")
     implementation(Dagpenger.Grunnbeløp)
     implementation(Dagpenger.Events)
 
     implementation(Bekk.nocommons)
 
     implementation(Konfig.konfig)
-    implementation("com.github.navikt.dp-biblioteker:oauth2-klient:2022.10.22-09.05.6fcf3395aa4f")
+    implementation("com.github.navikt.dp-biblioteker:oauth2-klient:$dpBibliotekerVersjon")
     implementation(Kotlin.Logging.kotlinLogging)
     implementation(Ktor2.Client.library("auth-jvm"))
     implementation(Ktor2.Client.library("cio"))
