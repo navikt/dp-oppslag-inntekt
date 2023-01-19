@@ -24,11 +24,6 @@ internal class FangstOgFiskeInntektLøsningServiceTest {
     }
 
     @Test
-    fun `hubba`() {
-        behovJson("aktor").let { println(it) }
-    }
-
-    @Test
     fun `skal besvare behov om inntekt inneholder fangst og fiske siste 36 mnd`() {
         val mockk = mockk<OppslagInntekt>(relaxed = true).also {
             every { it.inneholderFangstOgFiske() } returns true
