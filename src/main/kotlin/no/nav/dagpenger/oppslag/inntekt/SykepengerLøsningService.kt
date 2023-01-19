@@ -22,9 +22,7 @@ internal class SykepengerLøsningService(rapidsConnection: RapidsConnection, pri
                 it.requireArray("identer") {
                     requireKey("type", "historisk", "id")
                 }
-                it.require("identer") { identer ->
-                    if (!identer.any { ident -> ident["type"].asText() == "aktørid" }) throw IllegalArgumentException("Mangler aktørid i identer")
-                }
+                it.require("identer", ::harAktørEllerFnr)
                 it.requireKey("Virkningstidspunkt")
                 it.interestedIn("søknad_uuid")
             }
@@ -48,11 +46,14 @@ internal class SykepengerLøsningService(rapidsConnection: RapidsConnection, pri
             "søknad_uuid" to søknadUUID.toString(),
             "callId" to callId
         ) {
-            val aktørId =
-                packet["identer"].first { it["type"].asText() == "aktørid" && !it["historisk"].asBoolean() }["id"].asText()
-            val virkningstidspunkt = packet["Virkningstidspunkt"].asLocalDate()
             val inntekt = runBlocking {
-                inntektClient.hentKlassifisertInntekt(søknadUUID, aktørId, virkningstidspunkt, callId)
+                inntektClient.hentKlassifisertInntekt(
+                    søknadUUID = søknadUUID,
+                    aktørId = packet.aktorId(),
+                    fødselsnummer = packet.fodselsnummer(),
+                    virkningsTidspunkt = packet["Virkningstidspunkt"].asLocalDate(),
+                    callId = callId
+                )
             }
             val løsning = packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
                 behov to when (behov) {

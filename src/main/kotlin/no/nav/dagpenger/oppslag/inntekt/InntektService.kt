@@ -22,9 +22,7 @@ internal class InntektService(rapidsConnection: RapidsConnection, private val in
                 it.requireArray("identer") {
                     requireKey("type", "historisk", "id")
                 }
-                it.require("identer") { identer ->
-                    if (!identer.any { ident -> ident["type"].asText() == "aktørid" }) throw IllegalArgumentException("Mangler aktørid i identer")
-                }
+                it.require("identer", ::harAktørEllerFnr)
                 it.requireKey("FangstOgFiskeInntektSiste36mnd")
                 it.requireKey("Virkningstidspunkt")
                 it.interestedIn("søknad_uuid")
@@ -50,12 +48,16 @@ internal class InntektService(rapidsConnection: RapidsConnection, private val in
             "søknad_uuid" to søknadUUID.toString(),
             "callId" to callId
         ) {
-            val aktørId =
-                packet["identer"].first { it["type"].asText() == "aktørid" && !it["historisk"].asBoolean() }["id"].asText()
             val fangstOgFiske = packet["FangstOgFiskeInntektSiste36mnd"].asBoolean()
             val virkningsTidspunkt = packet["Virkningstidspunkt"].asLocalDate()
             val inntekt = runBlocking {
-                inntektClient.hentKlassifisertInntekt(søknadUUID, aktørId, virkningsTidspunkt, callId)
+                inntektClient.hentKlassifisertInntekt(
+                    søknadUUID = søknadUUID,
+                    aktørId = packet.aktorId(),
+                    fødselsnummer = packet.fodselsnummer(),
+                    virkningsTidspunkt = virkningsTidspunkt,
+                    callId = callId
+                )
             }
             val løsning = packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
                 behov to when (behov) {

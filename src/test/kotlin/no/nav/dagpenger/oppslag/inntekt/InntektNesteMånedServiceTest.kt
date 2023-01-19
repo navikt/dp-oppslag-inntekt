@@ -50,6 +50,7 @@ class InntektNesteMånedServiceTest {
                 it.hentKlassifisertInntekt(
                     søknadUUID,
                     "32542134",
+                    "32542134",
                     LocalDate.parse("2021-06-08"),
                     callId = any()
                 )
@@ -66,7 +67,7 @@ class InntektNesteMånedServiceTest {
     @Test
     fun `skal droppe behov hvor aktørid mangler`() {
         InntektService(testRapid, mockk())
-        testRapid.sendTestMessage(behovUtenAktørIdJson)
+        testRapid.sendTestMessage(behovUtenIdent)
         assertEquals(0, testRapid.inspektør.size)
     }
 
@@ -79,7 +80,7 @@ class InntektNesteMånedServiceTest {
   "@behovId": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
   "Virkningstidspunkt": "2021-05-06",
   "søknad_uuid": "$søknadUUID",
-  "identer":[{"id":"32542134","type":"aktørid","historisk":false}],
+  "identer":[{"id":"32542134","type":"aktørid","historisk":false},{"id":"32542134","type":"folkeregisterident","historisk":false}],
   "FangstOgFiske": false,
   "fakta": [
     {
@@ -94,7 +95,7 @@ class InntektNesteMånedServiceTest {
         """.trimIndent()
 
     // language=JSON
-    private val behovUtenAktørIdJson =
+    private val behovUtenIdent =
         """{
   "@event_name": "faktum_svar",
   "@opprettet": "2021-11-18T11:04:32.867824",
@@ -102,7 +103,7 @@ class InntektNesteMånedServiceTest {
   "@behovId": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
   "Virkningstidspunkt": "2021-05-06",
   "søknad_uuid": "$søknadUUID",
-  "identer":[{"id":"32542134","type":"folkeregisterident","historisk":false}],
+  "identer":[],
   "FangstOgFiske": false,
   "fakta": [
     {

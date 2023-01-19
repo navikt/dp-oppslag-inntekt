@@ -31,6 +31,7 @@ internal class SykepengerLøsningServiceTest {
                 it.hentKlassifisertInntekt(
                     søknadUUID,
                     "32542134",
+                    "32542134",
                     LocalDate.parse("2020-11-18"),
                     callId = any()
                 )
@@ -47,6 +48,7 @@ internal class SykepengerLøsningServiceTest {
             inntektClient.hentKlassifisertInntekt(
                 søknadUUID,
                 "32542134",
+                "32542134",
                 LocalDate.parse("2020-11-18"),
                 callId = any()
             )
@@ -56,7 +58,7 @@ internal class SykepengerLøsningServiceTest {
     @Test
     fun `skal droppe behov hvor aktørid mangler`() {
         InntektService(testRapid, mockk())
-        testRapid.sendTestMessage(behovUtenAktørIdJson)
+        testRapid.sendTestMessage(behovUtenIdent)
         assertEquals(0, testRapid.inspektør.size)
     }
 
@@ -69,7 +71,7 @@ internal class SykepengerLøsningServiceTest {
   "@behovId": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
   "Virkningstidspunkt": "2020-11-18",
   "søknad_uuid": "$søknadUUID",
-  "identer":[{"id":"32542134","type":"aktørid","historisk":false}],
+  "identer":[{"id":"32542134","type":"aktørid","historisk":false}, {"id":"32542134","type":"folkeregisterident","historisk":false}],
   "FangstOgFiskeInntektSiste36mnd": false,
   "fakta": [
     {
@@ -84,7 +86,7 @@ internal class SykepengerLøsningServiceTest {
         """.trimIndent()
 
     // language=JSON
-    private val behovUtenAktørIdJson =
+    private val behovUtenIdent =
         """{
   "@event_name": "faktum_svar",
   "@opprettet": "2020-11-18T11:04:32.867824",
@@ -92,7 +94,7 @@ internal class SykepengerLøsningServiceTest {
   "@behovId": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
   "Virkningstidspunkt": "2020-11-18",
   "søknad_uuid": "$søknadUUID",
-  "identer":[{"id":"32542134","type":"folkeregisterident","historisk":false}],
+  "identer":[],
   "FangstOgFiskeInntektSiste36mnd": false,
   "fakta": [
     {

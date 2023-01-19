@@ -28,8 +28,10 @@ class InntektClientTest {
                     assertEquals(Configuration.inntektApiUrl, request.url.toString())
                     assertEquals("Bearer token", request.headers[HttpHeaders.Authorization])
 
-                    val requestBody = JsonMapper.objectMapper.readTree(ByteArrayInputStream((request.body.toByteArray())))
+                    val requestBody =
+                        JsonMapper.objectMapper.readTree(ByteArrayInputStream((request.body.toByteArray())))
                     assertEquals("123", requestBody["aktørId"].asText())
+                    assertEquals("fnr", requestBody["fødselsnummer"].asText())
                     assertEquals(id, requestBody["regelkontekst"]["id"].asText())
                     assertEquals("saksbehandling", requestBody["regelkontekst"]["type"].asText())
                     assertEquals(LocalDate.now(), requestBody["beregningsDato"].asLocalDate())
@@ -37,7 +39,7 @@ class InntektClientTest {
                 }
             ),
             tokenProvider = { "token" }
-        ).hentKlassifisertInntekt(UUID.fromString(id), "123", LocalDate.now())
+        ).hentKlassifisertInntekt(UUID.fromString(id), "123", "fnr", LocalDate.now())
         assertEquals(BigDecimal("0"), response.inntektSiste12mnd(false))
         assertEquals(BigDecimal("18900"), response.inntektSiste3år(false))
     }

@@ -23,9 +23,7 @@ internal class InntektNesteMånedService(rapidsConnection: RapidsConnection, pri
                 it.requireArray("identer") {
                     requireKey("type", "historisk", "id")
                 }
-                it.require("identer") { identer ->
-                    if (!identer.any { ident -> ident["type"].asText() == "aktørid" }) throw IllegalArgumentException("Mangler aktørid i identer")
-                }
+                it.require("identer", ::harAktørEllerFnr)
                 it.requireKey("Virkningstidspunkt")
                 it.interestedIn("søknad_uuid")
             }
@@ -49,15 +47,14 @@ internal class InntektNesteMånedService(rapidsConnection: RapidsConnection, pri
             "søknad_uuid" to søknadUUID.toString(),
             "callId" to callId
         ) {
-            val aktørId =
-                packet["identer"].first { it["type"].asText() == "aktørid" && !it["historisk"].asBoolean() }["id"].asText()
             val inntektsrapporteringsperiode = Inntektsrapporteringperiode(packet["Virkningstidspunkt"].asLocalDate())
             val inntekt = runBlocking {
                 inntektClient.hentKlassifisertInntekt(
-                    søknadUUID,
-                    aktørId,
-                    inntektsrapporteringsperiode.neste().fom(),
-                    callId
+                    søknadUUID = søknadUUID,
+                    aktørId = packet.aktorId(),
+                    fødselsnummer = packet.fodselsnummer(),
+                    virkningsTidspunkt = inntektsrapporteringsperiode.neste().fom(),
+                    callId = callId
                 )
             }
             val løsning = packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
@@ -67,6 +64,7 @@ internal class InntektNesteMånedService(rapidsConnection: RapidsConnection, pri
                             inntektsrapporteringsperiode.fom()
                         )
                     )
+
                     else -> throw IllegalArgumentException("Ukjent behov $behov")
                 }
             }.toMap()

@@ -23,7 +23,8 @@ internal class InntektClient(
 ) {
     suspend fun hentKlassifisertInntekt(
         søknadUUID: UUID,
-        aktørId: String,
+        aktørId: String?,
+        fødselsnummer: String? = null,
         virkningsTidspunkt: LocalDate,
         callId: String? = null
     ): OppslagInntekt {
@@ -34,9 +35,10 @@ internal class InntektClient(
             accept(ContentType.Application.Json)
             setBody(
                 InntektRequest(
-                    aktørId,
-                    RegelKontekst(id = søknadUUID.toString(), type = "saksbehandling"),
-                    virkningsTidspunkt
+                    aktørId = aktørId,
+                    fødselsnummer = fødselsnummer,
+                    regelkontekst = RegelKontekst(id = søknadUUID.toString(), type = "saksbehandling"),
+                    beregningsDato = virkningsTidspunkt
                 )
             )
         }.body<Inntekt>()
@@ -45,6 +47,17 @@ internal class InntektClient(
     }
 }
 
-internal data class InntektRequest(val aktørId: String, val regelkontekst: RegelKontekst, val beregningsDato: LocalDate)
+internal data class InntektRequest(
+    val aktørId: String?,
+    val fødselsnummer: String? = null,
+    val regelkontekst: RegelKontekst,
+    val beregningsDato: LocalDate
+) {
+    init {
+        require(aktørId != null || fødselsnummer !== null) {
+            "Enten aktørId eller fødselsnummer må være satt"
+        }
+    }
+}
 
 data class RegelKontekst(val id: String, val type: String)
