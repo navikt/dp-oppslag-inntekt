@@ -33,7 +33,6 @@ internal object Configuration {
     )
 
     private val properties = systemProperties() overriding EnvironmentVariables overriding defaultProperties
-
     val inntektApiUrl = properties[Key("inntekt.api.url", stringType)]
 
     fun asMap(): Map<String, String> = properties.list().reversed().fold(emptyMap()) { map, pair ->
