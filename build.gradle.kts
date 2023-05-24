@@ -17,7 +17,7 @@ val dpBibliotekerVersjon = Dagpenger.Biblioteker.version
 
 dependencies {
     implementation("com.github.navikt.dp-biblioteker:ktor-client-metrics:$dpBibliotekerVersjon")
-    implementation(Dagpenger.Grunnbeløp)
+    implementation("com.github.navikt:dp-grunnbelop:2023.05.24-15.26.f42064d9fdc8")
     implementation(Dagpenger.Events)
 
     implementation(Bekk.nocommons)
