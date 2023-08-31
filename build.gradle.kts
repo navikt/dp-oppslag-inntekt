@@ -6,6 +6,7 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
 }
 
 application {
@@ -18,7 +19,7 @@ val dpBibliotekerVersjon = Dagpenger.Biblioteker.version
 dependencies {
     implementation("com.github.navikt.dp-biblioteker:ktor-client-metrics:$dpBibliotekerVersjon")
     implementation("com.github.navikt:dp-grunnbelop:2023.05.24-15.26.f42064d9fdc8")
-    implementation(Dagpenger.Events)
+    implementation("com.github.navikt:dagpenger-events:20230831.d11fdb")
 
     implementation(Bekk.nocommons)
 
