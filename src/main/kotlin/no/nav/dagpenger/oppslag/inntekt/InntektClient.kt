@@ -19,29 +19,30 @@ private val sikkerLogg = KotlinLogging.logger("tjenestekall")
 
 internal class InntektClient(
     private val httpKlient: HttpClient = httpClient(httpMetricsBasename = "ktor_client_inntekt_api_metrics"),
-    private val tokenProvider: () -> String
+    private val tokenProvider: () -> String,
 ) {
     suspend fun hentKlassifisertInntekt(
         søknadUUID: UUID,
         aktørId: String?,
         fødselsnummer: String? = null,
         virkningsTidspunkt: LocalDate,
-        callId: String? = null
+        callId: String? = null,
     ): OppslagInntekt {
-        val inntekt = httpKlient.post(Url(Configuration.inntektApiUrl)) {
-            header("Content-Type", "application/json")
-            header(HttpHeaders.Authorization, "Bearer ${tokenProvider.invoke()}")
-            callId?.let { header(HttpHeaders.XRequestId, it) }
-            accept(ContentType.Application.Json)
-            setBody(
-                InntektRequest(
-                    aktørId = aktørId,
-                    fødselsnummer = fødselsnummer,
-                    regelkontekst = RegelKontekst(id = søknadUUID.toString(), type = "saksbehandling"),
-                    beregningsDato = virkningsTidspunkt
+        val inntekt =
+            httpKlient.post(Url(Configuration.inntektApiUrl)) {
+                header("Content-Type", "application/json")
+                header(HttpHeaders.Authorization, "Bearer ${tokenProvider.invoke()}")
+                callId?.let { header(HttpHeaders.XRequestId, it) }
+                accept(ContentType.Application.Json)
+                setBody(
+                    InntektRequest(
+                        aktørId = aktørId,
+                        fødselsnummer = fødselsnummer,
+                        regelkontekst = RegelKontekst(id = søknadUUID.toString(), type = "saksbehandling"),
+                        beregningsDato = virkningsTidspunkt,
+                    ),
                 )
-            )
-        }.body<Inntekt>()
+            }.body<Inntekt>()
         sikkerLogg.info { inntekt }
         return OppslagInntekt(inntekt)
     }
@@ -51,7 +52,7 @@ internal data class InntektRequest(
     val aktørId: String?,
     val fødselsnummer: String? = null,
     val regelkontekst: RegelKontekst,
-    val beregningsDato: LocalDate
+    val beregningsDato: LocalDate,
 ) {
     init {
         require(aktørId != null || fødselsnummer !== null) {

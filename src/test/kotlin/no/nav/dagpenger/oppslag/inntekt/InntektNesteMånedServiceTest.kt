@@ -25,37 +25,39 @@ class InntektNesteMånedServiceTest {
 
     @Test
     fun `skal sjekke om det finnes inntekt for neste måned`() {
-        val inntekt = OppslagInntekt(
-            no.nav.dagpenger.events.inntekt.v1.Inntekt(
-                "123",
-                listOf(
-                    KlassifisertInntektMåned(
-                        YearMonth.of(2020, 11),
-                        listOf(KlassifisertInntekt(BigDecimal.ONE, InntektKlasse.ARBEIDSINNTEKT))
+        val inntekt =
+            OppslagInntekt(
+                no.nav.dagpenger.events.inntekt.v1.Inntekt(
+                    "123",
+                    listOf(
+                        KlassifisertInntektMåned(
+                            YearMonth.of(2020, 11),
+                            listOf(KlassifisertInntekt(BigDecimal.ONE, InntektKlasse.ARBEIDSINNTEKT)),
+                        ),
+                        KlassifisertInntektMåned(
+                            YearMonth.of(2020, 12),
+                            listOf(KlassifisertInntekt(BigDecimal.ONE, InntektKlasse.ARBEIDSINNTEKT)),
+                        ),
+                        KlassifisertInntektMåned(
+                            YearMonth.of(2021, 5),
+                            listOf(KlassifisertInntekt(BigDecimal.ONE, InntektKlasse.ARBEIDSINNTEKT)),
+                        ),
                     ),
-                    KlassifisertInntektMåned(
-                        YearMonth.of(2020, 12),
-                        listOf(KlassifisertInntekt(BigDecimal.ONE, InntektKlasse.ARBEIDSINNTEKT))
-                    ),
-                    KlassifisertInntektMåned(
-                        YearMonth.of(2021, 5),
-                        listOf(KlassifisertInntekt(BigDecimal.ONE, InntektKlasse.ARBEIDSINNTEKT))
-                    )
+                    sisteAvsluttendeKalenderMåned = YearMonth.of(2021, 3),
                 ),
-                sisteAvsluttendeKalenderMåned = YearMonth.of(2021, 3)
             )
-        )
-        val inntektClient = mockk<InntektClient>().also {
-            coEvery {
-                it.hentKlassifisertInntekt(
-                    søknadUUID,
-                    "32542134",
-                    "32542134",
-                    LocalDate.parse("2021-06-08"),
-                    callId = any()
-                )
-            } returns inntekt
-        }
+        val inntektClient =
+            mockk<InntektClient>().also {
+                coEvery {
+                    it.hentKlassifisertInntekt(
+                        søknadUUID,
+                        "32542134",
+                        "32542134",
+                        LocalDate.parse("2021-06-08"),
+                        callId = any(),
+                    )
+                } returns inntekt
+            }
 
         InntektNesteMånedService(testRapid, inntektClient)
         testRapid.sendTestMessage(behovForInntektNesteMåned)
@@ -73,47 +75,49 @@ class InntektNesteMånedServiceTest {
 
     // language=JSON
     private val behovForInntektNesteMåned =
-        """{
-  "@event_name": "faktum_svar",
-  "@opprettet": "2021-11-18T11:04:32.867824",
-  "@id": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
-  "@behovId": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
-  "Virkningstidspunkt": "2021-05-06",
-  "søknad_uuid": "$søknadUUID",
-  "identer":[{"id":"32542134","type":"aktørid","historisk":false},{"id":"32542134","type":"folkeregisterident","historisk":false}],
-  "FangstOgFiske": false,
-  "fakta": [
-    {
-      "id": "9",
-      "behov": "HarRapportertInntektNesteMåned"
-    }
-  ],
-  "@behov": [
-    "InntektSiste12Mnd", "InntektSiste3År", "HarRapportertInntektNesteMåned"
-  ]
-}
+        """
+        {
+          "@event_name": "faktum_svar",
+          "@opprettet": "2021-11-18T11:04:32.867824",
+          "@id": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
+          "@behovId": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
+          "Virkningstidspunkt": "2021-05-06",
+          "søknad_uuid": "$søknadUUID",
+          "identer":[{"id":"32542134","type":"aktørid","historisk":false},{"id":"32542134","type":"folkeregisterident","historisk":false}],
+          "FangstOgFiske": false,
+          "fakta": [
+            {
+              "id": "9",
+              "behov": "HarRapportertInntektNesteMåned"
+            }
+          ],
+          "@behov": [
+            "InntektSiste12Mnd", "InntektSiste3År", "HarRapportertInntektNesteMåned"
+          ]
+        }
         """.trimIndent()
 
     // language=JSON
     private val behovUtenIdent =
-        """{
-  "@event_name": "faktum_svar",
-  "@opprettet": "2021-11-18T11:04:32.867824",
-  "@id": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
-  "@behovId": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
-  "Virkningstidspunkt": "2021-05-06",
-  "søknad_uuid": "$søknadUUID",
-  "identer":[],
-  "FangstOgFiske": false,
-  "fakta": [
-    {
-      "id": "9",
-      "behov": "HarRapportertInntektNesteMåned"
-    }
-  ],
-  "@behov": [
-    "InntektSiste12Mnd", "InntektSiste3År", "HarRapportertInntektNesteMåned"
-  ]
-}
+        """
+        {
+          "@event_name": "faktum_svar",
+          "@opprettet": "2021-11-18T11:04:32.867824",
+          "@id": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
+          "@behovId": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
+          "Virkningstidspunkt": "2021-05-06",
+          "søknad_uuid": "$søknadUUID",
+          "identer":[],
+          "FangstOgFiske": false,
+          "fakta": [
+            {
+              "id": "9",
+              "behov": "HarRapportertInntektNesteMåned"
+            }
+          ],
+          "@behov": [
+            "InntektSiste12Mnd", "InntektSiste3År", "HarRapportertInntektNesteMåned"
+          ]
+        }
         """.trimIndent()
 }

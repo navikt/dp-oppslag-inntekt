@@ -23,21 +23,23 @@ internal class InntektServiceTest {
 
     @Test
     fun `skal hente inntekter for riktig pakke`() {
-        val mockk = mockk<OppslagInntekt>(relaxed = true).also {
-            every { it.inntektSiste12mnd(false) } returns BigDecimal.ONE
-            every { it.inntektSiste3år(false) } returns BigDecimal("2.0123543")
-        }
-        val inntektClient = mockk<InntektClient>().also {
-            coEvery {
-                it.hentKlassifisertInntekt(
-                    søknadUUID,
-                    "32542134",
-                    "32542134",
-                    LocalDate.parse("2020-11-18"),
-                    callId = any()
-                )
-            } returns mockk
-        }
+        val mockk =
+            mockk<OppslagInntekt>(relaxed = true).also {
+                every { it.inntektSiste12mnd(false) } returns BigDecimal.ONE
+                every { it.inntektSiste3år(false) } returns BigDecimal("2.0123543")
+            }
+        val inntektClient =
+            mockk<InntektClient>().also {
+                coEvery {
+                    it.hentKlassifisertInntekt(
+                        søknadUUID,
+                        "32542134",
+                        "32542134",
+                        LocalDate.parse("2020-11-18"),
+                        callId = any(),
+                    )
+                } returns mockk
+            }
 
         InntektService(testRapid, inntektClient)
 
@@ -46,11 +48,11 @@ internal class InntektServiceTest {
         assertEquals(1, testRapid.inspektør.size)
         assertEquals(
             BigDecimal.ONE,
-            testRapid.inspektør.message(0)["@løsning"]["InntektSiste12Mnd"].asText().toBigDecimal()
+            testRapid.inspektør.message(0)["@løsning"]["InntektSiste12Mnd"].asText().toBigDecimal(),
         )
         assertEquals(
             BigDecimal("2.0123543"),
-            testRapid.inspektør.message(0)["@løsning"]["InntektSiste3År"].asText().toBigDecimal()
+            testRapid.inspektør.message(0)["@løsning"]["InntektSiste3År"].asText().toBigDecimal(),
         )
         coVerify {
             inntektClient.hentKlassifisertInntekt(
@@ -58,7 +60,7 @@ internal class InntektServiceTest {
                 "32542134",
                 "32542134",
                 LocalDate.parse("2020-11-18"),
-                callId = any()
+                callId = any(),
             )
         }
     }
@@ -72,71 +74,73 @@ internal class InntektServiceTest {
 
     // language=JSON
     private val behovJson =
-        """{
-  "@event_name": "faktum_svar",
-  "@opprettet": "2020-11-18T11:04:32.867824",
-  "@id": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
-  "@behovId": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
-  "Virkningstidspunkt": "2020-11-18",
-  "søknad_uuid": "$søknadUUID",
-  "identer": [
-    {
-      "id": "32542134",
-      "type": "aktørid",
-      "historisk": false
-    },
-    {"id":"32542134","type":"folkeregisterident","historisk":false}
-  ],
-  "FangstOgFiskeInntektSiste36mnd": false,
-  "fakta": [
-    {
-      "id": "7",
-      "behov": "InntektSiste12Mnd"
-    },
-    {
-      "id": "8",
-      "behov": "InntektSiste3År"
-    },
-    {
-      "id": "9",
-      "behov": "hubba"
-    }
-  ],
-  "@behov": [
-    "InntektSiste12Mnd",
-    "InntektSiste3År"
-  ]
-}
+        """
+        {
+          "@event_name": "faktum_svar",
+          "@opprettet": "2020-11-18T11:04:32.867824",
+          "@id": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
+          "@behovId": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
+          "Virkningstidspunkt": "2020-11-18",
+          "søknad_uuid": "$søknadUUID",
+          "identer": [
+            {
+              "id": "32542134",
+              "type": "aktørid",
+              "historisk": false
+            },
+            {"id":"32542134","type":"folkeregisterident","historisk":false}
+          ],
+          "FangstOgFiskeInntektSiste36mnd": false,
+          "fakta": [
+            {
+              "id": "7",
+              "behov": "InntektSiste12Mnd"
+            },
+            {
+              "id": "8",
+              "behov": "InntektSiste3År"
+            },
+            {
+              "id": "9",
+              "behov": "hubba"
+            }
+          ],
+          "@behov": [
+            "InntektSiste12Mnd",
+            "InntektSiste3År"
+          ]
+        }
         """.trimIndent()
 
     // language=JSON
     private val behovUtenIdent =
-        """{
-  "@event_name": "faktum_svar",
-  "@opprettet": "2020-11-18T11:04:32.867824",
-  "@id": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
-  "@behovId": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
-  "Virkningstidspunkt": "2020-11-18",
-  "søknad_uuid": "$søknadUUID",
-  "identer":[],
-  "FangstOgFiskeInntektSiste36mnd": false,
-  "fakta": [
-    {
-      "id": "7",
-      "behov": "InntektSiste12Mnd"
-    },
-    {
-      "id": "8",
-      "behov": "InntektSiste3År"
-    },
-    {
-      "id": "9",
-      "behov": "hubba"
-    }
-  ],
-  "@behov": [
-    "InntektSiste12Mnd", "InntektSiste3År"
-  ]
-}
+        """
+        {
+          "@event_name": "faktum_svar",
+          "@opprettet": "2020-11-18T11:04:32.867824",
+          "@id": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
+          "@behovId": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
+          "Virkningstidspunkt": "2020-11-18",
+          "søknad_uuid": "$søknadUUID",
+          "identer":[],
+          "FangstOgFiskeInntektSiste36mnd": false,
+          "fakta": [
+            {
+              "id": "7",
+              "behov": "InntektSiste12Mnd"
+            },
+            {
+              "id": "8",
+              "behov": "InntektSiste3År"
+            },
+            {
+              "id": "9",
+              "behov": "hubba"
+            }
+          ],
+          "@behov": [
+            "InntektSiste12Mnd", "InntektSiste3År"
+          ]
+        }
         """.trimIndent()
 }

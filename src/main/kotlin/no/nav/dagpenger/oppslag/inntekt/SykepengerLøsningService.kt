@@ -33,34 +33,41 @@ internal class SykepengerLøsningService(rapidsConnection: RapidsConnection, pri
         private val log = KotlinLogging.logger {}
     }
 
-    private val løserBehov = listOf(
-        "SykepengerSiste36Måneder"
-    )
+    private val løserBehov =
+        listOf(
+            "SykepengerSiste36Måneder",
+        )
 
-    override fun onPacket(packet: JsonMessage, context: MessageContext) {
+    override fun onPacket(
+        packet: JsonMessage,
+        context: MessageContext,
+    ) {
         val søknadUUID = packet["søknad_uuid"].asUUID()
         val callId = "dp-oppslag-inntekt-${UUID.randomUUID()}"
 
         withLoggingContext(
             "behovId" to packet["@behovId"].asText(),
             "søknad_uuid" to søknadUUID.toString(),
-            "callId" to callId
+            "callId" to callId,
         ) {
-            val inntekt = runBlocking {
-                inntektClient.hentKlassifisertInntekt(
-                    søknadUUID = søknadUUID,
-                    aktørId = packet.aktorId(),
-                    fødselsnummer = packet.fodselsnummer(),
-                    virkningsTidspunkt = packet["Virkningstidspunkt"].asLocalDate(),
-                    callId = callId
-                )
-            }
-            val løsning = packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
-                behov to when (behov) {
-                    "SykepengerSiste36Måneder" -> inntekt.inneholderSykepenger()
-                    else -> throw IllegalArgumentException("Ukjent behov $behov")
+            val inntekt =
+                runBlocking {
+                    inntektClient.hentKlassifisertInntekt(
+                        søknadUUID = søknadUUID,
+                        aktørId = packet.aktorId(),
+                        fødselsnummer = packet.fodselsnummer(),
+                        virkningsTidspunkt = packet["Virkningstidspunkt"].asLocalDate(),
+                        callId = callId,
+                    )
                 }
-            }.toMap()
+            val løsning =
+                packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
+                    behov to
+                        when (behov) {
+                            "SykepengerSiste36Måneder" -> inntekt.inneholderSykepenger()
+                            else -> throw IllegalArgumentException("Ukjent behov $behov")
+                        }
+                }.toMap()
 
             packet["@løsning"] = løsning
             log.info { "Løst behov for $søknadUUID" }
@@ -68,7 +75,10 @@ internal class SykepengerLøsningService(rapidsConnection: RapidsConnection, pri
         }
     }
 
-    override fun onError(problems: MessageProblems, context: MessageContext) {
+    override fun onError(
+        problems: MessageProblems,
+        context: MessageContext,
+    ) {
         log.info { problems.toString() }
     }
 }

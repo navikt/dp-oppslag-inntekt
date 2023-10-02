@@ -12,14 +12,18 @@ class Inntektsrapporteringperiode(private val dato: LocalDate) {
     }
 
     fun tom() =
-        if (dato <= førsteArbeidsdag(dato.withDayOfMonth(5)))
+        if (dato <= førsteArbeidsdag(dato.withDayOfMonth(5))) {
             rapporteringsfrist(dato)
-        else rapporteringsfrist(dato, månedOffset = 1)
+        } else {
+            rapporteringsfrist(dato, månedOffset = 1)
+        }
 
     fun neste(): Inntektsrapporteringperiode = Inntektsrapporteringperiode(tom().plusDays(1))
 
-    private fun rapporteringsfrist(dato: LocalDate, månedOffset: Long = 0) =
-        førsteArbeidsdag(dato.plusMonths(månedOffset).withDayOfMonth(5))
+    private fun rapporteringsfrist(
+        dato: LocalDate,
+        månedOffset: Long = 0,
+    ) = førsteArbeidsdag(dato.plusMonths(månedOffset).withDayOfMonth(5))
 
     private fun førsteArbeidsdag(inklusivDato: LocalDate) =
         generateSequence(inklusivDato) {
@@ -27,5 +31,6 @@ class Inntektsrapporteringperiode(private val dato: LocalDate) {
         }.first { it.erArbeidsdag() }
 
     private fun LocalDate.erArbeidsdag() = NorwegianDateUtil.isWorkingDay(this.toDate())
+
     private fun LocalDate.toDate() = Date.from(this.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant())
 }

@@ -9,15 +9,16 @@ import java.time.YearMonth
 internal class OppslagInntekt(private val inntekt: Inntekt) {
     private val inntektsPerioder = inntekt.splitIntoInntektsPerioder()
 
-    fun inntektSiste12mnd(fangstOgFisk: Boolean) =
-        inntektsPerioder.first.sumInntekt(inntektsklasser(fangstOgFisk))
+    fun inntektSiste12mnd(fangstOgFisk: Boolean) = inntektsPerioder.first.sumInntekt(inntektsklasser(fangstOgFisk))
 
-    fun inntektSiste3år(fangstOgFisk: Boolean) =
-        inntektsPerioder.all().sumInntekt(inntektsklasser(fangstOgFisk))
+    fun inntektSiste3år(fangstOgFisk: Boolean) = inntektsPerioder.all().sumInntekt(inntektsklasser(fangstOgFisk))
 
     private fun inntektsklasser(fangstOgFisk: Boolean) =
-        if (fangstOgFisk) listOf(InntektKlasse.ARBEIDSINNTEKT, InntektKlasse.FANGST_FISKE)
-        else listOf(InntektKlasse.ARBEIDSINNTEKT)
+        if (fangstOgFisk) {
+            listOf(InntektKlasse.ARBEIDSINNTEKT, InntektKlasse.FANGST_FISKE)
+        } else {
+            listOf(InntektKlasse.ARBEIDSINNTEKT)
+        }
 
     fun inneholderSykepenger() =
         inntekt.inntektsListe.any {

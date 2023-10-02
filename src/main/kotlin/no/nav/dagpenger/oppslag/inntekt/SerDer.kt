@@ -10,7 +10,8 @@ internal fun JsonMessage.fodselsnummer(): String? =
     this["identer"].firstOrNull { it["type"].asText() == "folkeregisterident" && !it["historisk"].asBoolean() }?.get("id")?.asText()
 
 internal fun harAktørEllerFnr(jsonNode: JsonNode) {
-    require(jsonNode.any { node -> node["type"].asText() == "aktørid" } ||
-            jsonNode.any { node -> node["type"].asText() == "folkeregisterident" }
+    require(
+        jsonNode.any { node -> node["type"].asText() == "aktørid" } ||
+            jsonNode.any { node -> node["type"].asText() == "folkeregisterident" },
     ) { "Mangler aktørid eller folkeregisterident i identer" }
 }

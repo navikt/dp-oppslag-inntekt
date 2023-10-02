@@ -7,10 +7,8 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 internal class GrunnbeløpServiceTest {
-
     @Test
     fun `Grunnbeløp`() {
-
         val testRapid = TestRapid()
         GrunnbeløpService(testRapid)
 
