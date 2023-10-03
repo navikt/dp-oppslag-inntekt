@@ -6,10 +6,8 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 class InntektsrapporteringsperiodeLøsningServiceTest {
-
     @Test
     fun `Løser behov for Innteksrapporteringsperiode `() {
-
         val testRapid = TestRapid()
         InntektsrapporteringsperiodeLøsningService(testRapid)
 

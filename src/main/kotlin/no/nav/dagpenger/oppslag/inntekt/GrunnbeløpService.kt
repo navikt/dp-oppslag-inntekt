@@ -29,25 +29,32 @@ class GrunnbeløpService(rapidsConnection: RapidsConnection) : River.PacketListe
         private val log = KotlinLogging.logger {}
     }
 
-    override fun onPacket(packet: JsonMessage, context: MessageContext) {
+    override fun onPacket(
+        packet: JsonMessage,
+        context: MessageContext,
+    ) {
         val søknadUUID = packet["søknad_uuid"].asText()
         withMDC(
             mapOf(
                 "behovId" to packet["@behovId"].asText(),
                 "søknad_uuid" to søknadUUID,
-            )
+            ),
         ) {
-            val G = getGrunnbeløpForRegel(Regel.Minsteinntekt).forDato(packet["Virkningstidspunkt"].asLocalDate()).verdi
+            val grunnbeløp = getGrunnbeløpForRegel(Regel.Minsteinntekt).forDato(packet["Virkningstidspunkt"].asLocalDate()).verdi
 
-            packet["@løsning"] = mapOf(
-                "Grunnbeløp" to G,
-            )
+            packet["@løsning"] =
+                mapOf(
+                    "Grunnbeløp" to grunnbeløp,
+                )
             log.info { "Løst behov for $søknadUUID" }
             context.publish(packet.toJson())
         }
     }
 
-    override fun onError(problems: MessageProblems, context: MessageContext) {
+    override fun onError(
+        problems: MessageProblems,
+        context: MessageContext,
+    ) {
         log.info { problems.toString() }
     }
 }

@@ -5,20 +5,17 @@ import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-
 import io.ktor.http.ContentType
 import io.ktor.serialization.jackson.JacksonConverter
 import no.nav.dagpenger.ktor.client.metrics.PrometheusMetricsPlugin
 import no.nav.dagpenger.oppslag.inntekt.JsonMapper
-
 import java.time.Duration
 
 internal fun httpClient(
     engine: HttpClientEngine = CIO.create { requestTimeout = Long.MAX_VALUE },
-    httpMetricsBasename: String? = null
+    httpMetricsBasename: String? = null,
 ): HttpClient {
     return HttpClient(engine) {
-
         install(HttpTimeout) {
             connectTimeoutMillis = Duration.ofSeconds(30).toMillis()
             requestTimeoutMillis = Duration.ofSeconds(30).toMillis()

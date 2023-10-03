@@ -7,12 +7,10 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.util.UUID
 
 object JsonMapper {
-    internal val objectMapper = jacksonObjectMapper()
-        .registerModule(JavaTimeModule())
-        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+    internal val objectMapper =
+        jacksonObjectMapper()
+            .registerModule(JavaTimeModule())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
 }
 
-
-
-fun JsonNode.asUUID(): UUID =
-    asText().let { UUID.fromString(it) }
+fun JsonNode.asUUID(): UUID = asText().let { UUID.fromString(it) }

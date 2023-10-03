@@ -26,29 +26,35 @@ internal class InntektsrapporteringsperiodeLøsningService(rapidsConnection: Rap
         private val log = KotlinLogging.logger {}
     }
 
-    private val løserBehov = listOf(
-        "InntektsrapporteringsperiodeFom",
-        "InntektsrapporteringsperiodeTom",
-    )
+    private val løserBehov =
+        listOf(
+            "InntektsrapporteringsperiodeFom",
+            "InntektsrapporteringsperiodeTom",
+        )
 
-    override fun onPacket(packet: JsonMessage, context: MessageContext) {
+    override fun onPacket(
+        packet: JsonMessage,
+        context: MessageContext,
+    ) {
         val søknadUUID = packet["søknad_uuid"].asUUID()
         withMDC(
             mapOf(
                 "behovId" to packet["@behovId"].asText(),
                 "søknad_uuid" to søknadUUID.toString(),
-            )
+            ),
         ) {
             val virkningstidspunkt = packet["Behandlingsdato"].asLocalDate()
             val periode = Inntektsrapporteringperiode(virkningstidspunkt)
 
-            val løsning = packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
-                behov to when (behov) {
-                    "InntektsrapporteringsperiodeFom" -> periode.fom()
-                    "InntektsrapporteringsperiodeTom" -> periode.tom()
-                    else -> throw IllegalArgumentException("Ukjent behov $behov")
-                }
-            }.toMap()
+            val løsning =
+                packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
+                    behov to
+                        when (behov) {
+                            "InntektsrapporteringsperiodeFom" -> periode.fom()
+                            "InntektsrapporteringsperiodeTom" -> periode.tom()
+                            else -> throw IllegalArgumentException("Ukjent behov $behov")
+                        }
+                }.toMap()
 
             packet["@løsning"] = løsning
 
@@ -57,7 +63,10 @@ internal class InntektsrapporteringsperiodeLøsningService(rapidsConnection: Rap
         }
     }
 
-    override fun onError(problems: MessageProblems, context: MessageContext) {
+    override fun onError(
+        problems: MessageProblems,
+        context: MessageContext,
+    ) {
         log.info { problems.toString() }
     }
 }

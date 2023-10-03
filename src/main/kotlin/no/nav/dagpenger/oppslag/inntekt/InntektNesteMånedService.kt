@@ -34,40 +34,48 @@ internal class InntektNesteMånedService(rapidsConnection: RapidsConnection, pri
         private val log = KotlinLogging.logger {}
     }
 
-    private val løserBehov = listOf(
-        "HarRapportertInntektNesteMåned"
-    )
+    private val løserBehov =
+        listOf(
+            "HarRapportertInntektNesteMåned",
+        )
 
-    override fun onPacket(packet: JsonMessage, context: MessageContext) {
+    override fun onPacket(
+        packet: JsonMessage,
+        context: MessageContext,
+    ) {
         val søknadUUID = packet["søknad_uuid"].asUUID()
         val callId = "dp-oppslag-inntekt-${UUID.randomUUID()}"
 
         withLoggingContext(
             "behovId" to packet["@behovId"].asText(),
             "søknad_uuid" to søknadUUID.toString(),
-            "callId" to callId
+            "callId" to callId,
         ) {
             val inntektsrapporteringsperiode = Inntektsrapporteringperiode(packet["Virkningstidspunkt"].asLocalDate())
-            val inntekt = runBlocking {
-                inntektClient.hentKlassifisertInntekt(
-                    søknadUUID = søknadUUID,
-                    aktørId = packet.aktorId(),
-                    fødselsnummer = packet.fodselsnummer(),
-                    virkningsTidspunkt = inntektsrapporteringsperiode.neste().fom(),
-                    callId = callId
-                )
-            }
-            val løsning = packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
-                behov to when (behov) {
-                    "HarRapportertInntektNesteMåned" -> inntekt.harRapportertInntektForMåned(
-                        YearMonth.from(
-                            inntektsrapporteringsperiode.fom()
-                        )
+            val inntekt =
+                runBlocking {
+                    inntektClient.hentKlassifisertInntekt(
+                        søknadUUID = søknadUUID,
+                        aktørId = packet.aktorId(),
+                        fødselsnummer = packet.fodselsnummer(),
+                        virkningsTidspunkt = inntektsrapporteringsperiode.neste().fom(),
+                        callId = callId,
                     )
-
-                    else -> throw IllegalArgumentException("Ukjent behov $behov")
                 }
-            }.toMap()
+            val løsning =
+                packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
+                    behov to
+                        when (behov) {
+                            "HarRapportertInntektNesteMåned" ->
+                                inntekt.harRapportertInntektForMåned(
+                                    YearMonth.from(
+                                        inntektsrapporteringsperiode.fom(),
+                                    ),
+                                )
+
+                            else -> throw IllegalArgumentException("Ukjent behov $behov")
+                        }
+                }.toMap()
 
             packet["@løsning"] = løsning
             log.info { "Løst behov for $søknadUUID" }
@@ -75,7 +83,10 @@ internal class InntektNesteMånedService(rapidsConnection: RapidsConnection, pri
         }
     }
 
-    override fun onError(problems: MessageProblems, context: MessageContext) {
+    override fun onError(
+        problems: MessageProblems,
+        context: MessageContext,
+    ) {
         log.info { problems.toString() }
     }
 }

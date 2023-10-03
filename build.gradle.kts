@@ -1,7 +1,6 @@
 plugins {
-    kotlin("jvm")
-    id("dagpenger.common")
-    id("dagpenger.rapid-and-rivers")
+    id("common")
+    application
 }
 
 repositories {
@@ -14,31 +13,25 @@ application {
     mainClass.set("no.nav.dagpenger.oppslag.inntekt.ApplicationKt")
 }
 
-val dpBibliotekerVersjon = Dagpenger.Biblioteker.version
+val dpBibliotekerVersjon = libs.versions.dp.biblioteker.get()
 
 dependencies {
     implementation("com.github.navikt.dp-biblioteker:ktor-client-metrics:$dpBibliotekerVersjon")
     implementation("com.github.navikt:dp-grunnbelop:2023.05.24-15.26.f42064d9fdc8")
     implementation("com.github.navikt:dagpenger-events:20230831.d11fdb")
 
-    implementation(Bekk.nocommons)
+    implementation("no.bekk.bekkopen:nocommons:0.15.0")
 
-    implementation(Konfig.konfig)
+    implementation(libs.konfig)
     implementation("com.github.navikt.dp-biblioteker:oauth2-klient:$dpBibliotekerVersjon")
-    implementation(Kotlin.Logging.kotlinLogging)
-    implementation(Ktor2.Client.library("auth-jvm"))
-    implementation(Ktor2.Client.library("cio"))
-    implementation(Ktor2.Client.library("apache"))
-    implementation(Ktor2.Client.library("core"))
-    implementation(Ktor2.Client.library("logging-jvm"))
-    implementation(Ktor2.Client.library("content-negotiation"))
-    implementation("io.ktor:ktor-serialization-jackson:${Ktor2.version}")
-    implementation(RapidAndRiversKtor2)
-    implementation(kotlin("stdlib"))
+    implementation(libs.kotlin.logging)
+    implementation(libs.bundles.ktor.client)
+    implementation("io.ktor:ktor-client-apache:${libs.versions.ktor.get()}")
+    implementation("io.ktor:ktor-serialization-jackson:${libs.versions.ktor.get()}")
+    implementation(libs.rapids.and.rivers)
 
-    testImplementation(Junit5.api)
-    testImplementation(Mockk.mockk)
-    testImplementation(Ktor2.Client.library("mock-jvm"))
+    testImplementation(libs.mockk)
+
+    testImplementation("io.ktor:ktor-client-mock-jvm:${libs.versions.ktor.get()}")
     testImplementation(kotlin("test"))
-    testRuntimeOnly(Junit5.engine)
 }

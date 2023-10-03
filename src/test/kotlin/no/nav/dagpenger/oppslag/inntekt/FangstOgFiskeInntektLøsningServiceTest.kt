@@ -25,30 +25,32 @@ internal class FangstOgFiskeInntektLøsningServiceTest {
 
     @Test
     fun `skal besvare behov om inntekt inneholder fangst og fiske siste 36 mnd`() {
-        val mockk = mockk<OppslagInntekt>(relaxed = true).also {
-            every { it.inneholderFangstOgFiske() } returns true
-        }
-        val inntektClient = mockk<InntektClient>().also {
-            coEvery {
-                it.hentKlassifisertInntekt(
-                    søknadUUID,
-                    ident,
-                    null,
-                    LocalDate.parse("2020-11-18"),
-                    callId = any()
-                )
-            } returns mockk
+        val mockk =
+            mockk<OppslagInntekt>(relaxed = true).also {
+                every { it.inneholderFangstOgFiske() } returns true
+            }
+        val inntektClient =
+            mockk<InntektClient>().also {
+                coEvery {
+                    it.hentKlassifisertInntekt(
+                        søknadUUID,
+                        ident,
+                        null,
+                        LocalDate.parse("2020-11-18"),
+                        callId = any(),
+                    )
+                } returns mockk
 
-            coEvery {
-                it.hentKlassifisertInntekt(
-                    søknadUUID,
-                    null,
-                    ident,
-                    LocalDate.parse("2020-11-18"),
-                    callId = any()
-                )
-            } returns mockk
-        }
+                coEvery {
+                    it.hentKlassifisertInntekt(
+                        søknadUUID,
+                        null,
+                        ident,
+                        LocalDate.parse("2020-11-18"),
+                        callId = any(),
+                    )
+                } returns mockk
+            }
         FangstOgFiskeInntektLøsningService(testRapid, inntektClient)
 
         testRapid.sendTestMessage(behovJson(identType = "aktørid"))
@@ -64,7 +66,7 @@ internal class FangstOgFiskeInntektLøsningServiceTest {
                 ident,
                 null,
                 LocalDate.parse("2020-11-18"),
-                callId = any()
+                callId = any(),
             )
         }
 
@@ -74,7 +76,7 @@ internal class FangstOgFiskeInntektLøsningServiceTest {
                 null,
                 ident,
                 LocalDate.parse("2020-11-18"),
-                callId = any()
+                callId = any(),
             )
         }
     }
@@ -88,28 +90,29 @@ internal class FangstOgFiskeInntektLøsningServiceTest {
 
     // language=JSON
     private fun behovJson(identType: String): String {
-        return """{
-  "@event_name": "faktum_svar",
-  "@opprettet": "2020-11-18T11:04:32.867824",
-  "@id": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
-  "@behovId": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
-  "Virkningstidspunkt": "2020-11-18",
-  "søknad_uuid": "$søknadUUID",
-  "identer": [{
-  "id": "$ident",
-  "type": "$identType",
-  "historisk": false
-} ],
-  "fakta": [
-    {
-      "id": "29",
-      "behov": "FangstOgFiskeInntektSiste36mnd"
-    }
-  ],
-  "@behov": [
-    "FangstOgFiskeInntektSiste36mnd"
-  ]
-}
+        return """
+            {
+              "@event_name": "faktum_svar",
+              "@opprettet": "2020-11-18T11:04:32.867824",
+              "@id": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
+              "@behovId": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
+              "Virkningstidspunkt": "2020-11-18",
+              "søknad_uuid": "$søknadUUID",
+              "identer": [{
+              "id": "$ident",
+              "type": "$identType",
+              "historisk": false
+            } ],
+              "fakta": [
+                {
+                  "id": "29",
+                  "behov": "FangstOgFiskeInntektSiste36mnd"
+                }
+              ],
+              "@behov": [
+                "FangstOgFiskeInntektSiste36mnd"
+              ]
+            }
             """.trimIndent()
     }
 }
