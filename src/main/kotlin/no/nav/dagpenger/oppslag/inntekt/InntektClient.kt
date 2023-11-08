@@ -6,9 +6,11 @@ import io.ktor.client.request.accept
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
+import io.ktor.serialization.JsonConvertException
 import mu.KotlinLogging
 import no.nav.dagpenger.events.inntekt.v1.Inntekt
 import no.nav.dagpenger.oppslag.inntekt.http.httpClient
@@ -28,7 +30,7 @@ internal class InntektClient(
         virkningsTidspunkt: LocalDate,
         callId: String? = null,
     ): OppslagInntekt {
-        val inntekt =
+        val response =
             httpKlient.post(Url(Configuration.inntektApiUrl)) {
                 header("Content-Type", "application/json")
                 header(HttpHeaders.Authorization, "Bearer ${tokenProvider.invoke()}")
@@ -42,7 +44,16 @@ internal class InntektClient(
                         beregningsDato = virkningsTidspunkt,
                     ),
                 )
-            }.body<Inntekt>()
+            }
+
+        val inntekt =
+            try {
+                response.body<Inntekt>()
+            } catch (e: JsonConvertException) {
+                val body = response.bodyAsText()
+                sikkerLogg.error { "Feil ved oppslag på inntekt. Respons: $body" }
+                throw e
+            }
         sikkerLogg.info { inntekt }
         return OppslagInntekt(inntekt)
     }
