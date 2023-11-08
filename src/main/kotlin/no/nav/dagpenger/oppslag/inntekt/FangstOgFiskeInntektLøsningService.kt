@@ -19,7 +19,7 @@ internal class FangstOgFiskeInntektLøsningService(
         River(rapidsConnection).apply {
             validate {
                 it.demandAllOrAny("@behov", løserBehov)
-                it.forbid("@løsning")
+                it.rejectKey("@løsning")
                 it.requireKey("@id", "@behovId")
                 it.requireArray("identer") {
                     requireKey("type", "historisk", "id")
