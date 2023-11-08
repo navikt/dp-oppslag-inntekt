@@ -33,7 +33,7 @@ internal class FangstOgFiskeInntektLøsningService(
 
     companion object {
         private val log = KotlinLogging.logger {}
-        private val sikkerlogg = KotlinLogging.logger("sikkerlogg")
+        private val sikkerlogg = KotlinLogging.logger("tjenestekall")
     }
 
     private val løserBehov =
