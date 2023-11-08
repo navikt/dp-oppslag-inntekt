@@ -83,7 +83,7 @@ internal class FangstOgFiskeInntektLøsningService(
         problems: MessageProblems,
         context: MessageContext,
     ) {
-        log.info { problems.toString() }
-        sikkerlogg.info { problems.toExtendedReport() }
+        log.error { problems.toString() }
+        sikkerlogg.error { problems.toExtendedReport() }
     }
 }
