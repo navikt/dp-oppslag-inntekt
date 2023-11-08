@@ -33,6 +33,7 @@ internal class FangstOgFiskeInntektLøsningService(
 
     companion object {
         private val log = KotlinLogging.logger {}
+        private val sikkerlogg = KotlinLogging.logger("sikkerlogg")
     }
 
     private val løserBehov =
@@ -83,5 +84,6 @@ internal class FangstOgFiskeInntektLøsningService(
         context: MessageContext,
     ) {
         log.info { problems.toString() }
+        sikkerlogg.info { problems.toExtendedReport() }
     }
 }
