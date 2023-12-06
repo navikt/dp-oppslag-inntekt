@@ -18,7 +18,7 @@ val dpBibliotekerVersjon = libs.versions.dp.biblioteker.get()
 dependencies {
     implementation("com.github.navikt.dp-biblioteker:ktor-client-metrics:$dpBibliotekerVersjon")
     implementation("com.github.navikt:dp-grunnbelop:2023.05.24-15.26.f42064d9fdc8")
-    implementation("com.github.navikt:dagpenger-events:20230831.d11fdb")
+    implementation("com.github.navikt:dagpenger-events:20231204.ee1cc3")
 
     implementation("no.bekk.bekkopen:nocommons:0.15.0")
 
