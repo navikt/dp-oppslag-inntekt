@@ -12,7 +12,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.serialization.JsonConvertException
 import mu.KotlinLogging
-import no.nav.dagpenger.events.inntekt.v1.Inntekt
+import no.nav.dagpenger.inntekt.v1.Inntekt
 import no.nav.dagpenger.oppslag.inntekt.http.httpClient
 import java.time.LocalDate
 import java.util.UUID

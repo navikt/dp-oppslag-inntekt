@@ -1,9 +1,9 @@
 package no.nav.dagpenger.oppslag.inntekt
 
-import no.nav.dagpenger.events.inntekt.v1.Inntekt
-import no.nav.dagpenger.events.inntekt.v1.InntektKlasse
-import no.nav.dagpenger.events.inntekt.v1.all
-import no.nav.dagpenger.events.inntekt.v1.sumInntekt
+import no.nav.dagpenger.inntekt.v1.Inntekt
+import no.nav.dagpenger.inntekt.v1.InntektKlasse
+import no.nav.dagpenger.inntekt.v1.all
+import no.nav.dagpenger.inntekt.v1.sumInntekt
 import java.time.YearMonth
 
 internal class OppslagInntekt(private val inntekt: Inntekt) {

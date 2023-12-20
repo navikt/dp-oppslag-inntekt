@@ -2,9 +2,9 @@ package no.nav.dagpenger.oppslag.inntekt
 
 import io.mockk.coEvery
 import io.mockk.mockk
-import no.nav.dagpenger.events.inntekt.v1.InntektKlasse
-import no.nav.dagpenger.events.inntekt.v1.KlassifisertInntekt
-import no.nav.dagpenger.events.inntekt.v1.KlassifisertInntektMåned
+import no.nav.dagpenger.inntekt.v1.InntektKlasse
+import no.nav.dagpenger.inntekt.v1.KlassifisertInntekt
+import no.nav.dagpenger.inntekt.v1.KlassifisertInntektMåned
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
@@ -27,7 +27,7 @@ class InntektNesteMånedServiceTest {
     fun `skal sjekke om det finnes inntekt for neste måned`() {
         val inntekt =
             OppslagInntekt(
-                no.nav.dagpenger.events.inntekt.v1.Inntekt(
+                no.nav.dagpenger.inntekt.v1.Inntekt(
                     "123",
                     listOf(
                         KlassifisertInntektMåned(
