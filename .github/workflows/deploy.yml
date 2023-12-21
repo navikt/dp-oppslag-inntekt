@@ -51,7 +51,7 @@ jobs:
     environment: dev-fss
     steps:
       - uses: actions/checkout@v4.1.1
-      - uses: nais/deploy/actions/deploy@v1
+      - uses: nais/deploy/actions/deploy@v2
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-fss
@@ -68,7 +68,7 @@ jobs:
     environment: prod-fss
     steps:
       - uses: actions/checkout@v4.1.1
-      - uses: nais/deploy/actions/deploy@v1
+      - uses: nais/deploy/actions/deploy@v2
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-fss
