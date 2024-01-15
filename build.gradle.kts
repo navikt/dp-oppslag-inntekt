@@ -21,7 +21,7 @@ dependencies {
     implementation("com.github.navikt:dp-inntekt-kontrakter:1_20231220.55a8a9")
     implementation("com.github.navikt:dagpenger-events:20231220.3050bf")
 
-    implementation("no.bekk.bekkopen:nocommons:0.15.0")
+    implementation("no.bekk.bekkopen:nocommons:0.16.0")
 
     implementation(libs.konfig)
     implementation("com.github.navikt.dp-biblioteker:oauth2-klient:$dpBibliotekerVersjon")
