@@ -29,8 +29,6 @@ spec:
     pool: {{ kafka_pool }}
   secureLogs:
     enabled: true
-  vault:
-    enabled: true
   azure:
     application:
       enabled: true
