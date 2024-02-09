@@ -9,9 +9,7 @@ import com.natpryce.konfig.Key
 import com.natpryce.konfig.overriding
 import com.natpryce.konfig.stringType
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.ProxyBuilder
-import io.ktor.client.engine.apache.Apache
-import io.ktor.client.engine.http
+import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.jackson.jackson
 import no.nav.dagpenger.oauth2.CachedOauth2Client
@@ -46,20 +44,14 @@ internal object Configuration {
         CachedOauth2Client(
             tokenEndpointUrl = azureAd.tokenEndpointUrl,
             authType = azureAd.clientSecret(),
-            httpClient =
-                HttpClient(Apache) {
-                    install(ContentNegotiation) {
-                        jackson {
-                            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                            setSerializationInclusion(JsonInclude.Include.NON_NULL)
-                        }
+            httpClient = HttpClient(CIO) {
+                install(ContentNegotiation) {
+                    jackson {
+                        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                        setSerializationInclusion(JsonInclude.Include.NON_NULL)
                     }
-                    engine {
-                        System.getenv("HTTP_PROXY")?.let {
-                            this.proxy = ProxyBuilder.http(it)
-                        }
-                    }
-                },
+                }
+            },
         )
     }
 }

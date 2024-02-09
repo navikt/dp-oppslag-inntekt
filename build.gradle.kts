@@ -27,7 +27,6 @@ dependencies {
     implementation("com.github.navikt.dp-biblioteker:oauth2-klient:$dpBibliotekerVersjon")
     implementation(libs.kotlin.logging)
     implementation(libs.bundles.ktor.client)
-    implementation("io.ktor:ktor-client-apache:${libs.versions.ktor.get()}")
     implementation("io.ktor:ktor-serialization-jackson:${libs.versions.ktor.get()}")
     implementation(libs.rapids.and.rivers)
 
