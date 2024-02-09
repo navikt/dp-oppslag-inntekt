@@ -32,7 +32,6 @@ spec:
   azure:
     application:
       enabled: true
-  webproxy: true
   env:
     - name: DP_INNTEKT_API_SCOPE
       value: {{dp_inntekt_api_scope}}
