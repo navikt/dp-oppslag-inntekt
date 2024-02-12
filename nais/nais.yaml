@@ -29,12 +29,13 @@ spec:
     pool: {{ kafka_pool }}
   secureLogs:
     enabled: true
-  vault:
-    enabled: true
   azure:
     application:
       enabled: true
-  webproxy: true
   env:
     - name: DP_INNTEKT_API_SCOPE
       value: {{dp_inntekt_api_scope}}
+  accessPolicy:
+    outbound:
+      rules:
+        - application: dp-inntekt-api
