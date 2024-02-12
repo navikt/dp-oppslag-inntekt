@@ -35,3 +35,7 @@ spec:
   env:
     - name: DP_INNTEKT_API_SCOPE
       value: {{dp_inntekt_api_scope}}
+  accessPolicy:
+    outbound:
+      rules:
+        - application: dp-inntekt-api
