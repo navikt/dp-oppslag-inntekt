@@ -12,10 +12,14 @@ import no.nav.dagpenger.oppslag.inntekt.JsonMapper
 import java.time.Duration
 
 internal fun httpClient(
-    engine: HttpClientEngine = CIO.create { requestTimeout = Long.MAX_VALUE },
+    engine: HttpClientEngine = CIO.create {
+        requestTimeout = Long.MAX_VALUE
+    },
     httpMetricsBasename: String? = null,
 ): HttpClient {
     return HttpClient(engine) {
+        expectSuccess = true
+
         install(HttpTimeout) {
             connectTimeoutMillis = Duration.ofSeconds(30).toMillis()
             requestTimeoutMillis = Duration.ofSeconds(30).toMillis()
