@@ -11,7 +11,9 @@ internal class OppslagInntekt(private val inntekt: Inntekt) {
 
     fun inntektSiste12mnd(fangstOgFisk: Boolean) = inntektsPerioder.first.sumInntekt(inntektsklasser(fangstOgFisk))
 
-    fun inntektSiste3år(fangstOgFisk: Boolean) = inntektsPerioder.all().sumInntekt(inntektsklasser(fangstOgFisk))
+    fun inntektSiste36Mnd(fangstOgFisk: Boolean) = inntektsPerioder.all().sumInntekt(inntektsklasser(fangstOgFisk))
+
+    fun inntektSiste3år(fangstOgFisk: Boolean) = inntektSiste36Mnd(fangstOgFisk)
 
     private fun inntektsklasser(fangstOgFisk: Boolean) =
         if (fangstOgFisk) {

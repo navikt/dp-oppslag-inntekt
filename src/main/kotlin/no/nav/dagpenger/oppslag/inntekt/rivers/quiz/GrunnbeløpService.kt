@@ -1,4 +1,4 @@
-package no.nav.dagpenger.oppslag.inntekt
+package no.nav.dagpenger.oppslag.inntekt.rivers.quiz
 
 import mu.KotlinLogging
 import no.nav.dagpenger.grunnbelop.Regel

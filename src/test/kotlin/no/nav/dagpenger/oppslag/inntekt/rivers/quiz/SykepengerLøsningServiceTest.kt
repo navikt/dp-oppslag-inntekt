@@ -1,12 +1,15 @@
-package no.nav.dagpenger.oppslag.inntekt
+package no.nav.dagpenger.oppslag.inntekt.rivers.quiz
 
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.dagpenger.oppslag.inntekt.InntektClient
+import no.nav.dagpenger.oppslag.inntekt.OppslagInntekt
+import no.nav.dagpenger.oppslag.inntekt.SykepengerLøsningService
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.util.UUID
@@ -45,7 +48,7 @@ internal class SykepengerLøsningServiceTest {
         testRapid.sendTestMessage(behovJson)
 
         assertEquals(1, testRapid.inspektør.size)
-        assertTrue(testRapid.inspektør.message(0)["@løsning"]["SykepengerSiste36Måneder"].asBoolean())
+        Assertions.assertTrue(testRapid.inspektør.message(0)["@løsning"]["SykepengerSiste36Måneder"].asBoolean())
         coVerify {
             inntektClient.hentKlassifisertInntekt(
                 søknadUUID,

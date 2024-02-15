@@ -44,14 +44,15 @@ internal object Configuration {
         CachedOauth2Client(
             tokenEndpointUrl = azureAd.tokenEndpointUrl,
             authType = azureAd.clientSecret(),
-            httpClient = HttpClient(CIO) {
-                install(ContentNegotiation) {
-                    jackson {
-                        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                        setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            httpClient =
+                HttpClient(CIO) {
+                    install(ContentNegotiation) {
+                        jackson {
+                            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                            setSerializationInclusion(JsonInclude.Include.NON_NULL)
+                        }
                     }
-                }
-            },
+                },
         )
     }
 }

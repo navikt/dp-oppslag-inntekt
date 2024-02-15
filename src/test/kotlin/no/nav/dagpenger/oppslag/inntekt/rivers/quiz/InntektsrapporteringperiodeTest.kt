@@ -1,5 +1,15 @@
-package no.nav.dagpenger.oppslag.inntekt
+package no.nav.dagpenger.oppslag.inntekt.rivers.quiz
 
+import no.nav.dagpenger.oppslag.inntekt.april
+import no.nav.dagpenger.oppslag.inntekt.august
+import no.nav.dagpenger.oppslag.inntekt.desember
+import no.nav.dagpenger.oppslag.inntekt.februar
+import no.nav.dagpenger.oppslag.inntekt.januar
+import no.nav.dagpenger.oppslag.inntekt.juni
+import no.nav.dagpenger.oppslag.inntekt.mai
+import no.nav.dagpenger.oppslag.inntekt.mars
+import no.nav.dagpenger.oppslag.inntekt.oktober
+import no.nav.dagpenger.oppslag.inntekt.september
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 

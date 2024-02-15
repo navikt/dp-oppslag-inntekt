@@ -1,27 +1,25 @@
-package no.nav.dagpenger.oppslag.inntekt
+package no.nav.dagpenger.oppslag.inntekt.rivers.quiz
 
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
-class InntektsrapporteringsperiodeLøsningServiceTest {
+internal class GrunnbeløpServiceTest {
     @Test
-    fun `Løser behov for Innteksrapporteringsperiode `() {
+    fun `Grunnbeløp`() {
         val testRapid = TestRapid()
-        InntektsrapporteringsperiodeLøsningService(testRapid)
+        GrunnbeløpService(testRapid)
 
         testRapid.sendTestMessage(behovJson)
         Assertions.assertEquals(1, testRapid.inspektør.size)
 
         val message = testRapid.inspektør.message(0)
         Assertions.assertEquals("faktum_svar", message["@event_name"].asText())
-        Assertions.assertTrue(message["@løsning"].has("InntektsrapporteringsperiodeFom"))
-        Assertions.assertTrue(message["@løsning"].has("InntektsrapporteringsperiodeTom"))
+        Assertions.assertTrue(message["@løsning"].has("Grunnbeløp"))
     }
 }
 
-@Language("json")
+// language=JSON
 private val behovJson =
     """
     {
@@ -33,15 +31,12 @@ private val behovJson =
       "søknad_uuid": "41621ac0-f5ee-4cce-b1f5-88a79f25f1a5",
       "fakta": [
         {
-          "behov": "InntektsrapporteringsperiodeFom"
-        },
-        {
-          "behov": "InntektsrapporteringsperiodeTom"
+          "behov": "Grunnbeløp"
         }
       ],
       "@behov": [
-        "InntektsrapporteringsperiodeFom", "InntektsrapporteringsperiodeTom"
+        "Grunnbeløp"
       ],
-      "Behandlingsdato": "2020-12-15"
+      "Virkningstidspunkt": "2020-01-01"
     }
     """.trimIndent()
