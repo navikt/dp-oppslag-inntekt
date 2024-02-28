@@ -12,8 +12,10 @@ import java.time.LocalDate
 import kotlin.test.assertEquals
 
 internal class InntektOpplysningsbehovLøserTest {
+    val inntektId = "InntektID"
     val oppslagMock =
         mockk<OppslagInntekt>(relaxed = true).also {
+            every { it.inntektId() } returns inntektId
             every { it.inntektSiste12mnd(false) } returns BigDecimal("111111")
             every { it.inntektSiste36Mnd(false) } returns BigDecimal("222222")
         }
@@ -44,11 +46,13 @@ internal class InntektOpplysningsbehovLøserTest {
             løsning["@løsning"]["InntektSiste12Mnd"].asText().toBigDecimal().also {
                 assertEquals(it, BigDecimal("111111"))
             }
+            assertEquals(inntektId, løsning["inntektId"].asText())
         }
         inspektør.message(1).also { løsning ->
             løsning["@løsning"]["InntektSiste36Mnd"].asText().toBigDecimal().also {
                 assertEquals(it, BigDecimal("222222"))
             }
+            assertEquals(inntektId, løsning["inntektId"].asText())
         }
     }
 

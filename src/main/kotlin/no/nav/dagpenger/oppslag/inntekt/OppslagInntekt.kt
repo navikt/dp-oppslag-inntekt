@@ -9,6 +9,8 @@ import java.time.YearMonth
 internal class OppslagInntekt(private val inntekt: Inntekt) {
     private val inntektsPerioder = inntekt.splitIntoInntektsPerioder()
 
+    fun inntektId() = inntekt.inntektsId
+
     fun inntektSiste12mnd(fangstOgFisk: Boolean) = inntektsPerioder.first.sumInntekt(inntektsklasser(fangstOgFisk))
 
     fun inntektSiste36Mnd(fangstOgFisk: Boolean) = inntektsPerioder.all().sumInntekt(inntektsklasser(fangstOgFisk))

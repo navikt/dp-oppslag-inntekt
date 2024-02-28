@@ -62,6 +62,7 @@ internal abstract class InntektOpplysningsbehovLøser(
                 }
 
             packet["@løsning"] = løsning(inntekt)
+            packet["inntektId"] = inntekt.inntektId()
             log.info { "Løst behov $behov for $behandlingId" }
             context.publish(packet.toJson())
         }
