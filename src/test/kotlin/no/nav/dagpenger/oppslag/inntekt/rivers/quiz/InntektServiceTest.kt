@@ -27,8 +27,8 @@ internal class InntektServiceTest {
     fun `skal hente inntekter for riktig pakke`() {
         val mockk =
             mockk<OppslagInntekt>(relaxed = true).also {
-                every { it.inntektSiste12mnd(false) } returns BigDecimal.ONE
-                every { it.inntektSiste3år(false) } returns BigDecimal("2.0123543")
+                every { it.inntektSiste12mndMed(false) } returns BigDecimal.ONE
+                every { it.inntektSiste3årMed(false) } returns BigDecimal("2.0123543")
             }
         val inntektClient =
             mockk<InntektClient>().also {

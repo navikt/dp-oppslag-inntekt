@@ -13,7 +13,7 @@ internal class InntektSiste12MndBehovløser(rapidsConnection: RapidsConnection, 
 
     override fun løsning(inntekt: OppslagInntekt): Map<String, Any> {
         return mapOf(
-            behov to inntekt.inntektSiste12mnd(fangstOgFisk = false),
+            behov to inntekt.inntektSiste12mndMed(fangstOgFisk = false),
         )
     }
 }

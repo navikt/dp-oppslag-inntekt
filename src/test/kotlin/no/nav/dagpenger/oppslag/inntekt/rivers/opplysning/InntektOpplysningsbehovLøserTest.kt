@@ -16,7 +16,7 @@ internal class InntektOpplysningsbehovLøserTest {
     val oppslagMock =
         mockk<OppslagInntekt>(relaxed = true).also {
             every { it.inntektId() } returns inntektId
-            every { it.inntektSiste12mnd(false) } returns BigDecimal("111111")
+            every { it.inntektSiste12mndMed(false) } returns BigDecimal("111111")
             every { it.inntektSiste36Mnd(false) } returns BigDecimal("222222")
         }
     val inntektClient =

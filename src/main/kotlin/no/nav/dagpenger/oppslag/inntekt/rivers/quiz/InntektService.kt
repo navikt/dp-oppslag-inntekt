@@ -28,7 +28,6 @@ internal class InntektService(rapidsConnection: RapidsConnection, private val in
                     requireKey("type", "historisk", "id")
                 }
                 it.require("identer", ::harAktørEllerFnr)
-                it.requireKey("FangstOgFiskeInntektSiste36mnd")
                 it.requireKey("Virkningstidspunkt")
                 it.interestedIn("søknad_uuid")
             }
@@ -57,7 +56,6 @@ internal class InntektService(rapidsConnection: RapidsConnection, private val in
             "søknad_uuid" to søknadUUID.toString(),
             "callId" to callId,
         ) {
-            val fangstOgFiske = packet["FangstOgFiskeInntektSiste36mnd"].asBoolean()
             val virkningsTidspunkt = packet["Virkningstidspunkt"].asLocalDate()
             val inntekt =
                 runBlocking {
@@ -73,8 +71,8 @@ internal class InntektService(rapidsConnection: RapidsConnection, private val in
                 packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
                     behov to
                         when (behov) {
-                            "InntektSiste3År" -> inntekt.inntektSiste3år(fangstOgFiske)
-                            "InntektSiste12Mnd" -> inntekt.inntektSiste12mnd(fangstOgFiske)
+                            "InntektSiste3År" -> inntekt.inntektSiste3årMed(fangstOgFisk = false)
+                            "InntektSiste12Mnd" -> inntekt.inntektSiste12mndMed(fangstOgFisk = false)
                             else -> throw IllegalArgumentException("Ukjent behov $behov")
                         }
                 }.toMap()

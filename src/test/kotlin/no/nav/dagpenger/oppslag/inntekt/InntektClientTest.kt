@@ -43,8 +43,8 @@ class InntektClientTest {
                     ),
                     tokenProvider = { "token" },
                 ).hentKlassifisertInntekt(UUID.fromString(id), "123", "fnr", LocalDate.now())
-            assertEquals(BigDecimal("0"), response.inntektSiste12mnd(false))
-            assertEquals(BigDecimal("18900"), response.inntektSiste3år(false))
+            assertEquals(BigDecimal("0"), response.inntektSiste12mndMed(false))
+            assertEquals(BigDecimal("18900"), response.inntektSiste3årMed(false))
         }
 }
 
