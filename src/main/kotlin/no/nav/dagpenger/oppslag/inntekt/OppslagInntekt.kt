@@ -33,11 +33,4 @@ internal class OppslagInntekt(private val inntekt: Inntekt) {
 
     fun harRapportertInntektForMåned(måned: YearMonth) =
         inntekt.inntektsListe.any { it.årMåned == måned && it.klassifiserteInntekter.isNotEmpty() }
-
-    fun inneholderFangstOgFiske() =
-        inntekt.inntektsListe.any {
-            it.klassifiserteInntekter.any {
-                it.inntektKlasse in listOf(InntektKlasse.FANGST_FISKE)
-            }
-        }
 }
