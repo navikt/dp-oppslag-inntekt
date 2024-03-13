@@ -4,7 +4,6 @@ import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import mu.withLoggingContext
 import no.nav.dagpenger.oppslag.inntekt.InntektClient
-import no.nav.dagpenger.oppslag.inntekt.OppslagInntekt
 import no.nav.dagpenger.oppslag.inntekt.asUUID
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageContext
@@ -13,26 +12,24 @@ import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import no.nav.helse.rapids_rivers.asLocalDate
 
-internal abstract class InntektOpplysningsbehovLøser(
+internal class InntektIdBehovløser(
     rapidsConnection: RapidsConnection,
     private val inntektClient: InntektClient,
 ) :
     River.PacketListener {
+    private val behov: String = "InntektId"
+
     init {
         River(rapidsConnection).apply {
             validate { it ->
                 it.demandAllOrAny("@behov", listOf(behov))
                 it.forbid("@løsning")
                 it.requireKey("@id", "@behovId")
-                it.require(behov) {
-                    require(it.has("Virkningsdato")) { "Mangler Virkningsdato" }
-                }
+                it.requireKey(behov)
                 it.requireKey("ident", "behandlingId")
             }
         }.register(this)
     }
-
-    abstract val behov: String
 
     companion object {
         private val log = KotlinLogging.logger {}
@@ -49,7 +46,8 @@ internal abstract class InntektOpplysningsbehovLøser(
             "behovId" to behovId,
             "behandlingId" to behandlingId.toString(),
         ) {
-            val virkningsTidspunkt = packet[behov]["Virkningsdato"].asLocalDate()
+            // @todo: Vi må hente ut inntektId basert på periode
+            val virkningsTidspunkt = packet[behov]["SisteAvsluttendeKalenderMåned"].asLocalDate()
             val inntekt =
                 runBlocking {
                     inntektClient.hentKlassifisertInntekt(
@@ -61,14 +59,11 @@ internal abstract class InntektOpplysningsbehovLøser(
                     )
                 }
 
-            packet["@løsning"] = løsning(inntekt)
-            packet["inntektId"] = inntekt.inntektId()
-            log.info { "Løst behov $behov for $behandlingId" }
+            packet["@løsning"] = mapOf(behov to mapOf("verdi" to inntekt.inntektId()))
+            log.info { "Løst behov $behov" }
             context.publish(packet.toJson())
         }
     }
-
-    abstract fun løsning(inntekt: OppslagInntekt): Map<String, Any>
 
     override fun onError(
         problems: MessageProblems,

@@ -1,7 +1,7 @@
 package no.nav.dagpenger.oppslag.inntekt
 
-import no.nav.dagpenger.oppslag.inntekt.rivers.opplysning.InntektSiste12MndBehovløser
-import no.nav.dagpenger.oppslag.inntekt.rivers.opplysning.InntektSiste36MndBehovløser
+import no.nav.dagpenger.oppslag.inntekt.rivers.opplysning.InntektBehovløser
+import no.nav.dagpenger.oppslag.inntekt.rivers.opplysning.InntektIdBehovløser
 import no.nav.dagpenger.oppslag.inntekt.rivers.quiz.GrunnbeløpService
 import no.nav.dagpenger.oppslag.inntekt.rivers.quiz.InntektNesteMånedService
 import no.nav.dagpenger.oppslag.inntekt.rivers.quiz.InntektService
@@ -19,7 +19,7 @@ fun main() {
         SykepengerLøsningService(rapidsConnection, inntektClient)
         InntektsrapporteringsperiodeLøsningService(rapidsConnection)
         GrunnbeløpService(rapidsConnection)
-        InntektSiste12MndBehovløser(rapidsConnection, inntektClient)
-        InntektSiste36MndBehovløser(rapidsConnection, inntektClient)
+        InntektBehovløser(rapidsConnection, inntektClient)
+        InntektIdBehovløser(rapidsConnection, inntektClient)
     }.start()
 }
