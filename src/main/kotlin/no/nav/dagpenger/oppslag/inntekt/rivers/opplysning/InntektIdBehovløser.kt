@@ -60,6 +60,7 @@ internal class InntektIdBehovløser(
                 }
 
             packet["@løsning"] = mapOf(behov to mapOf("verdi" to inntekt.inntektId()))
+            packet["@final"] = true
             log.info { "Løst behov $behov" }
             context.publish(packet.toJson())
         }
