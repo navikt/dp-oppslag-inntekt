@@ -32,6 +32,10 @@ spec:
   azure:
     application:
       enabled: true
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
   env:
     - name: DP_INNTEKT_API_SCOPE
       value: {{dp_inntekt_api_scope}}
