@@ -18,6 +18,7 @@ import io.ktor.serialization.JsonConvertException
 import mu.KotlinLogging
 import no.nav.dagpenger.inntekt.v1.Inntekt
 import no.nav.dagpenger.oppslag.inntekt.http.httpClient
+import org.slf4j.MDC
 import java.time.LocalDate
 import java.util.UUID
 
@@ -38,6 +39,7 @@ internal class InntektClient(
             httpKlient.post(Url(Configuration.inntektApiUrl)) {
                 header("Content-Type", "application/json")
                 header(HttpHeaders.Authorization, "Bearer ${tokenProvider.invoke()}")
+                callId?.let { header(HttpHeaders.XCorrelationId, it) }
                 callId?.let { header(HttpHeaders.XRequestId, it) }
                 accept(ContentType.Application.Json)
                 setBody(
@@ -62,7 +64,7 @@ internal class InntektClient(
             httpKlient.get(url) {
                 header(HttpHeaders.Authorization, "Bearer ${tokenProvider.invoke()}")
                 accept(ContentType.Application.Json)
-                header(HttpHeaders.XRequestId, UUID.randomUUID().toString())
+                header(HttpHeaders.XCorrelationId, MDC.get("behovId"))
             }
         val inntekt = hentInntekt(response)
         return OppslagInntekt(inntekt)

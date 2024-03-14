@@ -7,6 +7,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.headersOf
 import kotlinx.coroutines.runBlocking
+import mu.withLoggingContext
 import no.nav.dagpenger.oppslag.inntekt.http.httpClient
 import no.nav.helse.rapids_rivers.asLocalDate
 import org.junit.jupiter.api.Test
@@ -45,6 +46,31 @@ class InntektClientTest {
                 ).hentKlassifisertInntekt(UUID.fromString(id), "123", "fnr", LocalDate.now())
             assertEquals(BigDecimal("0"), response.inntektSiste12mndMed(false))
             assertEquals(BigDecimal("18900"), response.inntektSiste3årMed(false))
+        }
+
+    @Test
+    fun `http call med inntektId`() =
+        withLoggingContext("behovId" to "foobar") {
+            runBlocking {
+                val id = "41621ac0-f5ee-4cce-b1f5-88a79f25f1a5"
+                val response =
+                    InntektClient(
+                        httpClient(
+                            engine =
+                                MockEngine { request ->
+                                    assertEquals(HttpMethod.Get, request.method)
+                                    assertEquals(Configuration.inntektApiUrl + "/$id", request.url.toString())
+                                    assertEquals("Bearer token", request.headers[HttpHeaders.Authorization])
+                                    assertEquals("foobar", request.headers[HttpHeaders.XCorrelationId])
+
+                                    respond(inntektRespons, headers = headersOf("Content-Type", "application/json"))
+                                },
+                        ),
+                        tokenProvider = { "token" },
+                    ).hentInntekt(id)
+                assertEquals(BigDecimal("0"), response.inntektSiste12mndMed(false))
+                assertEquals(BigDecimal("18900"), response.inntektSiste3årMed(false))
+            }
         }
 }
 
