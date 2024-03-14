@@ -1,5 +1,7 @@
 package no.nav.dagpenger.oppslag.inntekt.rivers.opplysning
 
+import io.opentelemetry.api.trace.Span
+import io.opentelemetry.instrumentation.annotations.WithSpan
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import mu.withLoggingContext
@@ -35,12 +37,18 @@ internal class InntektIdBehovløser(
         private val log = KotlinLogging.logger {}
     }
 
+    @WithSpan
     override fun onPacket(
         packet: JsonMessage,
         context: MessageContext,
     ) {
         val behandlingId = packet["behandlingId"].asUUID()
         val behovId = packet["@behovId"].asText()
+        Span.current().apply {
+            setAttribute("app.river", name())
+            setAttribute("app.behovId", behovId)
+            setAttribute("app.behandlingId", behandlingId.toString())
+        }
 
         withLoggingContext(
             "behovId" to behovId,
