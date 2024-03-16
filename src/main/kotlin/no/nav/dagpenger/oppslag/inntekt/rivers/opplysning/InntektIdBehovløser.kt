@@ -44,11 +44,11 @@ internal class InntektIdBehovløser(
     ) {
         val behandlingId = packet["behandlingId"].asUUID()
         val behovId = packet["@behovId"].asText()
-        Span.current().apply {
+        /*Span.current().apply {
             setAttribute("app.river", name())
             setAttribute("app.behovId", behovId)
             setAttribute("app.behandlingId", behandlingId.toString())
-        }
+        }*/
 
         withLoggingContext(
             "behovId" to behovId,

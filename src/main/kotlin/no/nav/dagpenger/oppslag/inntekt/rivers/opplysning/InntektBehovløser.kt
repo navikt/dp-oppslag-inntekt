@@ -42,11 +42,11 @@ internal class InntektBehovløser(
     ) {
         val behandlingId = packet["behandlingId"].asText()
         val behovId = packet["@behovId"].asText()
-        Span.current().apply {
+        /*Span.current().apply {
             setAttribute("app.river", name())
             setAttribute("app.behovId", behovId)
             setAttribute("app.behandlingId", behandlingId.toString())
-        }
+        }*/
 
         val behovSomSkalLøses = packet["@behov"].map { it.asText() }.filter { it in behovSomLøses }
 
