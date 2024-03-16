@@ -16,7 +16,7 @@ internal class InntektBehovløser(
     private val inntektClient: InntektClient,
 ) :
     River.PacketListener {
-    private val behov = listOf("InntektSiste12Mnd", "InntektSiste36Mnd")
+    private val behovSomLøses = listOf("InntektSiste12Mnd", "InntektSiste36Mnd")
 
     companion object {
         private val log = KotlinLogging.logger {}
@@ -26,10 +26,10 @@ internal class InntektBehovløser(
 
         River(rapidsConnection).apply {
             validate { it ->
-                it.demandAllOrAny("@behov", behov)
+                it.demandAllOrAny("@behov", behovSomLøses)
                 it.forbid("@løsning")
                 it.requireKey("@id", "@behovId")
-                it.interestedIn(*behov.toTypedArray())
+                it.interestedIn(*behovSomLøses.toTypedArray())
                 it.requireKey("ident", "behandlingId")
             }
         }.register(this)
@@ -48,13 +48,13 @@ internal class InntektBehovløser(
             setAttribute("app.behandlingId", behandlingId.toString())
         }
 
-        val behov = packet["@behov"].map { it.asText() }
+        val behovSomSkalLøses = packet["@behov"].map { it.asText() }.filter { it in behovSomLøses }
 
         withLoggingContext(
             "behovId" to behovId,
             "behandlingId" to behandlingId,
         ) {
-            val inntektId = packet[behov.first()]["InntektId"].asText()
+            val inntektId = packet[behovSomSkalLøses.first()]["InntektId"].asText()
             val inntekt =
                 runBlocking {
                     inntektClient.hentInntekt(
@@ -63,7 +63,7 @@ internal class InntektBehovløser(
                 }
 
             val løsninger =
-                behov.associate { behov ->
+                behovSomSkalLøses.associate { behov ->
                     when (behov) {
                         "InntektSiste12Mnd" -> {
                             val inntektSiste12Mnd = inntekt.inntektSiste12mndMed(fangstOgFisk = false)
@@ -81,7 +81,7 @@ internal class InntektBehovløser(
                 }
             packet["@løsning"] = løsninger
             context.publish(packet.toJson())
-            log.info { "Løst behov $behov" }
+            log.info { "Løst behov $behovSomSkalLøses" }
         }
     }
 }
