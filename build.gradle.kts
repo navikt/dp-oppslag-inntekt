@@ -22,7 +22,7 @@ dependencies {
     implementation("com.github.navikt:dagpenger-events:20231222.8a61a7")
 
     implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.1.0")
-    implementation("io.opentelemetry:opentelemetry-api:1.36.0")
+    implementation("io.opentelemetry:opentelemetry-api:1.37.0")
 
     implementation("no.bekk.bekkopen:nocommons:0.16.0")
 
