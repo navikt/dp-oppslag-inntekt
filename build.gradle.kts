@@ -21,7 +21,7 @@ dependencies {
     implementation("com.github.navikt:dp-inntekt-kontrakter:1_20231220.55a8a9")
     implementation("com.github.navikt:dagpenger-events:20231222.8a61a7")
 
-    implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.2.0")
+    implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.3.0")
     implementation("io.opentelemetry:opentelemetry-api:1.37.0")
 
     implementation("no.bekk.bekkopen:nocommons:0.16.0")
