@@ -1,6 +1,5 @@
 package no.nav.dagpenger.oppslag.inntekt.rivers.opplysning
 
-import io.opentelemetry.api.trace.Span
 import io.opentelemetry.instrumentation.annotations.WithSpan
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -68,7 +67,10 @@ internal class InntektIdBehovløser(
                 }
 
             packet["@løsning"] = mapOf(behov to mapOf("verdi" to inntekt.inntektId()))
-            packet["@final"] = true
+
+            // TODO: Birgitte fanger ikke opp pakker med bare ett behov, så vi må sette @final = true
+            if (packet["@behov"].size() == 1) packet["@final"] = true
+
             log.info { "Løst behov $behov" }
             context.publish(packet.toJson())
         }
