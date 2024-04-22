@@ -19,7 +19,6 @@ dependencies {
     implementation("com.github.navikt.dp-biblioteker:ktor-client-metrics:$dpBibliotekerVersjon")
     implementation("com.github.navikt:dp-grunnbelop:2023.05.24-15.26.f42064d9fdc8")
     implementation("com.github.navikt:dp-inntekt-kontrakter:1_20231220.55a8a9")
-    implementation("com.github.navikt:dagpenger-events:20231222.8a61a7")
 
     implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.3.0")
     implementation("io.opentelemetry:opentelemetry-api:1.37.0")

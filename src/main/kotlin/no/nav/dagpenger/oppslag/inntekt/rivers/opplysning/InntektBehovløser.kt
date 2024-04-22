@@ -1,6 +1,5 @@
 package no.nav.dagpenger.oppslag.inntekt.rivers.opplysning
 
-import io.opentelemetry.api.trace.Span
 import io.opentelemetry.instrumentation.annotations.WithSpan
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
