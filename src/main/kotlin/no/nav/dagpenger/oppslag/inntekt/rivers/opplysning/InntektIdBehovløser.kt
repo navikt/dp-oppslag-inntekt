@@ -53,8 +53,8 @@ internal class InntektIdBehovløser(
             "behovId" to behovId,
             "behandlingId" to behandlingId.toString(),
         ) {
-            // @todo: Vi må hente ut inntektId basert på periode
-            val virkningsTidspunkt = packet[behov]["SisteAvsluttendeKalenderMåned"].asLocalDate()
+            // @todo: Vi må hente ut inntektId basert på opptjeningsperiode
+            val virkningsTidspunkt = packet[behov]["Virkningsdato"].asLocalDate()
             val inntekt =
                 runBlocking {
                     inntektClient.hentKlassifisertInntekt(
