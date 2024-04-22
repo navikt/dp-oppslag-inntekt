@@ -59,8 +59,7 @@ internal class InntektIdBehovløserTest {
           "ident": "12345678911",
           "behandlingId": "018dac22-2664-7724-95a6-2cd1ed9d3a07",
           "InntektId": {
-            "SisteAvsluttendeKalenderMåned": "2024-01-01",
-            "OpptjeningsperiodeFraOgMed": "2023-01-01"
+            "Virkningsdato": "2024-01-01"
           },
         
           "@id": "f0d97980-93e0-4638-8a61-337978466d7e",
