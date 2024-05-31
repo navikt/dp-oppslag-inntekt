@@ -17,7 +17,7 @@ val dpBibliotekerVersjon = libs.versions.dp.biblioteker.get()
 
 dependencies {
     implementation("com.github.navikt.dp-biblioteker:ktor-client-metrics:$dpBibliotekerVersjon")
-    implementation("com.github.navikt:dp-grunnbelop:2023.05.24-15.26.f42064d9fdc8")
+    implementation("com.github.navikt:dp-grunnbelop:2024.05.30-13.38.6e9169eb05d1")
     implementation("com.github.navikt:dp-inntekt-kontrakter:1_20231220.55a8a9")
 
     implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.4.0")
