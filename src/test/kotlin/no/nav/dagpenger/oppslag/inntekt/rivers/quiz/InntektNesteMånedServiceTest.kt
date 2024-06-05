@@ -8,6 +8,7 @@ import no.nav.dagpenger.inntekt.v1.KlassifisertInntekt
 import no.nav.dagpenger.inntekt.v1.KlassifisertInntektMåned
 import no.nav.dagpenger.oppslag.inntekt.InntektClient
 import no.nav.dagpenger.oppslag.inntekt.OppslagInntekt
+import no.nav.dagpenger.oppslag.inntekt.rivers.opplysning.InntektNesteMånedService
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
@@ -71,7 +72,7 @@ class InntektNesteMånedServiceTest {
 
     @Test
     fun `skal droppe behov hvor aktørid mangler`() {
-        InntektService(testRapid, mockk())
+        InntektNesteMånedService(testRapid, mockk())
         testRapid.sendTestMessage(behovUtenIdent)
         assertEquals(0, testRapid.inspektør.size)
     }

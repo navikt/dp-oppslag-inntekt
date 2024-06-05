@@ -1,4 +1,4 @@
-package no.nav.dagpenger.oppslag.inntekt.rivers.quiz
+package no.nav.dagpenger.oppslag.inntekt.rivers.opplysning
 
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging

@@ -1,8 +1,13 @@
-package no.nav.dagpenger.oppslag.inntekt
+package no.nav.dagpenger.oppslag.inntekt.rivers.opplysning
 
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import mu.withLoggingContext
+import no.nav.dagpenger.oppslag.inntekt.InntektClient
+import no.nav.dagpenger.oppslag.inntekt.aktorId
+import no.nav.dagpenger.oppslag.inntekt.asUUID
+import no.nav.dagpenger.oppslag.inntekt.fodselsnummer
+import no.nav.dagpenger.oppslag.inntekt.harAktørEllerFnr
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageContext
 import no.nav.helse.rapids_rivers.MessageProblems

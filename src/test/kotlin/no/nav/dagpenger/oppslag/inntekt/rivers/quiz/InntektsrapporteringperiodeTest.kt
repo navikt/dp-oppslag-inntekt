@@ -9,6 +9,7 @@ import no.nav.dagpenger.oppslag.inntekt.juni
 import no.nav.dagpenger.oppslag.inntekt.mai
 import no.nav.dagpenger.oppslag.inntekt.mars
 import no.nav.dagpenger.oppslag.inntekt.oktober
+import no.nav.dagpenger.oppslag.inntekt.rivers.opplysning.Inntektsrapporteringperiode
 import no.nav.dagpenger.oppslag.inntekt.september
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals

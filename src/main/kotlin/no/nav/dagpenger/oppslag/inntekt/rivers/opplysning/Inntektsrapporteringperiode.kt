@@ -1,4 +1,4 @@
-package no.nav.dagpenger.oppslag.inntekt.rivers.quiz
+package no.nav.dagpenger.oppslag.inntekt.rivers.opplysning
 
 import no.bekk.bekkopen.date.NorwegianDateUtil
 import java.time.LocalDate

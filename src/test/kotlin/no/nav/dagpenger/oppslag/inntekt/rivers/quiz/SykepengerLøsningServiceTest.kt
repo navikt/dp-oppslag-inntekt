@@ -6,7 +6,7 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.dagpenger.oppslag.inntekt.InntektClient
 import no.nav.dagpenger.oppslag.inntekt.OppslagInntekt
-import no.nav.dagpenger.oppslag.inntekt.SykepengerLøsningService
+import no.nav.dagpenger.oppslag.inntekt.rivers.opplysning.SykepengerLøsningService
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
@@ -62,7 +62,7 @@ internal class SykepengerLøsningServiceTest {
 
     @Test
     fun `skal droppe behov hvor aktørid mangler`() {
-        InntektService(testRapid, mockk())
+        SykepengerLøsningService(testRapid, mockk())
         testRapid.sendTestMessage(behovUtenIdent)
         assertEquals(0, testRapid.inspektør.size)
     }
