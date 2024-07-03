@@ -6,7 +6,9 @@ import no.nav.dagpenger.inntekt.v1.all
 import no.nav.dagpenger.inntekt.v1.sumInntekt
 import java.time.YearMonth
 
-internal class OppslagInntekt(private val inntekt: Inntekt) {
+internal class OppslagInntekt(
+    private val inntekt: Inntekt,
+) {
     private val inntektsPerioder = inntekt.splitIntoInntektsPerioder()
 
     fun inntektId() = inntekt.inntektsId
@@ -25,7 +27,7 @@ internal class OppslagInntekt(private val inntekt: Inntekt) {
         }
 
     fun inneholderSykepenger() =
-        inntekt.inntektsListe.any {
+        inntekt.inntektsListe.filter {
             it.klassifiserteInntekter.any {
                 it.inntektKlasse in listOf(InntektKlasse.SYKEPENGER, InntektKlasse.SYKEPENGER_FANGST_FISKE)
             }

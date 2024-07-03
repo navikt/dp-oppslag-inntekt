@@ -11,22 +11,25 @@ import no.nav.helse.rapids_rivers.River
 import no.nav.helse.rapids_rivers.asLocalDate
 import java.util.UUID
 
-internal class SykepengerLøsningService(rapidsConnection: RapidsConnection, private val inntektClient: InntektClient) :
-    River.PacketListener {
+internal class SykepengerLøsningService(
+    rapidsConnection: RapidsConnection,
+    private val inntektClient: InntektClient,
+) : River.PacketListener {
     init {
-        River(rapidsConnection).apply {
-            validate {
-                it.demandAllOrAny("@behov", løserBehov)
-                it.forbid("@løsning")
-                it.requireKey("@id", "@behovId")
-                it.requireArray("identer") {
-                    requireKey("type", "historisk", "id")
+        River(rapidsConnection)
+            .apply {
+                validate {
+                    it.demandAllOrAny("@behov", løserBehov)
+                    it.forbid("@løsning")
+                    it.requireKey("@id", "@behovId")
+                    it.requireArray("identer") {
+                        requireKey("type", "historisk", "id")
+                    }
+                    it.require("identer", ::harAktørEllerFnr)
+                    it.requireKey("Virkningstidspunkt")
+                    it.interestedIn("søknad_uuid", "avklaringId", "behandlingId")
                 }
-                it.require("identer", ::harAktørEllerFnr)
-                it.requireKey("Virkningstidspunkt")
-                it.interestedIn("søknad_uuid")
-            }
-        }.register(this)
+            }.register(this)
     }
 
     companion object {
@@ -47,6 +50,8 @@ internal class SykepengerLøsningService(rapidsConnection: RapidsConnection, pri
 
         withLoggingContext(
             "behovId" to packet["@behovId"].asText(),
+            "avklaringId" to packet["avklaringId"].asText(),
+            "behandlingId" to packet["behandlingId"].asText(),
             "søknad_uuid" to søknadUUID.toString(),
             "callId" to callId,
         ) {
@@ -61,13 +66,18 @@ internal class SykepengerLøsningService(rapidsConnection: RapidsConnection, pri
                     )
                 }
             val løsning =
-                packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
-                    behov to
-                        when (behov) {
-                            "SykepengerSiste36Måneder" -> inntekt.inneholderSykepenger()
-                            else -> throw IllegalArgumentException("Ukjent behov $behov")
-                        }
-                }.toMap()
+                packet["@behov"].map { it.asText() }.filter { it in løserBehov }.associateWith { behov ->
+                    when (behov) {
+                        "SykepengerSiste36Måneder" ->
+                            inntekt
+                                .inneholderSykepenger()
+                                .also {
+                                    log.info { "Måneder med sykepenger: ${it.joinToString { it.årMåned.toString() }}" }
+                                }.isNotEmpty()
+
+                        else -> throw IllegalArgumentException("Ukjent behov $behov")
+                    }
+                }
 
             packet["@løsning"] = løsning
             log.info { "Løst behov for $søknadUUID" }

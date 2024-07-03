@@ -4,6 +4,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.dagpenger.inntekt.v1.KlassifisertInntektMåned
 import no.nav.dagpenger.oppslag.inntekt.InntektClient
 import no.nav.dagpenger.oppslag.inntekt.OppslagInntekt
 import no.nav.dagpenger.oppslag.inntekt.SykepengerLøsningService
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
+import java.time.YearMonth
 import java.util.UUID
 import kotlin.test.assertEquals
 
@@ -28,7 +30,9 @@ internal class SykepengerLøsningServiceTest {
     fun `skal besvare behov om inntekt inneholder sykepenger siste 36 mnd`() {
         val mockk =
             mockk<OppslagInntekt>(relaxed = true).also {
-                every { it.inneholderSykepenger() } returns true
+                val årMåned = mockk<KlassifisertInntektMåned>()
+                every { årMåned.årMåned } returns YearMonth.parse("2020-11")
+                every { it.inneholderSykepenger() } returns listOf(årMåned)
             }
         val inntektClient =
             mockk<InntektClient>().also {
