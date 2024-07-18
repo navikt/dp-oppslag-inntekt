@@ -52,9 +52,8 @@ internal class InntektClient(
                 )
             }
 
-        val inntekt =
-            hentInntekt(response)
-        sikkerLogg.info { inntekt }
+        val inntekt = hentInntekt(response)
+        sikkerLogg.info { "Hentet inntekt med id=${inntekt.inntektsId}, sisteAvsluttedeKalenderMåned=${inntekt.sisteAvsluttendeKalenderMåned}" }
         return OppslagInntekt(inntekt)
     }
 
