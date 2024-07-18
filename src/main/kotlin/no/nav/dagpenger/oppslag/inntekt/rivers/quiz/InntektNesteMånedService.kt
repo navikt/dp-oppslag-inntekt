@@ -15,7 +15,6 @@ import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import no.nav.helse.rapids_rivers.asLocalDate
 import java.time.YearMonth
-import java.util.UUID
 
 internal class InntektNesteMånedService(rapidsConnection: RapidsConnection, private val inntektClient: InntektClient) :
     River.PacketListener {
@@ -49,10 +48,11 @@ internal class InntektNesteMånedService(rapidsConnection: RapidsConnection, pri
         context: MessageContext,
     ) {
         val søknadUUID = packet["søknad_uuid"].asUUID()
-        val callId = "dp-oppslag-inntekt-${UUID.randomUUID()}"
+        val behovId = packet["@behovId"].asText()
+        val callId = "dp-oppslag-inntekt:$behovId"
 
         withLoggingContext(
-            "behovId" to packet["@behovId"].asText(),
+            "behovId" to behovId,
             "søknad_uuid" to søknadUUID.toString(),
             "callId" to callId,
         ) {
@@ -70,16 +70,16 @@ internal class InntektNesteMånedService(rapidsConnection: RapidsConnection, pri
             val løsning =
                 packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
                     behov to
-                        when (behov) {
-                            "HarRapportertInntektNesteMåned" ->
-                                inntekt.harRapportertInntektForMåned(
-                                    YearMonth.from(
-                                        inntektsrapporteringsperiode.fom(),
-                                    ),
-                                )
+                            when (behov) {
+                                "HarRapportertInntektNesteMåned" ->
+                                    inntekt.harRapportertInntektForMåned(
+                                        YearMonth.from(
+                                            inntektsrapporteringsperiode.fom(),
+                                        ),
+                                    )
 
-                            else -> throw IllegalArgumentException("Ukjent behov $behov")
-                        }
+                                else -> throw IllegalArgumentException("Ukjent behov $behov")
+                            }
                 }.toMap()
 
             packet["@løsning"] = løsning
