@@ -70,16 +70,16 @@ internal class InntektNesteMånedService(rapidsConnection: RapidsConnection, pri
             val løsning =
                 packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
                     behov to
-                            when (behov) {
-                                "HarRapportertInntektNesteMåned" ->
-                                    inntekt.harRapportertInntektForMåned(
-                                        YearMonth.from(
-                                            inntektsrapporteringsperiode.fom(),
-                                        ),
-                                    )
+                        when (behov) {
+                            "HarRapportertInntektNesteMåned" ->
+                                inntekt.harRapportertInntektForMåned(
+                                    YearMonth.from(
+                                        inntektsrapporteringsperiode.fom(),
+                                    ),
+                                )
 
-                                else -> throw IllegalArgumentException("Ukjent behov $behov")
-                            }
+                            else -> throw IllegalArgumentException("Ukjent behov $behov")
+                        }
                 }.toMap()
 
             packet["@løsning"] = løsning

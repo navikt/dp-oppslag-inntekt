@@ -53,7 +53,12 @@ internal class InntektClient(
             }
 
         val inntekt = hentInntekt(response)
-        sikkerLogg.info { "Hentet inntekt med id=${inntekt.inntektsId}, sisteAvsluttedeKalenderMåned=${inntekt.sisteAvsluttendeKalenderMåned}" }
+        sikkerLogg.info {
+            """
+            |Hentet inntekt med id=${inntekt.inntektsId}, 
+            |sisteAvsluttedeKalenderMåned=${inntekt.sisteAvsluttendeKalenderMåned}
+            """.trimMargin()
+        }
         return OppslagInntekt(inntekt)
     }
 

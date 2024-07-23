@@ -1,6 +1,9 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     id("common")
     application
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 repositories {
@@ -36,4 +39,8 @@ dependencies {
 
     testImplementation("io.ktor:ktor-client-mock-jvm:${libs.versions.ktor.get()}")
     testImplementation(kotlin("test"))
+}
+
+tasks.withType<ShadowJar> {
+    mergeServiceFiles()
 }
