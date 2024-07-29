@@ -16,20 +16,20 @@ import no.nav.helse.rapids_rivers.asLocalDate
 internal class InntektIdBehovløser(
     rapidsConnection: RapidsConnection,
     private val inntektClient: InntektClient,
-) :
-    River.PacketListener {
+) : River.PacketListener {
     private val behov: String = "InntektId"
 
     init {
-        River(rapidsConnection).apply {
-            validate { it ->
-                it.demandAllOrAny("@behov", listOf(behov))
-                it.forbid("@løsning")
-                it.requireKey("@id", "@behovId")
-                it.requireKey(behov)
-                it.requireKey("ident", "behandlingId")
-            }
-        }.register(this)
+        River(rapidsConnection)
+            .apply {
+                validate { it ->
+                    it.demandAllOrAny("@behov", listOf(behov))
+                    it.forbid("@løsning")
+                    it.requireKey("@id", "@behovId")
+                    it.requireKey(behov)
+                    it.requireKey("ident", "behandlingId")
+                }
+            }.register(this)
     }
 
     companion object {

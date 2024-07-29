@@ -1,4 +1,4 @@
-package no.nav.dagpenger.oppslag.inntekt.rivers.quiz
+package no.nav.dagpenger.oppslag.inntekt.rivers.avklaring
 
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -16,22 +16,25 @@ import no.nav.helse.rapids_rivers.River
 import no.nav.helse.rapids_rivers.asLocalDate
 import java.time.YearMonth
 
-internal class InntektNesteMånedService(rapidsConnection: RapidsConnection, private val inntektClient: InntektClient) :
-    River.PacketListener {
+internal class InntektNesteMånedService(
+    rapidsConnection: RapidsConnection,
+    private val inntektClient: InntektClient,
+) : River.PacketListener {
     init {
-        River(rapidsConnection).apply {
-            validate {
-                it.demandAllOrAny("@behov", løserBehov)
-                it.forbid("@løsning")
-                it.requireKey("@id", "@behovId")
-                it.requireArray("identer") {
-                    requireKey("type", "historisk", "id")
+        River(rapidsConnection)
+            .apply {
+                validate {
+                    it.demandAllOrAny("@behov", løserBehov)
+                    it.forbid("@løsning")
+                    it.requireKey("@id", "@behovId")
+                    it.requireArray("identer") {
+                        requireKey("type", "historisk", "id")
+                    }
+                    it.require("identer", ::harAktørEllerFnr)
+                    it.requireKey("Virkningstidspunkt")
+                    it.interestedIn("søknad_uuid")
                 }
-                it.require("identer", ::harAktørEllerFnr)
-                it.requireKey("Virkningstidspunkt")
-                it.interestedIn("søknad_uuid")
-            }
-        }.register(this)
+            }.register(this)
     }
 
     companion object {
@@ -68,19 +71,22 @@ internal class InntektNesteMånedService(rapidsConnection: RapidsConnection, pri
                     )
                 }
             val løsning =
-                packet["@behov"].map { it.asText() }.filter { it in løserBehov }.map { behov ->
-                    behov to
-                        when (behov) {
-                            "HarRapportertInntektNesteMåned" ->
-                                inntekt.harRapportertInntektForMåned(
-                                    YearMonth.from(
-                                        inntektsrapporteringsperiode.fom(),
-                                    ),
-                                )
+                packet["@behov"]
+                    .map { it.asText() }
+                    .filter { it in løserBehov }
+                    .map { behov ->
+                        behov to
+                            when (behov) {
+                                "HarRapportertInntektNesteMåned" ->
+                                    inntekt.harRapportertInntektForMåned(
+                                        YearMonth.from(
+                                            inntektsrapporteringsperiode.fom(),
+                                        ),
+                                    )
 
-                            else -> throw IllegalArgumentException("Ukjent behov $behov")
-                        }
-                }.toMap()
+                                else -> throw IllegalArgumentException("Ukjent behov $behov")
+                            }
+                    }.toMap()
 
             packet["@løsning"] = løsning
             log.info { "Løst behov for $søknadUUID" }

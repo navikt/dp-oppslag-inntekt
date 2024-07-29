@@ -1,4 +1,4 @@
-package no.nav.dagpenger.oppslag.inntekt.rivers.quiz
+package no.nav.dagpenger.oppslag.inntekt.rivers.avklaring
 
 import no.nav.dagpenger.oppslag.inntekt.april
 import no.nav.dagpenger.oppslag.inntekt.august

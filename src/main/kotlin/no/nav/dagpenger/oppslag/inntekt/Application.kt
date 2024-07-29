@@ -1,11 +1,9 @@
 package no.nav.dagpenger.oppslag.inntekt
 
+import no.nav.dagpenger.oppslag.inntekt.rivers.avklaring.InntektNesteMånedService
+import no.nav.dagpenger.oppslag.inntekt.rivers.avklaring.SykepengerLøsningService
 import no.nav.dagpenger.oppslag.inntekt.rivers.opplysning.InntektBehovløser
 import no.nav.dagpenger.oppslag.inntekt.rivers.opplysning.InntektIdBehovløser
-import no.nav.dagpenger.oppslag.inntekt.rivers.quiz.GrunnbeløpService
-import no.nav.dagpenger.oppslag.inntekt.rivers.quiz.InntektNesteMånedService
-import no.nav.dagpenger.oppslag.inntekt.rivers.quiz.InntektService
-import no.nav.dagpenger.oppslag.inntekt.rivers.quiz.InntektsrapporteringsperiodeLøsningService
 import no.nav.helse.rapids_rivers.RapidApplication
 
 fun main() {
@@ -13,13 +11,12 @@ fun main() {
         InntektClient(
             tokenProvider = { Configuration.dpInntektApiTokenProvider.clientCredentials(Configuration.dpInntektApiScope).accessToken },
         )
-    RapidApplication.create(Configuration.asMap()).also { rapidsConnection ->
-        InntektService(rapidsConnection, inntektClient)
-        InntektNesteMånedService(rapidsConnection, inntektClient)
-        SykepengerLøsningService(rapidsConnection, inntektClient)
-        InntektsrapporteringsperiodeLøsningService(rapidsConnection)
-        GrunnbeløpService(rapidsConnection)
-        InntektBehovløser(rapidsConnection, inntektClient)
-        InntektIdBehovløser(rapidsConnection, inntektClient)
-    }.start()
+    RapidApplication
+        .create(Configuration.asMap())
+        .also { rapidsConnection ->
+            InntektNesteMånedService(rapidsConnection, inntektClient)
+            SykepengerLøsningService(rapidsConnection, inntektClient)
+            InntektBehovløser(rapidsConnection, inntektClient)
+            InntektIdBehovløser(rapidsConnection, inntektClient)
+        }.start()
 }

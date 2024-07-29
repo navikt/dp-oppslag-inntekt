@@ -1,4 +1,4 @@
-package no.nav.dagpenger.oppslag.inntekt.rivers.quiz
+package no.nav.dagpenger.oppslag.inntekt.rivers.avklaring
 
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -71,7 +71,7 @@ class InntektNesteMånedServiceTest {
 
     @Test
     fun `skal droppe behov hvor aktørid mangler`() {
-        InntektService(testRapid, mockk())
+        InntektNesteMånedService(testRapid, mockk())
         testRapid.sendTestMessage(behovUtenIdent)
         assertEquals(0, testRapid.inspektør.size)
     }

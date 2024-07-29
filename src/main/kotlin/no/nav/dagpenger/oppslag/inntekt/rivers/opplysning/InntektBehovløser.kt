@@ -13,8 +13,7 @@ import no.nav.helse.rapids_rivers.River
 internal class InntektBehovløser(
     rapidsConnection: RapidsConnection,
     private val inntektClient: InntektClient,
-) :
-    River.PacketListener {
+) : River.PacketListener {
     private val behovSomLøses = listOf("InntektSiste12Mnd", "InntektSiste36Mnd")
 
     companion object {
@@ -23,15 +22,16 @@ internal class InntektBehovløser(
 
     init {
 
-        River(rapidsConnection).apply {
-            validate { it ->
-                it.demandAllOrAny("@behov", behovSomLøses)
-                it.forbid("@løsning")
-                it.requireKey("@id", "@behovId")
-                it.interestedIn(*behovSomLøses.toTypedArray())
-                it.requireKey("ident", "behandlingId")
-            }
-        }.register(this)
+        River(rapidsConnection)
+            .apply {
+                validate { it ->
+                    it.demandAllOrAny("@behov", behovSomLøses)
+                    it.forbid("@løsning")
+                    it.requireKey("@id", "@behovId")
+                    it.interestedIn(*behovSomLøses.toTypedArray())
+                    it.requireKey("ident", "behandlingId")
+                }
+            }.register(this)
     }
 
     @WithSpan

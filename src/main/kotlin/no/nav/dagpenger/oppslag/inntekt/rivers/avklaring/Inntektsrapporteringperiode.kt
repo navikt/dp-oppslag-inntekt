@@ -1,11 +1,13 @@
-package no.nav.dagpenger.oppslag.inntekt.rivers.quiz
+package no.nav.dagpenger.oppslag.inntekt.rivers.avklaring
 
 import no.bekk.bekkopen.date.NorwegianDateUtil
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Date
 
-class Inntektsrapporteringperiode(private val dato: LocalDate) {
+class Inntektsrapporteringperiode(
+    private val dato: LocalDate,
+) {
     fun fom(): LocalDate {
         val månederTilbake: Long = if (tom().month == dato.month) -1 else 0
         return rapporteringsfrist(dato, månedOffset = månederTilbake).plusDays(1)
