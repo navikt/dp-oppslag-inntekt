@@ -76,8 +76,10 @@ internal class SykepengerLøsningService(
                         "SykepengerSiste36Måneder" ->
                             inntekt
                                 .inneholderSykepenger()
-                                .also {
-                                    log.info { "Måneder med sykepenger: ${it.joinToString { it.årMåned.toString() }}" }
+                                .also { måneder ->
+                                    if (måneder.isNotEmpty()) {
+                                        log.info { "Måneder med sykepenger: ${måneder.joinToString { it.årMåned.toString() }}" }
+                                    }
                                 }.isNotEmpty()
 
                         else -> throw IllegalArgumentException("Ukjent behov $behov")
@@ -85,7 +87,7 @@ internal class SykepengerLøsningService(
                 }
 
             packet["@løsning"] = løsning
-            log.info { "Løst behov for $søknadUUID" }
+            log.info { "Løst behov $løserBehov" }
             context.publish(packet.toJson())
         }
     }
