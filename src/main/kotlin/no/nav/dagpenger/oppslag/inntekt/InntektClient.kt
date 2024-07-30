@@ -22,12 +22,12 @@ import org.slf4j.MDC
 import java.time.LocalDate
 import java.util.UUID
 
-private val sikkerLogg = KotlinLogging.logger("tjenestekall")
-
 internal class InntektClient(
     private val httpKlient: HttpClient = httpClient(httpMetricsBasename = "ktor_client_inntekt_api_metrics"),
     private val tokenProvider: () -> String,
 ) {
+    private val sikkerLogg = KotlinLogging.logger("tjenestekall.InntektClient")
+
     suspend fun hentKlassifisertInntekt(
         søknadUUID: UUID,
         aktørId: String?,
@@ -97,4 +97,7 @@ internal data class InntektRequest(
     }
 }
 
-data class RegelKontekst(val id: String, val type: String)
+data class RegelKontekst(
+    val id: String,
+    val type: String,
+)

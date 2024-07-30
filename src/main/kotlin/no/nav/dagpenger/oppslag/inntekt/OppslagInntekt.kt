@@ -17,8 +17,6 @@ internal class OppslagInntekt(
 
     fun inntektSiste36Mnd(fangstOgFisk: Boolean) = inntektsPerioder.all().sumInntekt(inntektsklasser(fangstOgFisk))
 
-    fun inntektSiste3årMed(fangstOgFisk: Boolean) = inntektSiste36Mnd(fangstOgFisk)
-
     private fun inntektsklasser(fangstOgFisk: Boolean) =
         if (fangstOgFisk) {
             listOf(InntektKlasse.ARBEIDSINNTEKT, InntektKlasse.FANGST_FISKE)
