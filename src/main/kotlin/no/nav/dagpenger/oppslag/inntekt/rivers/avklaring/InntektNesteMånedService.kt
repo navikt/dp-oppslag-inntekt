@@ -89,7 +89,7 @@ internal class InntektNesteMånedService(
                     }.toMap()
 
             packet["@løsning"] = løsning
-            log.info { "Løst behov for $søknadUUID" }
+            log.info { "Løst behov $løserBehov" }
             context.publish(packet.toJson())
         }
     }
@@ -98,6 +98,6 @@ internal class InntektNesteMånedService(
         problems: MessageProblems,
         context: MessageContext,
     ) {
-        log.info { problems.toString() }
+        log.trace { problems.toString() }
     }
 }

@@ -80,6 +80,6 @@ internal class InntektIdBehovløser(
         problems: MessageProblems,
         context: MessageContext,
     ) {
-        log.info { problems.toString() }
+        log.trace { problems.toString() }
     }
 }
