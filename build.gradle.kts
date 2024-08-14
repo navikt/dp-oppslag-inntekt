@@ -16,7 +16,9 @@ application {
     mainClass.set("no.nav.dagpenger.oppslag.inntekt.ApplicationKt")
 }
 
-val dpBibliotekerVersjon = libs.versions.dp.biblioteker.get()
+val dpBibliotekerVersjon =
+    libs.versions.dp.biblioteker
+        .get()
 
 dependencies {
     implementation("com.github.navikt.dp-biblioteker:ktor-client-metrics:$dpBibliotekerVersjon")
