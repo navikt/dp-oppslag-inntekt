@@ -66,12 +66,14 @@ internal class InntektIdBehovløser(
                     )
                 }
 
-            packet["@løsning"] = mapOf(
-                behov to mapOf(
-                    "verdi" to inntekt.inntektId(),
-                    "gyldigFraOgMed" to virkningsdato
+            packet["@løsning"] =
+                mapOf(
+                    behov to
+                        mapOf(
+                            "verdi" to inntekt.inntektId(),
+                            "gyldigFraOgMed" to virkningsdato,
+                        ),
                 )
-            )
 
             // TODO: Birgitte fanger ikke opp pakker med bare ett behov, så vi må sette @final = true
             if (packet["@behov"].size() == 1) packet["@final"] = true
