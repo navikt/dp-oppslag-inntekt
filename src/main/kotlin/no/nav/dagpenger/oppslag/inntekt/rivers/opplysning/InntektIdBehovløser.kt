@@ -54,19 +54,24 @@ internal class InntektIdBehovløser(
             "behandlingId" to behandlingId.toString(),
         ) {
             // @todo: Vi må hente ut inntektId basert på opptjeningsperiode
-            val virkningsTidspunkt = packet[behov]["Virkningsdato"].asLocalDate()
+            val virkningsdato = packet[behov]["Virkningsdato"].asLocalDate()
             val inntekt =
                 runBlocking {
                     inntektClient.hentKlassifisertInntekt(
                         søknadUUID = behandlingId,
                         aktørId = null,
                         fødselsnummer = packet["ident"].asText(),
-                        virkningsTidspunkt = virkningsTidspunkt,
+                        virkningsTidspunkt = virkningsdato,
                         callId = behovId,
                     )
                 }
 
-            packet["@løsning"] = mapOf(behov to mapOf("verdi" to inntekt.inntektId()))
+            packet["@løsning"] = mapOf(
+                behov to mapOf(
+                    "verdi" to inntekt.inntektId(),
+                    "gyldigFraOgMed" to virkningsdato
+                )
+            )
 
             // TODO: Birgitte fanger ikke opp pakker med bare ett behov, så vi må sette @final = true
             if (packet["@behov"].size() == 1) packet["@final"] = true
