@@ -9,7 +9,10 @@ import no.nav.helse.rapids_rivers.RapidApplication
 fun main() {
     val inntektClient =
         InntektClient(
-            tokenProvider = { Configuration.dpInntektApiTokenProvider.clientCredentials(Configuration.dpInntektApiScope).accessToken },
+            tokenProvider = {
+                Configuration.dpInntektApiTokenProvider.clientCredentials(Configuration.dpInntektApiScope).accessToken
+                    ?: throw RuntimeException("Klarte ikke hente token")
+            },
         )
     RapidApplication
         .create(Configuration.asMap())
