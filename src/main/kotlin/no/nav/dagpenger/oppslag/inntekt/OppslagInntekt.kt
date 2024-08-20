@@ -7,7 +7,7 @@ import no.nav.dagpenger.inntekt.v1.sumInntekt
 import java.time.YearMonth
 
 internal class OppslagInntekt(
-    private val inntekt: Inntekt,
+    val inntekt: Inntekt,
 ) {
     private val inntektsPerioder = inntekt.splitIntoInntektsPerioder()
 

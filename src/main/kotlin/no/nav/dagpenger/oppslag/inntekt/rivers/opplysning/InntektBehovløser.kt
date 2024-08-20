@@ -14,7 +14,7 @@ internal class InntektBehovløser(
     rapidsConnection: RapidsConnection,
     private val inntektClient: InntektClient,
 ) : River.PacketListener {
-    private val behovSomLøses = listOf("InntektSiste12Mnd", "InntektSiste36Mnd")
+    private val behovSomLøses = listOf("InntektSiste12Mnd", "InntektSiste36Mnd", "Inntekt")
 
     companion object {
         private val log = KotlinLogging.logger {}
@@ -73,6 +73,9 @@ internal class InntektBehovløser(
                             val inntektSiste36Mnd = inntekt.inntektSiste36Mnd(fangstOgFisk = false)
 
                             behov to mapOf("verdi" to inntektSiste36Mnd)
+                        }
+                        "Inntekt" -> {
+                            behov to mapOf("verdi" to inntekt.inntekt)
                         }
 
                         else -> throw IllegalArgumentException("Ukjent behov $behov")
