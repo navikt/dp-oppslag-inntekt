@@ -102,14 +102,12 @@ internal class InntektBehovLøserTest {
           "søknad_uuid" : "01916e84-2286-701c-ad55-1c81b72d0674",
           "opprettet" : "2024-08-20T08:40:39.049295",
           "Inntekt" : {
-            "@opplysningsbehov" : true,
             "InntektId" : "$inntektId",
             "InnsendtSøknadsId" : {
               "urn" : "urn:soknad:4afce924-6cb4-4ab4-a92b-fe91e24f31bf"
             },
             "søknad_uuid" : "01916e84-2286-701c-ad55-1c81b72d0674"
           },
-          "@opplysningsbehov" : true,
           "InntektId" : "$inntektId",
           "InnsendtSøknadsId" : {
             "urn" : "urn:soknad:4afce924-6cb4-4ab4-a92b-fe91e24f31bf"
