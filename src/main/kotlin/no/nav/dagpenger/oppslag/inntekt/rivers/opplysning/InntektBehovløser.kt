@@ -18,6 +18,7 @@ internal class InntektBehovløser(
 
     companion object {
         private val log = KotlinLogging.logger {}
+        private val sikkerLogg = KotlinLogging.logger("tjenestekall.InntektBehovløser")
     }
 
     init {
@@ -56,9 +57,16 @@ internal class InntektBehovløser(
             val inntektId = packet[behovSomSkalLøses.first()]["InntektId"].asText()
             val inntekt =
                 runBlocking {
-                    inntektClient.hentInntekt(
-                        inntektId = inntektId,
-                    )
+                    kotlin.runCatching {
+                        inntektClient.hentInntekt(
+                            inntektId = inntektId,
+                        )
+                    }
+                        .onFailure {
+                            log.error(it) { "Feil ved henting av inntekt" }
+                            sikkerLogg.error(it) { "Feil ved henting av inntekt for pakke: ${packet.toJson()}" }
+                        }
+                        .getOrThrow()
                 }
 
             val løsninger =
@@ -74,6 +82,7 @@ internal class InntektBehovløser(
 
                             behov to mapOf("verdi" to inntektSiste36Mnd)
                         }
+
                         "Inntekt" -> {
                             behov to mapOf("verdi" to inntekt.inntekt)
                         }
