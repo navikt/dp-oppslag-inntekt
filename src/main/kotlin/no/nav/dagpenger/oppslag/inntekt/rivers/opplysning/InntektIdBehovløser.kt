@@ -47,6 +47,10 @@ internal class InntektIdBehovløser(
     ) {
         val behandlingId = packet["behandlingId"].asUUID()
         val behovId = packet["@behovId"].asText()
+        if (behovId == "cf56e622-0606-4c03-860e-413bd587f4fd") {
+            log.warn { "skipper $behovId" }
+            return
+        }
 
         withLoggingContext(
             "behovId" to behovId,
