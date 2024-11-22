@@ -37,6 +37,7 @@ internal class InntektIdBehovløser(
 
     companion object {
         private val log = KotlinLogging.logger {}
+        private val sikkerLogg = KotlinLogging.logger("tjenestekall.InntektIdBehovløser")
     }
 
     @WithSpan
@@ -55,13 +56,20 @@ internal class InntektIdBehovløser(
             val virkningsdato = packet[behov]["Virkningsdato"].asLocalDate()
             val inntekt =
                 runBlocking {
-                    inntektClient.hentKlassifisertInntekt(
-                        søknadUUID = behandlingId,
-                        aktørId = null,
-                        fødselsnummer = packet["ident"].asText(),
-                        virkningsTidspunkt = virkningsdato,
-                        callId = behovId,
-                    )
+                    kotlin.runCatching {
+                        inntektClient.hentKlassifisertInntekt(
+                            søknadUUID = behandlingId,
+                            aktørId = null,
+                            fødselsnummer = packet["ident"].asText(),
+                            virkningsTidspunkt = virkningsdato,
+                            callId = behovId,
+                        )
+                    }
+                        .onFailure {
+                            log.error(it) { "Feil ved henting av inntekt" }
+                            sikkerLogg.error(it) { "Feil ved henting av inntekt for pakke: ${packet.toJson()}" }
+                        }
+                        .getOrThrow()
                 }
 
             packet["@løsning"] =
