@@ -53,23 +53,28 @@ internal class InntektIdBehovløser(
             "behandlingId" to behandlingId.toString(),
         ) {
             // @todo: Vi må hente ut inntektId basert på opptjeningsperiode
+
+            if (behandlingId.toString() == "019353e1-0bc7-71f5-a93c-f753e988c275") {
+                log.warn { "Skipper behandling " }
+                return
+            }
+
             val virkningsdato = packet[behov]["Virkningsdato"].asLocalDate()
             val inntekt =
                 runBlocking {
-                    kotlin.runCatching {
-                        inntektClient.hentKlassifisertInntekt(
-                            søknadUUID = behandlingId,
-                            aktørId = null,
-                            fødselsnummer = packet["ident"].asText(),
-                            virkningsTidspunkt = virkningsdato,
-                            callId = behovId,
-                        )
-                    }
-                        .onFailure {
+                    kotlin
+                        .runCatching {
+                            inntektClient.hentKlassifisertInntekt(
+                                søknadUUID = behandlingId,
+                                aktørId = null,
+                                fødselsnummer = packet["ident"].asText(),
+                                virkningsTidspunkt = virkningsdato,
+                                callId = behovId,
+                            )
+                        }.onFailure {
                             log.error(it) { "Feil ved henting av inntekt" }
                             sikkerLogg.error(it) { "Feil ved henting av inntekt for pakke: ${packet.toJson()}" }
-                        }
-                        .getOrThrow()
+                        }.getOrThrow()
                 }
 
             packet["@løsning"] =
