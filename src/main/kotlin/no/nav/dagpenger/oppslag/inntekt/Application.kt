@@ -2,8 +2,8 @@ package no.nav.dagpenger.oppslag.inntekt
 
 import no.nav.dagpenger.oppslag.inntekt.rivers.avklaring.InntektNesteMånedService
 import no.nav.dagpenger.oppslag.inntekt.rivers.avklaring.SykepengerLøsningService
-import no.nav.dagpenger.oppslag.inntekt.rivers.opplysning.InntektBehovløser
 import no.nav.dagpenger.oppslag.inntekt.rivers.opplysning.InntektIdBehovløser
+import no.nav.dagpenger.oppslag.inntekt.rivers.opplysning.LegacyInntektBehovløser
 import no.nav.helse.rapids_rivers.RapidApplication
 
 fun main() {
@@ -19,7 +19,7 @@ fun main() {
         .also { rapidsConnection ->
             InntektNesteMånedService(rapidsConnection, inntektClient)
             SykepengerLøsningService(rapidsConnection, inntektClient)
-            InntektBehovløser(rapidsConnection, inntektClient)
+            LegacyInntektBehovløser(rapidsConnection, inntektClient)
             InntektIdBehovløser(rapidsConnection, inntektClient)
         }.start()
 }

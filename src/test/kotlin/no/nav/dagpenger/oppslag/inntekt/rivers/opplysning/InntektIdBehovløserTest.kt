@@ -47,6 +47,13 @@ internal class InntektIdBehovløserTest {
         }
     }
 
+    @Test
+    fun `løser ikke inntekt-behov basert på inntektId`() {
+        testRapid.sendTestMessage(LegacyInntektBehovLøserTest().inntektBehov)
+        val inspektør = testRapid.inspektør
+        assertEquals(0, inspektør.size)
+    }
+
     // language=JSON
     private val behovJson =
         """

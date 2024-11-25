@@ -15,7 +15,7 @@ import java.math.BigDecimal
 import java.time.YearMonth
 import kotlin.test.assertEquals
 
-internal class InntektBehovLøserTest {
+internal class LegacyInntektBehovLøserTest {
     val inntektId = "inntektId"
     val inntekt =
         Inntekt(
@@ -52,7 +52,7 @@ internal class InntektBehovLøserTest {
         }
     private val testRapid =
         TestRapid().also {
-            InntektBehovløser(it, inntektClient)
+            LegacyInntektBehovløser(it, inntektClient)
         }
 
     @Test
@@ -89,7 +89,7 @@ internal class InntektBehovLøserTest {
     }
 
     // language=JSON
-    private val inntektBehov =
+    val inntektBehov =
         """
         {
           "@event_name" : "behov",
