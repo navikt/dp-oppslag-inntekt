@@ -34,6 +34,7 @@ internal class LegacyInntektBehovløser(
                 precondition {
                     it.requireValue("@event_name", "behov")
                     it.requireAllOrAny("@behov", behovSomLøses)
+                    it.requireKey("InntektId")
                 }
                 validate { it ->
                     it.forbid("@løsning")

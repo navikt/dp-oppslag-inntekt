@@ -141,6 +141,7 @@ internal class LegacyInntektBehovLøserTest {
           "InntektSiste36Mnd": {
             "InntektId": "$inntektId"
           },
+          "InntektId": "$inntektId",
           "@id": "f0d97980-93e0-4638-8a61-337978466d7e",
           "@opprettet": "2024-02-15T10:38:55.821778",
           "system_read_count": 0,
