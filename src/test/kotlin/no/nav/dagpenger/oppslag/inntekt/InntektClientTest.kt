@@ -1,5 +1,6 @@
 package no.nav.dagpenger.oppslag.inntekt
 
+import com.github.navikt.tbd_libs.rapids_and_rivers.asLocalDate
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.engine.mock.toByteArray
@@ -9,7 +10,6 @@ import io.ktor.http.headersOf
 import kotlinx.coroutines.runBlocking
 import mu.withLoggingContext
 import no.nav.dagpenger.oppslag.inntekt.http.httpClient
-import no.nav.helse.rapids_rivers.asLocalDate
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.io.ByteArrayInputStream
