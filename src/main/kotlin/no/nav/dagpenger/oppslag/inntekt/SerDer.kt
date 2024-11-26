@@ -1,7 +1,7 @@
 package no.nav.dagpenger.oppslag.inntekt
 
 import com.fasterxml.jackson.databind.JsonNode
-import no.nav.helse.rapids_rivers.JsonMessage
+import com.github.navikt.tbd_libs.rapids_and_rivers.JsonMessage
 
 internal fun JsonMessage.aktorId(): String? =
     this["identer"].firstOrNull { it["type"].asText() == "aktørid" && !it["historisk"].asBoolean() }?.get("id")?.asText()

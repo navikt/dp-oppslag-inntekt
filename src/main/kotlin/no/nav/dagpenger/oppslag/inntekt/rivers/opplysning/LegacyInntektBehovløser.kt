@@ -1,14 +1,16 @@
 package no.nav.dagpenger.oppslag.inntekt.rivers.opplysning
 
+import com.github.navikt.tbd_libs.rapids_and_rivers.JsonMessage
+import com.github.navikt.tbd_libs.rapids_and_rivers.River
+import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageContext
+import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageMetadata
+import com.github.navikt.tbd_libs.rapids_and_rivers_api.RapidsConnection
+import io.micrometer.core.instrument.MeterRegistry
 import io.opentelemetry.instrumentation.annotations.WithSpan
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import mu.withLoggingContext
 import no.nav.dagpenger.oppslag.inntekt.InntektClient
-import no.nav.helse.rapids_rivers.JsonMessage
-import no.nav.helse.rapids_rivers.MessageContext
-import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.helse.rapids_rivers.River
 
 /**
  *  TODO - Erstattes av InntektBehovløser når dp-behandling er oppdatert
@@ -29,8 +31,11 @@ internal class LegacyInntektBehovløser(
 
         River(rapidsConnection)
             .apply {
+                precondition {
+                    it.requireValue("@event_name", "behov")
+                    it.requireAllOrAny("@behov", behovSomLøses)
+                }
                 validate { it ->
-                    it.demandAllOrAny("@behov", behovSomLøses)
                     it.forbid("@løsning")
                     it.requireKey("@id", "@behovId")
                     it.interestedIn(*behovSomLøses.toTypedArray())
@@ -43,6 +48,8 @@ internal class LegacyInntektBehovløser(
     override fun onPacket(
         packet: JsonMessage,
         context: MessageContext,
+        metadata: MessageMetadata,
+        meterRegistry: MeterRegistry,
     ) {
         val behandlingId = packet["behandlingId"].asText()
         val behovId = packet["@behovId"].asText()

@@ -16,12 +16,8 @@ application {
     mainClass.set("no.nav.dagpenger.oppslag.inntekt.ApplicationKt")
 }
 
-val dpBibliotekerVersjon =
-    libs.versions.dp.biblioteker
-        .get()
-
 dependencies {
-    implementation("no.nav.dagpenger:ktor-client-metrics:$dpBibliotekerVersjon")
+    implementation("no.nav.dagpenger:ktor-client-metrics:2024.10.31-15.02.1d4f08a38d24")
     implementation("no.nav.dagpenger:dp-grunnbelop:20240812.99.7f2e69")
     implementation("com.github.navikt:dp-inntekt-kontrakter:1_20231220.55a8a9")
 
@@ -31,12 +27,13 @@ dependencies {
     implementation("no.bekk.bekkopen:nocommons:0.16.0")
 
     implementation(libs.konfig)
-    implementation("no.nav.dagpenger:oauth2-klient:$dpBibliotekerVersjon")
+    implementation("no.nav.dagpenger:oauth2-klient:2024.10.31-15.02.1d4f08a38d24")
     implementation(libs.kotlin.logging)
     implementation(libs.bundles.ktor.client)
     implementation("io.ktor:ktor-serialization-jackson:${libs.versions.ktor.get()}")
     implementation(libs.rapids.and.rivers)
 
+    testImplementation(libs.rapids.and.rivers.test)
     testImplementation(libs.mockk)
 
     testImplementation("io.ktor:ktor-client-mock-jvm:${libs.versions.ktor.get()}")
