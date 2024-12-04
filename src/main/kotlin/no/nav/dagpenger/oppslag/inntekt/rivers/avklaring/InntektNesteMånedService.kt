@@ -11,11 +11,13 @@ import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import mu.withLoggingContext
+import no.nav.dagpenger.inntekt.v1.Inntekt
 import no.nav.dagpenger.oppslag.inntekt.InntektClient
 import no.nav.dagpenger.oppslag.inntekt.aktorId
 import no.nav.dagpenger.oppslag.inntekt.asUUID
 import no.nav.dagpenger.oppslag.inntekt.fodselsnummer
 import no.nav.dagpenger.oppslag.inntekt.harAktørEllerFnr
+import java.time.LocalDate
 import java.time.YearMonth
 
 internal class InntektNesteMånedService(
@@ -83,11 +85,7 @@ internal class InntektNesteMånedService(
                         behov to
                             when (behov) {
                                 "HarRapportertInntektNesteMåned" ->
-                                    inntekt.harRapportertInntektForMåned(
-                                        YearMonth.from(
-                                            inntektsrapporteringsperiode.fom(),
-                                        ),
-                                    )
+                                    inntekt.harInntektFor(inntektsrapporteringsperiode.fom())
 
                                 else -> throw IllegalArgumentException("Ukjent behov $behov")
                             }
@@ -98,6 +96,11 @@ internal class InntektNesteMånedService(
             context.publish(packet.toJson())
         }
     }
+
+    private fun Inntekt.harInntektFor(fom: LocalDate): Boolean =
+        inntektsListe.any {
+            it.årMåned == YearMonth.from(fom) && it.klassifiserteInntekter.isNotEmpty()
+        }
 
     override fun onError(
         problems: MessageProblems,

@@ -34,7 +34,7 @@ internal class InntektClient(
         fødselsnummer: String? = null,
         virkningsTidspunkt: LocalDate,
         callId: String? = null,
-    ): OppslagInntekt {
+    ): Inntekt {
         val response =
             httpKlient.post(Url(Configuration.inntektApiUrl)) {
                 header("Content-Type", "application/json")
@@ -59,10 +59,10 @@ internal class InntektClient(
             |sisteAvsluttedeKalenderMåned=${inntekt.sisteAvsluttendeKalenderMåned}
             """.trimMargin()
         }
-        return OppslagInntekt(inntekt)
+        return inntekt
     }
 
-    suspend fun hentInntekt(inntektId: String): OppslagInntekt {
+    suspend fun hentInntekt(inntektId: String): Inntekt {
         val url = URLBuilder(Configuration.inntektApiUrl).appendEncodedPathSegments(inntektId).build()
         val response =
             httpKlient.get(url) {
@@ -70,8 +70,7 @@ internal class InntektClient(
                 accept(ContentType.Application.Json)
                 header(HttpHeaders.XCorrelationId, MDC.get("behovId"))
             }
-        val inntekt = hentInntekt(response)
-        return OppslagInntekt(inntekt)
+        return hentInntekt(response)
     }
 
     private suspend fun hentInntekt(response: HttpResponse) =

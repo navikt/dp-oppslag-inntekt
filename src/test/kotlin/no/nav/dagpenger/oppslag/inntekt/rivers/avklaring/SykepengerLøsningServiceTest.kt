@@ -3,14 +3,16 @@ package no.nav.dagpenger.oppslag.inntekt.rivers.avklaring
 import com.github.navikt.tbd_libs.rapids_and_rivers.test_support.TestRapid
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.every
 import io.mockk.mockk
+import no.nav.dagpenger.inntekt.v1.Inntekt
+import no.nav.dagpenger.inntekt.v1.InntektKlasse
+import no.nav.dagpenger.inntekt.v1.KlassifisertInntekt
 import no.nav.dagpenger.inntekt.v1.KlassifisertInntektMåned
 import no.nav.dagpenger.oppslag.inntekt.InntektClient
-import no.nav.dagpenger.oppslag.inntekt.OppslagInntekt
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.YearMonth
 import java.util.UUID
@@ -27,12 +29,24 @@ internal class SykepengerLøsningServiceTest {
 
     @Test
     fun `skal besvare behov om inntekt inneholder sykepenger siste 36 mnd`() {
-        val mockk =
-            mockk<OppslagInntekt>(relaxed = true).also {
-                val årMåned = mockk<KlassifisertInntektMåned>()
-                every { årMåned.årMåned } returns YearMonth.parse("2020-11")
-                every { it.inneholderSykepenger() } returns listOf(årMåned)
-            }
+        val inntekt =
+            Inntekt(
+                inntektsId = "inntektId",
+                sisteAvsluttendeKalenderMåned = YearMonth.of(2020, 8),
+                inntektsListe =
+                    listOf(
+                        KlassifisertInntektMåned(
+                            årMåned = YearMonth.of(2020, 11),
+                            klassifiserteInntekter =
+                                listOf(
+                                    KlassifisertInntekt(
+                                        inntektKlasse = InntektKlasse.SYKEPENGER,
+                                        beløp = BigDecimal("111111"),
+                                    ),
+                                ),
+                        ),
+                    ),
+            )
         val inntektClient =
             mockk<InntektClient>().also {
                 coEvery {
@@ -43,7 +57,7 @@ internal class SykepengerLøsningServiceTest {
                         LocalDate.parse("2020-11-18"),
                         callId = any(),
                     )
-                } returns mockk
+                } returns inntekt
             }
 
         SykepengerLøsningService(testRapid, inntektClient)

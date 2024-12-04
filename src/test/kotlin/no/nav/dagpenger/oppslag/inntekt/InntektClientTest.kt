@@ -9,6 +9,9 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.headersOf
 import kotlinx.coroutines.runBlocking
 import mu.withLoggingContext
+import no.nav.dagpenger.inntekt.v1.InntektKlasse
+import no.nav.dagpenger.inntekt.v1.InntektsPerioder
+import no.nav.dagpenger.inntekt.v1.sumInntekt
 import no.nav.dagpenger.oppslag.inntekt.http.httpClient
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -45,9 +48,20 @@ class InntektClientTest {
                     ),
                     tokenProvider = { "token" },
                 ).hentKlassifisertInntekt(UUID.fromString(id), "123", "fnr", LocalDate.now())
-            assertEquals(BigDecimal("0"), response.inntektSiste12mndMed(false))
-            assertEquals(BigDecimal("18900"), response.inntektSiste36Mnd(false))
+
+            val inntekter = response.splitIntoInntektsPerioder()
+            assertEquals(BigDecimal("0"), inntekter.first.sumInntekt(listOf(InntektKlasse.ARBEIDSINNTEKT)))
+            assertEquals(
+                BigDecimal("18900"),
+                summer36(inntekter),
+            )
         }
+
+    private fun summer36(inntekter: InntektsPerioder) =
+        inntekter.second.sumInntekt(listOf(InntektKlasse.ARBEIDSINNTEKT)) +
+            inntekter.third.sumInntekt(
+                listOf(InntektKlasse.ARBEIDSINNTEKT),
+            )
 
     @Test
     @Disabled("Vi kan ikke lage flere instanser av InntektClient uten at det feiler på grunn av prometheus metrikker")
@@ -70,8 +84,12 @@ class InntektClientTest {
                         ),
                         tokenProvider = { "token" },
                     ).hentInntekt(id)
-                assertEquals(BigDecimal("0"), response.inntektSiste12mndMed(false))
-                assertEquals(BigDecimal("18900"), response.inntektSiste36Mnd(false))
+                val inntekter = response.splitIntoInntektsPerioder()
+                assertEquals(BigDecimal("0"), inntekter.first.sumInntekt(listOf(InntektKlasse.ARBEIDSINNTEKT)))
+                assertEquals(
+                    BigDecimal("18900"),
+                    summer36(inntekter),
+                )
             }
         }
 }

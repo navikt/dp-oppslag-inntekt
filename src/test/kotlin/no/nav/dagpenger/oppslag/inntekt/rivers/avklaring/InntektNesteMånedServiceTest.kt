@@ -8,7 +8,6 @@ import no.nav.dagpenger.inntekt.v1.InntektKlasse
 import no.nav.dagpenger.inntekt.v1.KlassifisertInntekt
 import no.nav.dagpenger.inntekt.v1.KlassifisertInntektMåned
 import no.nav.dagpenger.oppslag.inntekt.InntektClient
-import no.nav.dagpenger.oppslag.inntekt.OppslagInntekt
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
@@ -29,26 +28,26 @@ class InntektNesteMånedServiceTest {
     @Test
     fun `skal sjekke om det finnes inntekt for neste måned`() {
         val inntekt =
-            OppslagInntekt(
-                Inntekt(
-                    "123",
-                    listOf(
-                        KlassifisertInntektMåned(
-                            YearMonth.of(2020, 11),
-                            listOf(KlassifisertInntekt(BigDecimal.ONE, InntektKlasse.ARBEIDSINNTEKT)),
-                        ),
-                        KlassifisertInntektMåned(
-                            YearMonth.of(2020, 12),
-                            listOf(KlassifisertInntekt(BigDecimal.ONE, InntektKlasse.ARBEIDSINNTEKT)),
-                        ),
-                        KlassifisertInntektMåned(
-                            YearMonth.of(2021, 5),
-                            listOf(KlassifisertInntekt(BigDecimal.ONE, InntektKlasse.ARBEIDSINNTEKT)),
-                        ),
+
+            Inntekt(
+                "123",
+                listOf(
+                    KlassifisertInntektMåned(
+                        YearMonth.of(2020, 11),
+                        listOf(KlassifisertInntekt(BigDecimal.ONE, InntektKlasse.ARBEIDSINNTEKT)),
                     ),
-                    sisteAvsluttendeKalenderMåned = YearMonth.of(2021, 3),
+                    KlassifisertInntektMåned(
+                        YearMonth.of(2020, 12),
+                        listOf(KlassifisertInntekt(BigDecimal.ONE, InntektKlasse.ARBEIDSINNTEKT)),
+                    ),
+                    KlassifisertInntektMåned(
+                        YearMonth.of(2021, 5),
+                        listOf(KlassifisertInntekt(BigDecimal.ONE, InntektKlasse.ARBEIDSINNTEKT)),
+                    ),
                 ),
+                sisteAvsluttendeKalenderMåned = YearMonth.of(2021, 3),
             )
+
         val inntektClient =
             mockk<InntektClient>().also {
                 coEvery {

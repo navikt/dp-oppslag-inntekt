@@ -11,6 +11,8 @@ import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import mu.withLoggingContext
+import no.nav.dagpenger.inntekt.v1.Inntekt
+import no.nav.dagpenger.inntekt.v1.InntektKlasse
 import no.nav.dagpenger.oppslag.inntekt.InntektClient
 import no.nav.dagpenger.oppslag.inntekt.aktorId
 import no.nav.dagpenger.oppslag.inntekt.asUUID
@@ -98,6 +100,13 @@ internal class SykepengerLøsningService(
             context.publish(packet.toJson())
         }
     }
+
+    private fun Inntekt.inneholderSykepenger() =
+        inntektsListe.filter { inntektMåned ->
+            inntektMåned.klassifiserteInntekter.any {
+                it.inntektKlasse in listOf(InntektKlasse.SYKEPENGER, InntektKlasse.SYKEPENGER_FANGST_FISKE)
+            }
+        }
 
     override fun onError(
         problems: MessageProblems,

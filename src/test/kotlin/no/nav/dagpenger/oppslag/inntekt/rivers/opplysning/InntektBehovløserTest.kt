@@ -3,7 +3,6 @@ package no.nav.dagpenger.oppslag.inntekt.rivers.opplysning
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.navikt.tbd_libs.rapids_and_rivers.test_support.TestRapid
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import no.nav.dagpenger.inntekt.v1.Inntekt
 import no.nav.dagpenger.inntekt.v1.InntektKlasse
@@ -11,7 +10,6 @@ import no.nav.dagpenger.inntekt.v1.KlassifisertInntekt
 import no.nav.dagpenger.inntekt.v1.KlassifisertInntektMåned
 import no.nav.dagpenger.oppslag.inntekt.InntektClient
 import no.nav.dagpenger.oppslag.inntekt.JsonMapper
-import no.nav.dagpenger.oppslag.inntekt.OppslagInntekt
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
@@ -39,13 +37,6 @@ internal class InntektBehovløserTest {
                 ),
         )
 
-    val oppslagMock =
-        mockk<OppslagInntekt>(relaxed = true).also {
-            every { it.inntektId() } throws NotImplementedError("Skal ikke bruker for denne testen")
-            every { it.inntekt } returns inntekt
-            every { it.inntektSiste12mndMed(false) } throws NotImplementedError("Skal ikke bruker for denne testen")
-            every { it.inntektSiste36Mnd(false) } throws NotImplementedError("Skal ikke bruker for denne testen")
-        }
     private val inntektClient =
         mockk<InntektClient>().also {
             coEvery {
@@ -56,7 +47,7 @@ internal class InntektBehovløserTest {
                     virkningsTidspunkt = LocalDate.parse("2024-01-01"),
                     callId = any(),
                 )
-            } returns oppslagMock
+            } returns inntekt
         }
 
     private val testRapid =

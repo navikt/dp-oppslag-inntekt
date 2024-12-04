@@ -27,7 +27,6 @@ internal class InntektBehovløser(
                 precondition {
                     it.requireValue("@event_name", "behov")
                     it.requireAllOrAny("@behov", listOf(behov))
-                    it.forbid("$behov.InntektId")
                 }
                 validate { it ->
                     it.forbid("@løsning")
@@ -43,7 +42,7 @@ internal class InntektBehovløser(
 
     companion object {
         private val log = KotlinLogging.logger {}
-        private val sikkerLogg = KotlinLogging.logger("tjenestekall.InntektIdBehovløser")
+        private val sikkerLogg = KotlinLogging.logger("tjenestekall.InntektBehovløser")
     }
 
     @WithSpan
@@ -60,8 +59,7 @@ internal class InntektBehovløser(
             "behovId" to behovId,
             "behandlingId" to behandlingId.toString(),
         ) {
-            // @todo: Vi må hente ut inntektId basert på opptjeningsperiode
-
+            // @todo: Vi må hente ut inntekt basert på opptjeningsperiode
             val virkningsdato = packet[behov]["Virkningsdato"].asLocalDate()
             val inntekt =
                 runBlocking {
@@ -84,7 +82,7 @@ internal class InntektBehovløser(
                 mapOf(
                     behov to
                         mapOf(
-                            "verdi" to inntekt.inntekt,
+                            "verdi" to inntekt,
                         ),
                 )
 
