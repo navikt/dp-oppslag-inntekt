@@ -10,7 +10,8 @@ import no.nav.dagpenger.inntekt.v1.KlassifisertInntekt
 import no.nav.dagpenger.inntekt.v1.KlassifisertInntektMåned
 import no.nav.dagpenger.oppslag.inntekt.InntektClient
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -28,7 +29,7 @@ internal class SykepengerLøsningServiceTest {
     }
 
     @Test
-    fun `skal besvare behov om inntekt inneholder sykepenger siste 36 mnd`() {
+    fun `skal besvare Ja behov der inntekt inneholder sykepenger siste 36 mnd`() {
         val inntekt =
             Inntekt(
                 inntektsId = "inntektId",
@@ -64,7 +65,55 @@ internal class SykepengerLøsningServiceTest {
         testRapid.sendTestMessage(behovJson)
 
         assertEquals(1, testRapid.inspektør.size)
-        Assertions.assertTrue(testRapid.inspektør.message(0)["@løsning"]["SykepengerSiste36Måneder"].asBoolean())
+        assertTrue(testRapid.inspektør.message(0)["@løsning"]["SykepengerSiste36Måneder"].asBoolean())
+        coVerify {
+            inntektClient.hentKlassifisertInntekt(
+                behandlingId = behandlingId,
+                fødselsnummer = "12345678911",
+                virkningsTidspunkt = LocalDate.parse("2020-11-18"),
+                callId = any(),
+            )
+        }
+    }
+
+    @Test
+    fun `skal besvare Nei på behov der inntekt ikke inneholder sykepenger siste 36 mnd`() {
+        val inntekt =
+            Inntekt(
+                inntektsId = "inntektId",
+                sisteAvsluttendeKalenderMåned = YearMonth.of(2020, 8),
+                inntektsListe =
+                    listOf(
+                        KlassifisertInntektMåned(
+                            årMåned = YearMonth.of(2020, 11),
+                            klassifiserteInntekter =
+                                listOf(
+                                    KlassifisertInntekt(
+                                        inntektKlasse = InntektKlasse.ARBEIDSINNTEKT,
+                                        beløp = BigDecimal("111111"),
+                                    ),
+                                ),
+                        ),
+                    ),
+            )
+        val inntektClient =
+            mockk<InntektClient>().also {
+                coEvery {
+                    it.hentKlassifisertInntekt(
+                        behandlingId = behandlingId,
+                        fødselsnummer = "12345678911",
+                        virkningsTidspunkt = LocalDate.parse("2020-11-18"),
+                        callId = any(),
+                    )
+                } returns inntekt
+            }
+
+        SykepengerLøsningService(testRapid, inntektClient)
+
+        testRapid.sendTestMessage(behovJson)
+
+        assertEquals(1, testRapid.inspektør.size)
+        assertFalse(testRapid.inspektør.message(0)["@løsning"]["SykepengerSiste36Måneder"].asBoolean())
         coVerify {
             inntektClient.hentKlassifisertInntekt(
                 behandlingId = behandlingId,
