@@ -66,8 +66,7 @@ internal class InntektBehovløser(
                     kotlin
                         .runCatching {
                             inntektClient.hentKlassifisertInntekt(
-                                søknadUUID = behandlingId,
-                                aktørId = null,
+                                behandlingId = behandlingId,
                                 fødselsnummer = packet["ident"].asText(),
                                 virkningsTidspunkt = virkningsdato,
                                 callId = behovId,

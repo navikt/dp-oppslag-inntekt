@@ -29,8 +29,8 @@ internal class InntektClient(
     private val sikkerLogg = KotlinLogging.logger("tjenestekall.InntektClient")
 
     suspend fun hentKlassifisertInntekt(
-        søknadUUID: UUID,
-        aktørId: String?,
+        behandlingId: UUID,
+        aktørId: String? = null,
         fødselsnummer: String? = null,
         virkningsTidspunkt: LocalDate,
         callId: String? = null,
@@ -46,7 +46,7 @@ internal class InntektClient(
                     InntektRequest(
                         aktørId = aktørId,
                         fødselsnummer = fødselsnummer,
-                        regelkontekst = RegelKontekst(id = søknadUUID.toString(), type = "saksbehandling"),
+                        regelkontekst = RegelKontekst(id = behandlingId.toString(), type = "saksbehandling"),
                         beregningsDato = virkningsTidspunkt,
                     ),
                 )

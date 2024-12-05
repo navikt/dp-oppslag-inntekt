@@ -16,8 +16,8 @@ import java.time.YearMonth
 import java.util.UUID
 import kotlin.test.assertEquals
 
-class InntektNesteMånedServiceTest {
-    private val søknadUUID = UUID.fromString("41621ac0-f5ee-4cce-b1f5-88a79f25f1a5")
+internal class InntektNesteMånedServiceTest {
+    private val behandlingId = UUID.fromString("41621ac0-f5ee-4cce-b1f5-88a79f25f1a5")
     private val testRapid = TestRapid()
 
     @AfterEach
@@ -52,10 +52,9 @@ class InntektNesteMånedServiceTest {
             mockk<InntektClient>().also {
                 coEvery {
                     it.hentKlassifisertInntekt(
-                        søknadUUID,
-                        "32542134",
-                        "32542134",
-                        LocalDate.parse("2021-06-08"),
+                        behandlingId = behandlingId,
+                        fødselsnummer = "12345678911",
+                        virkningsTidspunkt = LocalDate.parse("2021-06-08"),
                         callId = any(),
                     )
                 } returns inntekt
@@ -84,7 +83,8 @@ class InntektNesteMånedServiceTest {
           "@id": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
           "@behovId": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
           "Virkningstidspunkt": "2021-05-06",
-          "søknad_uuid": "$søknadUUID",
+          "behandlingId" : "$behandlingId",
+          "ident" : "12345678911",
           "identer":[{"id":"32542134","type":"aktørid","historisk":false},{"id":"32542134","type":"folkeregisterident","historisk":false}],
           "FangstOgFiske": false,
           "fakta": [
@@ -108,7 +108,8 @@ class InntektNesteMånedServiceTest {
           "@id": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
           "@behovId": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
           "Virkningstidspunkt": "2021-05-06",
-          "søknad_uuid": "$søknadUUID",
+          "behandlingId" : "$behandlingId",
+          "ident" : "12345678911",
           "identer":[],
           "FangstOgFiske": false,
           "fakta": [

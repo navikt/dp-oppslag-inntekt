@@ -41,7 +41,7 @@ internal class InntektBehovløserTest {
         mockk<InntektClient>().also {
             coEvery {
                 it.hentKlassifisertInntekt(
-                    søknadUUID = any(),
+                    behandlingId = any(),
                     aktørId = any(),
                     fødselsnummer = "12345678911",
                     virkningsTidspunkt = LocalDate.parse("2024-01-01"),

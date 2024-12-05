@@ -14,11 +14,9 @@ import mu.withLoggingContext
 import no.nav.dagpenger.inntekt.v1.Inntekt
 import no.nav.dagpenger.inntekt.v1.InntektKlasse
 import no.nav.dagpenger.oppslag.inntekt.InntektClient
-import no.nav.dagpenger.oppslag.inntekt.aktorId
 import no.nav.dagpenger.oppslag.inntekt.asUUID
 import no.nav.dagpenger.oppslag.inntekt.fodselsnummer
 import no.nav.dagpenger.oppslag.inntekt.harAktørEllerFnr
-import java.util.UUID
 
 internal class SykepengerLøsningService(
     rapidsConnection: RapidsConnection,
@@ -39,7 +37,8 @@ internal class SykepengerLøsningService(
                     }
                     it.require("identer", ::harAktørEllerFnr)
                     it.requireKey("Virkningstidspunkt")
-                    it.interestedIn("søknad_uuid", "avklaringId", "behandlingId")
+                    it.interestedIn("ident")
+                    it.interestedIn("avklaringId", "behandlingId")
                 }
             }.register(this)
     }
@@ -59,21 +58,19 @@ internal class SykepengerLøsningService(
         metadata: MessageMetadata,
         meterRegistry: MeterRegistry,
     ) {
-        val søknadUUID = packet["søknad_uuid"].asUUID()
-        val callId = "dp-oppslag-inntekt-${UUID.randomUUID()}"
-
+        val behovId = packet["@behovId"].asText()
+        val callId = "dp-oppslag-inntekt-$behovId"
+        val behandlingId = packet["behandlingId"].asUUID()
         withLoggingContext(
-            "behovId" to packet["@behovId"].asText(),
+            "behovId" to behovId,
             "avklaringId" to packet["avklaringId"].asText(),
-            "behandlingId" to packet["behandlingId"].asText(),
-            "søknad_uuid" to søknadUUID.toString(),
+            "behandlingId" to behandlingId.toString(),
             "callId" to callId,
         ) {
             val inntekt =
                 runBlocking {
                     inntektClient.hentKlassifisertInntekt(
-                        søknadUUID = søknadUUID,
-                        aktørId = packet.aktorId(),
+                        behandlingId = behandlingId,
                         fødselsnummer = packet.fodselsnummer(),
                         virkningsTidspunkt = packet["Virkningstidspunkt"].asLocalDate(),
                         callId = callId,

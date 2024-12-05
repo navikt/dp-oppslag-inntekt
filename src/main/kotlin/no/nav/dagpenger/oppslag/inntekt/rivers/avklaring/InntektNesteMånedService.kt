@@ -13,7 +13,6 @@ import mu.KotlinLogging
 import mu.withLoggingContext
 import no.nav.dagpenger.inntekt.v1.Inntekt
 import no.nav.dagpenger.oppslag.inntekt.InntektClient
-import no.nav.dagpenger.oppslag.inntekt.aktorId
 import no.nav.dagpenger.oppslag.inntekt.asUUID
 import no.nav.dagpenger.oppslag.inntekt.fodselsnummer
 import no.nav.dagpenger.oppslag.inntekt.harAktørEllerFnr
@@ -46,7 +45,8 @@ internal class InntektNesteMånedService(
                     }
                     it.require("identer", ::harAktørEllerFnr)
                     it.requireKey("Virkningstidspunkt")
-                    it.interestedIn("søknad_uuid")
+                    it.interestedIn("ident")
+                    it.interestedIn("avklaringId", "behandlingId")
                 }
             }.register(this)
     }
@@ -57,21 +57,20 @@ internal class InntektNesteMånedService(
         metadata: MessageMetadata,
         meterRegistry: MeterRegistry,
     ) {
-        val søknadUUID = packet["søknad_uuid"].asUUID()
         val behovId = packet["@behovId"].asText()
         val callId = "dp-oppslag-inntekt:$behovId"
-
+        val behandlingId = packet["behandlingId"].asUUID()
         withLoggingContext(
             "behovId" to behovId,
-            "søknad_uuid" to søknadUUID.toString(),
+            "avklaringId" to packet["avklaringId"].asText(),
+            "behandlingId" to behandlingId.toString(),
             "callId" to callId,
         ) {
             val inntektsrapporteringsperiode = Inntektsrapporteringperiode(packet["Virkningstidspunkt"].asLocalDate())
             val inntekt =
                 runBlocking {
                     inntektClient.hentKlassifisertInntekt(
-                        søknadUUID = søknadUUID,
-                        aktørId = packet.aktorId(),
+                        behandlingId = behandlingId,
                         fødselsnummer = packet.fodselsnummer(),
                         virkningsTidspunkt = inntektsrapporteringsperiode.neste().fom(),
                         callId = callId,
