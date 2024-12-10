@@ -67,13 +67,6 @@ internal class InntektNesteMånedServiceTest {
         assertEquals(true, testRapid.inspektør.message(0)["@løsning"]["HarRapportertInntektNesteMåned"].asBoolean())
     }
 
-    @Test
-    fun `skal droppe behov hvor aktørid mangler`() {
-        InntektNesteMånedService(testRapid, mockk())
-        testRapid.sendTestMessage(behovUtenIdent)
-        assertEquals(0, testRapid.inspektør.size)
-    }
-
     // language=JSON
     private val behovForInntektNesteMåned =
         """
@@ -85,7 +78,6 @@ internal class InntektNesteMånedServiceTest {
           "Virkningstidspunkt": "2021-05-06",
           "behandlingId" : "$behandlingId",
           "ident" : "12345678911",
-          "identer":[{"id":"32542134","type":"aktørid","historisk":false},{"id":"32542134","type":"folkeregisterident","historisk":false}],
           "FangstOgFiske": false,
           "fakta": [
             {

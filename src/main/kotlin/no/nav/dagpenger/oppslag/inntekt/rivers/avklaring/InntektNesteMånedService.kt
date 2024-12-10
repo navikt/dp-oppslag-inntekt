@@ -14,8 +14,6 @@ import mu.withLoggingContext
 import no.nav.dagpenger.inntekt.v1.Inntekt
 import no.nav.dagpenger.oppslag.inntekt.InntektClient
 import no.nav.dagpenger.oppslag.inntekt.asUUID
-import no.nav.dagpenger.oppslag.inntekt.fodselsnummer
-import no.nav.dagpenger.oppslag.inntekt.harAktørEllerFnr
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -40,12 +38,7 @@ internal class InntektNesteMånedService(
                 validate {
                     it.forbid("@løsning")
                     it.requireKey("@id", "@behovId")
-                    it.requireArray("identer") {
-                        requireKey("type", "historisk", "id")
-                    }
-                    it.require("identer", ::harAktørEllerFnr)
-                    it.requireKey("Virkningstidspunkt")
-                    it.interestedIn("ident")
+                    it.requireKey("Virkningstidspunkt", "ident")
                     it.interestedIn("avklaringId", "behandlingId")
                 }
             }.register(this)
@@ -71,7 +64,7 @@ internal class InntektNesteMånedService(
                 runBlocking {
                     inntektClient.hentKlassifisertInntekt(
                         behandlingId = behandlingId,
-                        fødselsnummer = packet.fodselsnummer(),
+                        fødselsnummer = packet["ident"].asText(),
                         virkningsTidspunkt = inntektsrapporteringsperiode.neste().fom(),
                         callId = callId,
                     )
@@ -79,16 +72,14 @@ internal class InntektNesteMånedService(
             val løsning =
                 packet["@behov"]
                     .map { it.asText() }
-                    .filter { it in løserBehov }
-                    .map { behov ->
-                        behov to
-                            when (behov) {
-                                "HarRapportertInntektNesteMåned" ->
-                                    inntekt.harInntektFor(inntektsrapporteringsperiode.fom())
+                    .filter { it in løserBehov }.associateWith { behov ->
+                        when (behov) {
+                            "HarRapportertInntektNesteMåned" ->
+                                inntekt.harInntektFor(inntektsrapporteringsperiode.fom())
 
-                                else -> throw IllegalArgumentException("Ukjent behov $behov")
-                            }
-                    }.toMap()
+                            else -> throw IllegalArgumentException("Ukjent behov $behov")
+                        }
+                    }
 
             packet["@løsning"] = løsning
             log.info { "Løst behov $løserBehov" }

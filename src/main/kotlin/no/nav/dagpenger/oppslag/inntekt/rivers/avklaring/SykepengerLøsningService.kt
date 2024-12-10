@@ -15,8 +15,6 @@ import no.nav.dagpenger.inntekt.v1.Inntekt
 import no.nav.dagpenger.inntekt.v1.InntektKlasse
 import no.nav.dagpenger.oppslag.inntekt.InntektClient
 import no.nav.dagpenger.oppslag.inntekt.asUUID
-import no.nav.dagpenger.oppslag.inntekt.fodselsnummer
-import no.nav.dagpenger.oppslag.inntekt.harAktørEllerFnr
 
 internal class SykepengerLøsningService(
     rapidsConnection: RapidsConnection,
@@ -32,12 +30,7 @@ internal class SykepengerLøsningService(
 
                     it.forbid("@løsning")
                     it.requireKey("@id", "@behovId")
-                    it.requireArray("identer") {
-                        requireKey("type", "historisk", "id")
-                    }
-                    it.require("identer", ::harAktørEllerFnr)
-                    it.requireKey("Virkningstidspunkt")
-                    it.interestedIn("ident")
+                    it.requireKey("Virkningstidspunkt", "ident")
                     it.interestedIn("avklaringId", "behandlingId")
                 }
             }.register(this)
@@ -71,7 +64,7 @@ internal class SykepengerLøsningService(
                 runBlocking {
                     inntektClient.hentKlassifisertInntekt(
                         behandlingId = behandlingId,
-                        fødselsnummer = packet.fodselsnummer(),
+                        fødselsnummer = packet["ident"].asText(),
                         virkningsTidspunkt = packet["Virkningstidspunkt"].asLocalDate(),
                         callId = callId,
                     )

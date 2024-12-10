@@ -135,7 +135,6 @@ internal class SykepengerLøsningServiceTest {
           "Virkningstidspunkt": "2020-11-18",
           "behandlingId": "$behandlingId",
           "ident" : "12345678911",
-          "identer":[{"id":"32542134","type":"aktørid","historisk":false}, {"id":"32542134","type":"folkeregisterident","historisk":false}],
           "FangstOgFiskeInntektSiste36mnd": false,
           "fakta": [
             {
