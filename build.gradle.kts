@@ -17,7 +17,7 @@ application {
 }
 
 dependencies {
-    implementation("no.nav.dagpenger:ktor-client-metrics:2024.10.31-15.02.1d4f08a38d24")
+    implementation("no.nav.dagpenger:ktor-client-metrics:2024.12.10-14.29.b14a663ac6da")
     implementation("no.nav.dagpenger:dp-grunnbelop:20240812.99.7f2e69")
     implementation("com.github.navikt:dp-inntekt-kontrakter:1_20231220.55a8a9")
 
