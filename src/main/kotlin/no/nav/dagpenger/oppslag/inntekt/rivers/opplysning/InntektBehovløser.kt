@@ -32,10 +32,7 @@ internal class InntektBehovløser(
                     it.forbid("@løsning")
                     it.requireKey("@id", "@behovId")
                     it.requireKey(behov)
-                    it.interestedIn("$behov.Virkningsdato") {
-                        it.asLocalDate()
-                    }
-                    it.interestedIn("$behov.Prøvingsdato") {
+                    it.require("$behov.Prøvingsdato") {
                         it.asLocalDate()
                     }
                     it.requireKey("ident", "behandlingId")
@@ -63,12 +60,7 @@ internal class InntektBehovløser(
             "behandlingId" to behandlingId.toString(),
         ) {
             // @todo: Vi må hente ut inntekt basert på opptjeningsperiode
-            val prøvingsdato =
-                if (packet[behov].has("Prøvingsdato")) {
-                    packet[behov]["Prøvingsdato"].asLocalDate()
-                } else {
-                    packet[behov]["Virkningsdato"].asLocalDate()
-                }
+            val prøvingsdato = packet[behov]["Prøvingsdato"].asLocalDate()
             val inntekt =
                 runBlocking {
                     kotlin
