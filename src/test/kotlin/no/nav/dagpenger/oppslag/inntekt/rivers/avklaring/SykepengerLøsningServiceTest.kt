@@ -54,7 +54,7 @@ internal class SykepengerLøsningServiceTest {
                     it.hentKlassifisertInntekt(
                         behandlingId = behandlingId,
                         fødselsnummer = "12345678911",
-                        virkningsTidspunkt = LocalDate.parse("2020-11-18"),
+                        prøvingsdato = LocalDate.parse("2020-11-18"),
                         callId = any(),
                     )
                 } returns inntekt
@@ -70,7 +70,7 @@ internal class SykepengerLøsningServiceTest {
             inntektClient.hentKlassifisertInntekt(
                 behandlingId = behandlingId,
                 fødselsnummer = "12345678911",
-                virkningsTidspunkt = LocalDate.parse("2020-11-18"),
+                prøvingsdato = LocalDate.parse("2020-11-18"),
                 callId = any(),
             )
         }
@@ -102,7 +102,7 @@ internal class SykepengerLøsningServiceTest {
                     it.hentKlassifisertInntekt(
                         behandlingId = behandlingId,
                         fødselsnummer = "12345678911",
-                        virkningsTidspunkt = LocalDate.parse("2020-11-18"),
+                        prøvingsdato = LocalDate.parse("2020-11-18"),
                         callId = any(),
                     )
                 } returns inntekt
@@ -118,7 +118,7 @@ internal class SykepengerLøsningServiceTest {
             inntektClient.hentKlassifisertInntekt(
                 behandlingId = behandlingId,
                 fødselsnummer = "12345678911",
-                virkningsTidspunkt = LocalDate.parse("2020-11-18"),
+                prøvingsdato = LocalDate.parse("2020-11-18"),
                 callId = any(),
             )
         }

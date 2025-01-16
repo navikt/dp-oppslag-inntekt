@@ -65,7 +65,7 @@ internal class SykepengerLøsningService(
                     inntektClient.hentKlassifisertInntekt(
                         behandlingId = behandlingId,
                         fødselsnummer = packet["ident"].asText(),
-                        virkningsTidspunkt = packet["Virkningstidspunkt"].asLocalDate(),
+                        prøvingsdato = packet["Virkningstidspunkt"].asLocalDate(),
                         callId = callId,
                     )
                 }

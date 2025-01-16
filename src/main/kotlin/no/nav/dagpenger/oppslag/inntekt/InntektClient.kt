@@ -32,7 +32,7 @@ internal class InntektClient(
         behandlingId: UUID,
         aktørId: String? = null,
         fødselsnummer: String? = null,
-        virkningsTidspunkt: LocalDate,
+        prøvingsdato: LocalDate,
         callId: String? = null,
     ): Inntekt {
         val response =
@@ -47,7 +47,7 @@ internal class InntektClient(
                         aktørId = aktørId,
                         fødselsnummer = fødselsnummer,
                         regelkontekst = RegelKontekst(id = behandlingId.toString(), type = "saksbehandling"),
-                        beregningsDato = virkningsTidspunkt,
+                        beregningsDato = prøvingsdato,
                     ),
                 )
             }

@@ -44,7 +44,7 @@ internal class InntektBehovløserTest {
                     behandlingId = any(),
                     aktørId = any(),
                     fødselsnummer = "12345678911",
-                    virkningsTidspunkt = LocalDate.parse("2024-01-01"),
+                    prøvingsdato = LocalDate.parse("2024-01-01"),
                     callId = any(),
                 )
             } returns inntekt
@@ -83,7 +83,7 @@ internal class InntektBehovløserTest {
           "ident": "12345678911",
           "behandlingId": "018dac22-2664-7724-95a6-2cd1ed9d3a07",
           "Inntekt": {
-            "Virkningsdato": "2024-01-01"
+            "Prøvingsdato": "2024-01-01"
           },
         
           "@id": "f0d97980-93e0-4638-8a61-337978466d7e",

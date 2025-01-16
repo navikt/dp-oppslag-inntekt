@@ -65,7 +65,7 @@ internal class InntektNesteMånedService(
                     inntektClient.hentKlassifisertInntekt(
                         behandlingId = behandlingId,
                         fødselsnummer = packet["ident"].asText(),
-                        virkningsTidspunkt = inntektsrapporteringsperiode.neste().fom(),
+                        prøvingsdato = inntektsrapporteringsperiode.neste().fom(),
                         callId = callId,
                     )
                 }

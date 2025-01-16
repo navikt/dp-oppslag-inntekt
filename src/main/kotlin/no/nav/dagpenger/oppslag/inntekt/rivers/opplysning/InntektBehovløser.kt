@@ -32,7 +32,10 @@ internal class InntektBehovløser(
                     it.forbid("@løsning")
                     it.requireKey("@id", "@behovId")
                     it.requireKey(behov)
-                    it.require("$behov.Virkningsdato") {
+                    it.interestedIn("$behov.Virkningsdato") {
+                        it.asLocalDate()
+                    }
+                    it.interestedIn("$behov.Prøvingsdato") {
                         it.asLocalDate()
                     }
                     it.requireKey("ident", "behandlingId")
@@ -60,7 +63,12 @@ internal class InntektBehovløser(
             "behandlingId" to behandlingId.toString(),
         ) {
             // @todo: Vi må hente ut inntekt basert på opptjeningsperiode
-            val virkningsdato = packet[behov]["Virkningsdato"].asLocalDate()
+            val prøvingsdato =
+                if (packet[behov].has("Prøvingsdato")) {
+                    packet[behov]["Prøvingsdato"].asLocalDate()
+                } else {
+                    packet[behov]["Virkningsdato"].asLocalDate()
+                }
             val inntekt =
                 runBlocking {
                     kotlin
@@ -68,7 +76,7 @@ internal class InntektBehovløser(
                             inntektClient.hentKlassifisertInntekt(
                                 behandlingId = behandlingId,
                                 fødselsnummer = packet["ident"].asText(),
-                                virkningsTidspunkt = virkningsdato,
+                                prøvingsdato = prøvingsdato,
                                 callId = behovId,
                             )
                         }.onFailure {

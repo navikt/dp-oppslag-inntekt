@@ -54,7 +54,7 @@ internal class InntektNesteMånedServiceTest {
                     it.hentKlassifisertInntekt(
                         behandlingId = behandlingId,
                         fødselsnummer = "12345678911",
-                        virkningsTidspunkt = LocalDate.parse("2021-06-08"),
+                        prøvingsdato = LocalDate.parse("2021-06-08"),
                         callId = any(),
                     )
                 } returns inntekt
