@@ -61,30 +61,22 @@ internal class InntektNesteMånedService(
         ) {
             val prøvingsdato = packet["Virkningstidspunkt"].asLocalDate()
             val inntektsrapporteringsperiode = Inntektsrapporteringperiode(prøvingsdato)
-            val nestePrøvingsdato = inntektsrapporteringsperiode.neste().fom()
-            log.info { "Henter klassifisert inntekt på $nestePrøvingsdato. Opprinnelig prøvingsdato var $prøvingsdato" }
+            val nesteInntektsrapporteringsperiode = inntektsrapporteringsperiode.neste()
             val inntekt =
                 runBlocking {
                     inntektClient.hentKlassifisertInntekt(
                         behandlingId = behandlingId,
                         fødselsnummer = packet["ident"].asText(),
-                        prøvingsdato = nestePrøvingsdato,
+                        prøvingsdato = nesteInntektsrapporteringsperiode.fom(),
                         callId = callId,
                     )
                 }
 
-            log.info {
-                """
-                |Inntekter dekker fram til og med ${inntekt.sisteAvsluttendeKalenderMåned}. Sjekker om det 
-                |ligger inntekt for inntektsperiode med 
-                |fom=${inntektsrapporteringsperiode.fom()}, tom=${inntektsrapporteringsperiode.tom()}
-                |
-                """.trimMargin()
-            }
             val løsning =
                 packet["@behov"]
                     .map { it.asText() }
-                    .filter { it in løserBehov }.associateWith { behov ->
+                    .filter { it in løserBehov }
+                    .associateWith { behov ->
                         when (behov) {
                             "HarRapportertInntektNesteMåned" ->
                                 inntekt.harInntektFor(inntektsrapporteringsperiode.fom())
