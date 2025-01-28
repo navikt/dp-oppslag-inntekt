@@ -35,6 +35,7 @@ internal class InntektClient(
         prøvingsdato: LocalDate,
         callId: String? = null,
     ): Inntekt {
+        sikkerLogg.info { "Henter inntekt for aktørId=$aktørId, fødselsnummer=$fødselsnummer" }
         val response =
             httpKlient.post(Url(Configuration.inntektApiUrl)) {
                 header("Content-Type", "application/json")
