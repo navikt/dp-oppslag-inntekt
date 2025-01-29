@@ -28,24 +28,15 @@ internal class InntektNesteMånedServiceTest {
     @Test
     fun `skal sjekke om det finnes inntekt for neste måned`() {
         val inntekt =
-
             Inntekt(
                 "123",
                 listOf(
                     KlassifisertInntektMåned(
-                        YearMonth.of(2020, 11),
-                        listOf(KlassifisertInntekt(BigDecimal.ONE, InntektKlasse.ARBEIDSINNTEKT)),
-                    ),
-                    KlassifisertInntektMåned(
-                        YearMonth.of(2020, 12),
-                        listOf(KlassifisertInntekt(BigDecimal.ONE, InntektKlasse.ARBEIDSINNTEKT)),
-                    ),
-                    KlassifisertInntektMåned(
-                        YearMonth.of(2021, 5),
+                        YearMonth.of(2021, 4),
                         listOf(KlassifisertInntekt(BigDecimal.ONE, InntektKlasse.ARBEIDSINNTEKT)),
                     ),
                 ),
-                sisteAvsluttendeKalenderMåned = YearMonth.of(2021, 3),
+                sisteAvsluttendeKalenderMåned = YearMonth.of(2021, 4),
             )
 
         val inntektClient =
@@ -54,7 +45,7 @@ internal class InntektNesteMånedServiceTest {
                     it.hentKlassifisertInntekt(
                         behandlingId = behandlingId,
                         fødselsnummer = "12345678911",
-                        prøvingsdato = LocalDate.parse("2021-06-08"),
+                        prøvingsdato = LocalDate.parse("2021-05-06"),
                         callId = any(),
                     )
                 } returns inntekt
@@ -75,34 +66,9 @@ internal class InntektNesteMånedServiceTest {
           "@opprettet": "2021-11-18T11:04:32.867824",
           "@id": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
           "@behovId": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
-          "Virkningstidspunkt": "2021-05-06",
+          "Virkningstidspunkt": "2021-05-02",
           "behandlingId" : "$behandlingId",
           "ident" : "12345678911",
-          "FangstOgFiske": false,
-          "fakta": [
-            {
-              "id": "9",
-              "behov": "HarRapportertInntektNesteMåned"
-            }
-          ],
-          "@behov": [
-            "InntektSiste12Mnd", "InntektSiste3År", "HarRapportertInntektNesteMåned"
-          ]
-        }
-        """.trimIndent()
-
-    // language=JSON
-    private val behovUtenIdent =
-        """
-        {
-          "@event_name": "faktum_svar",
-          "@opprettet": "2021-11-18T11:04:32.867824",
-          "@id": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
-          "@behovId": "930e2beb-d394-4024-b713-dbeb6ad3d4bf",
-          "Virkningstidspunkt": "2021-05-06",
-          "behandlingId" : "$behandlingId",
-          "ident" : "12345678911",
-          "identer":[],
           "FangstOgFiske": false,
           "fakta": [
             {

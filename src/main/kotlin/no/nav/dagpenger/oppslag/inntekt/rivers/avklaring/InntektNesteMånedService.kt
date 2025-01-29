@@ -59,20 +59,24 @@ internal class InntektNesteMånedService(
             "behandlingId" to behandlingId.toString(),
             "callId" to callId,
         ) {
-            val inntektsrapporteringsperiode = Inntektsrapporteringperiode(packet["Virkningstidspunkt"].asLocalDate())
+            val prøvingsdato = packet["Virkningstidspunkt"].asLocalDate()
+            val inntektsrapporteringsperiode = Inntektsrapporteringperiode(prøvingsdato)
+            val nesteInntektsrapporteringsperiode = inntektsrapporteringsperiode.neste()
             val inntekt =
                 runBlocking {
                     inntektClient.hentKlassifisertInntekt(
                         behandlingId = behandlingId,
                         fødselsnummer = packet["ident"].asText(),
-                        prøvingsdato = inntektsrapporteringsperiode.neste().fom(),
+                        prøvingsdato = nesteInntektsrapporteringsperiode.fom(),
                         callId = callId,
                     )
                 }
+
             val løsning =
                 packet["@behov"]
                     .map { it.asText() }
-                    .filter { it in løserBehov }.associateWith { behov ->
+                    .filter { it in løserBehov }
+                    .associateWith { behov ->
                         when (behov) {
                             "HarRapportertInntektNesteMåned" ->
                                 inntekt.harInntektFor(inntektsrapporteringsperiode.fom())
