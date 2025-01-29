@@ -9,7 +9,7 @@ fun main() {
     val inntektClient =
         InntektClient(
             tokenProvider = {
-                Configuration.dpInntektApiTokenProvider.clientCredentials(Configuration.dpInntektApiScope).accessToken
+                Configuration.dpInntektApiTokenProvider.clientCredentials(Configuration.dpInntektApiScope).access_token
                     ?: throw RuntimeException("Klarte ikke hente token")
             },
         )
