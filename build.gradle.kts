@@ -27,6 +27,7 @@ dependencies {
     implementation("no.bekk.bekkopen:nocommons:0.16.0")
 
     implementation(libs.konfig)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:1.10.1")
     implementation("no.nav.dagpenger:oauth2-klient:2024.12.19-12.57.9d42f60a1165")
     implementation(libs.kotlin.logging)
     implementation(libs.bundles.ktor.client)

@@ -8,6 +8,7 @@ import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageMetadata
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageProblems
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.RapidsConnection
 import io.micrometer.core.instrument.MeterRegistry
+import io.opentelemetry.instrumentation.annotations.WithSpan
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import mu.withLoggingContext
@@ -44,6 +45,7 @@ internal class InntektNesteMånedService(
             }.register(this)
     }
 
+    @WithSpan
     override fun onPacket(
         packet: JsonMessage,
         context: MessageContext,
@@ -72,7 +74,8 @@ internal class InntektNesteMånedService(
             val løsning =
                 packet["@behov"]
                     .map { it.asText() }
-                    .filter { it in løserBehov }.associateWith { behov ->
+                    .filter { it in løserBehov }
+                    .associateWith { behov ->
                         when (behov) {
                             "HarRapportertInntektNesteMåned" ->
                                 inntekt.harInntektFor(inntektsrapporteringsperiode.fom())

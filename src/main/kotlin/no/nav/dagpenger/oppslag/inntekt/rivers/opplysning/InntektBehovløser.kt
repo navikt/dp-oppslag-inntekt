@@ -10,6 +10,7 @@ import com.github.navikt.tbd_libs.rapids_and_rivers_api.RapidsConnection
 import io.micrometer.core.instrument.MeterRegistry
 import io.opentelemetry.instrumentation.annotations.WithSpan
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.slf4j.MDCContext
 import mu.KotlinLogging
 import mu.withLoggingContext
 import no.nav.dagpenger.oppslag.inntekt.InntektClient
@@ -62,7 +63,7 @@ internal class InntektBehovløser(
             // @todo: Vi må hente ut inntekt basert på opptjeningsperiode
             val prøvingsdato = packet[behov]["Prøvingsdato"].asLocalDate()
             val inntekt =
-                runBlocking {
+                runBlocking(MDCContext()) {
                     kotlin
                         .runCatching {
                             inntektClient.hentKlassifisertInntekt(
