@@ -33,7 +33,7 @@ spec:
       enabled: true
   observability:
     autoInstrumentation:
-      enabled: false
+      enabled: true
       runtime: java
   env:
     - name: DP_INNTEKT_API_SCOPE
