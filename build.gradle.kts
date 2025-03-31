@@ -27,7 +27,7 @@ dependencies {
     implementation("no.bekk.bekkopen:nocommons:0.16.0")
 
     implementation(libs.konfig)
-    implementation("no.nav.dagpenger:oauth2-klient:2024.12.19-12.57.9d42f60a1165")
+    implementation("no.nav.dagpenger:oauth2-klient:2025.03.26-08.06.f652e69565e1")
     implementation(libs.kotlin.logging)
     implementation(libs.bundles.ktor.client)
     implementation("io.ktor:ktor-serialization-jackson:${libs.versions.ktor.get()}")
