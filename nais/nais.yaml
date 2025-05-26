@@ -6,7 +6,7 @@ metadata:
   labels:
     team: teamdagpenger
 spec:
-  image: {{ image }}
+  image: "{{ image }}"
   port: 8080
   liveness:
     path: /isalive
@@ -25,7 +25,7 @@ spec:
       cpu: 200m
       memory: 256Mi
   kafka:
-    pool: {{ kafka_pool }}
+    pool: "{{ kafka_pool }}"
   secureLogs:
     enabled: true
   azure:
@@ -37,7 +37,7 @@ spec:
       runtime: java
   env:
     - name: DP_INNTEKT_API_SCOPE
-      value: {{dp_inntekt_api_scope}}
+      value: "{{dp_inntekt_api_scope}}"
   accessPolicy:
     outbound:
       rules:
