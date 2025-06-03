@@ -20,6 +20,7 @@ import no.nav.dagpenger.inntekt.v1.Inntekt
 import no.nav.dagpenger.oppslag.inntekt.http.httpClient
 import org.slf4j.MDC
 import java.time.LocalDate
+import java.time.YearMonth
 import java.util.UUID
 
 internal class InntektClient(
@@ -36,7 +37,7 @@ internal class InntektClient(
         callId: String? = null,
     ): Inntekt {
         val response =
-            httpKlient.post(Url(Configuration.inntektApiUrl)) {
+            httpKlient.post(Url(Configuration.inntektApiUrlV2)) {
                 header("Content-Type", "application/json")
                 header(HttpHeaders.Authorization, "Bearer ${tokenProvider.invoke()}")
                 callId?.let { header(HttpHeaders.XCorrelationId, it) }
@@ -62,8 +63,21 @@ internal class InntektClient(
         return inntekt
     }
 
+    suspend fun hentKlassifisertInntektV3(request: KlassifisertInntektRequestDto): Inntekt {
+        val response =
+            httpKlient.post(Url(Configuration.inntektApiUrlV3)) {
+                header("Content-Type", "application/json")
+                header(HttpHeaders.Authorization, "Bearer ${tokenProvider.invoke()}")
+                accept(ContentType.Application.Json)
+                setBody(
+                    request,
+                )
+            }
+        return hentInntekt(response)
+    }
+
     suspend fun hentInntekt(inntektId: String): Inntekt {
-        val url = URLBuilder(Configuration.inntektApiUrl).appendEncodedPathSegments(inntektId).build()
+        val url = URLBuilder(Configuration.inntektApiUrlV2).appendEncodedPathSegments(inntektId).build()
         val response =
             httpKlient.get(url) {
                 header(HttpHeaders.Authorization, "Bearer ${tokenProvider.invoke()}")
@@ -82,6 +96,14 @@ internal class InntektClient(
             throw e
         }
 }
+
+internal data class KlassifisertInntektRequestDto(
+    val personIdentifikator: String,
+    val regelkontekst: RegelKontekst,
+    val beregningsDato: LocalDate,
+    val periodeFraOgMed: YearMonth,
+    val periodeTilOgMed: YearMonth,
+)
 
 internal data class InntektRequest(
     val aktørId: String?,

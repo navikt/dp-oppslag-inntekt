@@ -17,8 +17,8 @@ internal fun httpClient(
             requestTimeout = Long.MAX_VALUE
         },
     httpMetricsBasename: String? = null,
-): HttpClient {
-    return HttpClient(engine) {
+): HttpClient =
+    HttpClient(engine) {
         expectSuccess = true
 
         install(HttpTimeout) {
@@ -30,11 +30,9 @@ internal fun httpClient(
         install(ContentNegotiation) {
             register(ContentType.Application.Json, JacksonConverter(JsonMapper.objectMapper))
         }
-
-        install(PrometheusMetricsPlugin) {
-            httpMetricsBasename?.let {
-                baseName = it
+        httpMetricsBasename?.let { basename ->
+            install(PrometheusMetricsPlugin) {
+                baseName = basename
             }
         }
     }
-}

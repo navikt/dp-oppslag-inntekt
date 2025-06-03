@@ -13,17 +13,17 @@ import no.nav.dagpenger.inntekt.v1.InntektKlasse
 import no.nav.dagpenger.inntekt.v1.InntektsPerioder
 import no.nav.dagpenger.inntekt.v1.sumInntekt
 import no.nav.dagpenger.oppslag.inntekt.http.httpClient
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.io.ByteArrayInputStream
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.YearMonth
 import java.util.UUID
 import kotlin.test.assertEquals
 
 class InntektClientTest {
     @Test
-    fun `http call`() =
+    fun `hent inntekt fra v2 endepunktet`() =
         runBlocking {
             val id = "41621ac0-f5ee-4cce-b1f5-88a79f25f1a5"
             val response =
@@ -33,7 +33,7 @@ class InntektClientTest {
                             MockEngine { request ->
                                 assertEquals(HttpMethod.Post, request.method)
                                 assertEquals("application/json", request.body.contentType.toString())
-                                assertEquals(Configuration.inntektApiUrl, request.url.toString())
+                                assertEquals(Configuration.inntektApiUrlV2, request.url.toString())
                                 assertEquals("Bearer token", request.headers[HttpHeaders.Authorization])
 
                                 val requestBody =
@@ -64,7 +64,55 @@ class InntektClientTest {
             )
 
     @Test
-    @Disabled("Vi kan ikke lage flere instanser av InntektClient uten at det feiler på grunn av prometheus metrikker")
+    fun `hent inntekt fra v3 endepunktet`() =
+        runBlocking {
+            val response =
+                InntektClient(
+                    httpClient(
+                        engine =
+                            MockEngine { request ->
+                                assertEquals(HttpMethod.Post, request.method)
+                                assertEquals("application/json", request.body.contentType.toString())
+                                assertEquals(Configuration.inntektApiUrlV3, request.url.toString())
+                                assertEquals("Bearer token", request.headers[HttpHeaders.Authorization])
+
+                                val requestBody =
+                                    JsonMapper.objectMapper.readTree(ByteArrayInputStream((request.body.toByteArray())))
+                                assertEquals("123", requestBody["personIdentifikator"].asText())
+                                assertEquals(LocalDate.now(), requestBody["beregningsDato"].asLocalDate())
+                                assertEquals("${YearMonth.now().minusMonths(36)}", requestBody["periodeFraOgMed"].asText())
+                                assertEquals("${YearMonth.now()}", requestBody["periodeTilOgMed"].asText())
+                                with(requestBody["regelkontekst"]) {
+                                    assertEquals("12345", this["id"].asText())
+                                    assertEquals("saksbehandling", this["type"].asText())
+                                }
+                                respond(inntektRespons, headers = headersOf("Content-Type", "application/json"))
+                            },
+                    ),
+                    tokenProvider = { "token" },
+                ).hentKlassifisertInntektV3(
+                    KlassifisertInntektRequestDto(
+                        personIdentifikator = "123",
+                        regelkontekst =
+                            RegelKontekst(
+                                id = "12345",
+                                type = "saksbehandling",
+                            ),
+                        beregningsDato = LocalDate.now(),
+                        periodeFraOgMed = YearMonth.now().minusMonths(36),
+                        periodeTilOgMed = YearMonth.now(),
+                    ),
+                )
+
+            val inntekter = response.splitIntoInntektsPerioder()
+            assertEquals(BigDecimal("0"), inntekter.first.sumInntekt(listOf(InntektKlasse.ARBEIDSINNTEKT)))
+            assertEquals(
+                BigDecimal("18900"),
+                summer36(inntekter),
+            )
+        }
+
+    @Test
     fun `http call med inntektId`() =
         withLoggingContext("behovId" to "foobar") {
             runBlocking {
@@ -75,7 +123,7 @@ class InntektClientTest {
                             engine =
                                 MockEngine { request ->
                                     assertEquals(HttpMethod.Get, request.method)
-                                    assertEquals(Configuration.inntektApiUrl + "/$id", request.url.toString())
+                                    assertEquals(Configuration.inntektApiUrlV2 + "/$id", request.url.toString())
                                     assertEquals("Bearer token", request.headers[HttpHeaders.Authorization])
                                     assertEquals("foobar", request.headers[HttpHeaders.XCorrelationId])
 
