@@ -40,13 +40,17 @@ internal class InntektBehovløserTest {
     private val inntektClient =
         mockk<InntektClient>().also {
             coEvery {
-                it.hentKlassifisertInntekt(
+                it.hentKlassifisertInntektV2(
                     behandlingId = any(),
                     aktørId = any(),
                     fødselsnummer = "12345678911",
                     prøvingsdato = LocalDate.parse("2024-01-01"),
                     callId = any(),
                 )
+            } returns inntekt
+
+            coEvery {
+                it.hentKlassifisertInntektV3(any())
             } returns inntekt
         }
 
@@ -83,7 +87,9 @@ internal class InntektBehovløserTest {
           "ident": "12345678911",
           "behandlingId": "018dac22-2664-7724-95a6-2cd1ed9d3a07",
           "Inntekt": {
-            "Prøvingsdato": "2024-01-01"
+            "Prøvingsdato": "2024-01-01",
+            "OpptjeningsperiodeFraOgMed" : "2021-01-01",
+            "SisteAvsluttendeKalenderMåned" : "2024-01-01"
           },
         
           "@id": "f0d97980-93e0-4638-8a61-337978466d7e",

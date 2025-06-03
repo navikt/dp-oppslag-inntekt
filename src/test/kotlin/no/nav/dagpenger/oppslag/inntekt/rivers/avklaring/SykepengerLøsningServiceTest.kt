@@ -51,7 +51,7 @@ internal class SykepengerLøsningServiceTest {
         val inntektClient =
             mockk<InntektClient>().also {
                 coEvery {
-                    it.hentKlassifisertInntekt(
+                    it.hentKlassifisertInntektV2(
                         behandlingId = behandlingId,
                         fødselsnummer = "12345678911",
                         prøvingsdato = LocalDate.parse("2020-11-18"),
@@ -67,7 +67,7 @@ internal class SykepengerLøsningServiceTest {
         assertEquals(1, testRapid.inspektør.size)
         assertTrue(testRapid.inspektør.message(0)["@løsning"]["SykepengerSiste36Måneder"].asBoolean())
         coVerify {
-            inntektClient.hentKlassifisertInntekt(
+            inntektClient.hentKlassifisertInntektV2(
                 behandlingId = behandlingId,
                 fødselsnummer = "12345678911",
                 prøvingsdato = LocalDate.parse("2020-11-18"),
@@ -99,7 +99,7 @@ internal class SykepengerLøsningServiceTest {
         val inntektClient =
             mockk<InntektClient>().also {
                 coEvery {
-                    it.hentKlassifisertInntekt(
+                    it.hentKlassifisertInntektV2(
                         behandlingId = behandlingId,
                         fødselsnummer = "12345678911",
                         prøvingsdato = LocalDate.parse("2020-11-18"),
@@ -115,7 +115,7 @@ internal class SykepengerLøsningServiceTest {
         assertEquals(1, testRapid.inspektør.size)
         assertFalse(testRapid.inspektør.message(0)["@løsning"]["SykepengerSiste36Måneder"].asBoolean())
         coVerify {
-            inntektClient.hentKlassifisertInntekt(
+            inntektClient.hentKlassifisertInntektV2(
                 behandlingId = behandlingId,
                 fødselsnummer = "12345678911",
                 prøvingsdato = LocalDate.parse("2020-11-18"),

@@ -42,7 +42,7 @@ internal class InntektNesteMånedServiceTest {
         val inntektClient =
             mockk<InntektClient>().also {
                 coEvery {
-                    it.hentKlassifisertInntekt(
+                    it.hentKlassifisertInntektV2(
                         behandlingId = behandlingId,
                         fødselsnummer = "12345678911",
                         prøvingsdato = LocalDate.parse("2021-05-06"),

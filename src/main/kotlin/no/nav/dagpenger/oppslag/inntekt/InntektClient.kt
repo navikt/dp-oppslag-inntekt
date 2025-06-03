@@ -29,7 +29,7 @@ internal class InntektClient(
 ) {
     private val sikkerLogg = KotlinLogging.logger("tjenestekall.InntektClient")
 
-    suspend fun hentKlassifisertInntekt(
+    suspend fun hentKlassifisertInntektV2(
         behandlingId: UUID,
         aktørId: String? = null,
         fødselsnummer: String? = null,

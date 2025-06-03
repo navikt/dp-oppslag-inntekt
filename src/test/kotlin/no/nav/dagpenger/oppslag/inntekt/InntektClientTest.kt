@@ -47,7 +47,7 @@ class InntektClientTest {
                             },
                     ),
                     tokenProvider = { "token" },
-                ).hentKlassifisertInntekt(UUID.fromString(id), "123", "fnr", LocalDate.now())
+                ).hentKlassifisertInntektV2(UUID.fromString(id), "123", "fnr", LocalDate.now())
 
             val inntekter = response.splitIntoInntektsPerioder()
             assertEquals(BigDecimal("0"), inntekter.first.sumInntekt(listOf(InntektKlasse.ARBEIDSINNTEKT)))

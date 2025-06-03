@@ -64,7 +64,7 @@ internal class InntektNesteMånedService(
             val nesteInntektsrapporteringsperiode = inntektsrapporteringsperiode.neste()
             val inntekt =
                 runBlocking {
-                    inntektClient.hentKlassifisertInntekt(
+                    inntektClient.hentKlassifisertInntektV2(
                         behandlingId = behandlingId,
                         fødselsnummer = packet["ident"].asText(),
                         prøvingsdato = nesteInntektsrapporteringsperiode.fom(),

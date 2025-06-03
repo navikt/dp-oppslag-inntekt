@@ -62,7 +62,7 @@ internal class SykepengerLøsningService(
         ) {
             val inntekt =
                 runBlocking {
-                    inntektClient.hentKlassifisertInntekt(
+                    inntektClient.hentKlassifisertInntektV2(
                         behandlingId = behandlingId,
                         fødselsnummer = packet["ident"].asText(),
                         prøvingsdato = packet["Virkningstidspunkt"].asLocalDate(),

@@ -13,7 +13,11 @@ import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import mu.withLoggingContext
 import no.nav.dagpenger.oppslag.inntekt.InntektClient
+import no.nav.dagpenger.oppslag.inntekt.KlassifisertInntektRequestDto
+import no.nav.dagpenger.oppslag.inntekt.RegelKontekst
 import no.nav.dagpenger.oppslag.inntekt.asUUID
+import java.time.LocalDate
+import java.time.YearMonth
 
 internal class InntektBehovløser(
     rapidsConnection: RapidsConnection,
@@ -62,10 +66,37 @@ internal class InntektBehovløser(
             // @todo: Vi må hente ut inntekt basert på opptjeningsperiode
             val prøvingsdato = packet[behov]["Prøvingsdato"].asLocalDate()
             val inntekt =
-                runBlocking {
-                    kotlin
-                        .runCatching {
-                            inntektClient.hentKlassifisertInntekt(
+                if (System.getenv("NAIS_CLUSTER_NAME") != "prod-gcp") {
+                    runBlocking {
+                        runCatching {
+                            inntektClient.hentKlassifisertInntektV3(
+                                KlassifisertInntektRequestDto(
+                                    personIdentifikator = packet["ident"].asText(),
+                                    regelkontekst =
+                                        RegelKontekst(
+                                            id = behandlingId.toString(),
+                                            type = "saksbehandling",
+                                        ),
+                                    beregningsDato = prøvingsdato,
+                                    periodeFraOgMed =
+                                        packet[behov]["OpptjeningsperiodeFraOgMed"]
+                                            .asLocalDate()
+                                            .toYearMonth(),
+                                    periodeTilOgMed =
+                                        packet[behov]["SisteAvsluttendeKalenderMåned"]
+                                            .asLocalDate()
+                                            .toYearMonth(),
+                                ),
+                            )
+                        }.onFailure {
+                            log.error(it) { "Feil ved henting av inntekt" }
+                            sikkerLogg.error(it) { "Feil ved henting av inntekt for pakke: ${packet.toJson()}" }
+                        }.getOrThrow()
+                    }
+                } else {
+                    runBlocking {
+                        runCatching {
+                            inntektClient.hentKlassifisertInntektV2(
                                 behandlingId = behandlingId,
                                 fødselsnummer = packet["ident"].asText(),
                                 prøvingsdato = prøvingsdato,
@@ -75,6 +106,7 @@ internal class InntektBehovløser(
                             log.error(it) { "Feil ved henting av inntekt" }
                             sikkerLogg.error(it) { "Feil ved henting av inntekt for pakke: ${packet.toJson()}" }
                         }.getOrThrow()
+                    }
                 }
 
             packet["@løsning"] =
@@ -92,6 +124,8 @@ internal class InntektBehovløser(
             context.publish(packet.toJson())
         }
     }
+
+    private fun LocalDate.toYearMonth(): YearMonth = YearMonth.of(this.year, this.monthValue)
 
     override fun onError(
         problems: MessageProblems,
