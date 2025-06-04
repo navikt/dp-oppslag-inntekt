@@ -67,6 +67,7 @@ internal class InntektBehovløser(
             val prøvingsdato = packet[behov]["Prøvingsdato"].asLocalDate()
             val inntekt =
                 if (System.getenv("NAIS_CLUSTER_NAME") != "prod-gcp") {
+                    log.info { "henter inntekt fra v3 endepunktet" }
                     runBlocking {
                         runCatching {
                             inntektClient.hentKlassifisertInntektV3(
