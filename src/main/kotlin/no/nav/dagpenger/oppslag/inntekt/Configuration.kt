@@ -19,8 +19,8 @@ internal object Configuration {
     private val defaultProperties =
         ConfigurationMap(
             mapOf(
-                "inntekt.api.url" to "http://dp-inntekt-api/v2/inntekt/klassifisert",
-                "inntekt.api.url.v3" to "http://dp-inntekt-api/v3/inntekt/klassifisert",
+                "inntekt.api.url" to "http://dp-inntekt-api/v2/inntekt",
+                "inntekt.api.url.v3" to "http://dp-inntekt-api/v3/inntekt",
                 "RAPID_APP_NAME" to "dp-oppslag-inntekt",
                 "KAFKA_BROKERS" to "localhost:9092",
                 "KAFKA_CONSUMER_GROUP_ID" to "dp-oppslag-inntekt-v1",

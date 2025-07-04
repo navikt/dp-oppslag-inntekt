@@ -11,13 +11,11 @@ import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import mu.withLoggingContext
-import no.nav.dagpenger.inntekt.v1.Inntekt
 import no.nav.dagpenger.oppslag.inntekt.InntektClient
 import no.nav.dagpenger.oppslag.inntekt.asUUID
-import java.time.LocalDate
 import java.time.YearMonth
 
-internal class InntektNesteMånedService(
+internal class InntektNesteMånedService2(
     rapidsConnection: RapidsConnection,
     private val inntektClient: InntektClient,
 ) : River.PacketListener {
@@ -62,63 +60,19 @@ internal class InntektNesteMånedService(
             val prøvingsdato = packet["Virkningstidspunkt"].asLocalDate()
             val inntektsrapporteringsperiode = Inntektsrapporteringperiode(prøvingsdato)
             val nesteInntektsrapporteringsperiode = inntektsrapporteringsperiode.neste()
-            val inntekt =
+            val harInntekt =
                 runBlocking {
-                    inntektClient.hentKlassifisertInntektV2(
-                        behandlingId = behandlingId,
-                        fødselsnummer = packet["ident"].asText(),
-                        prøvingsdato = nesteInntektsrapporteringsperiode.fom(),
-                        callId = callId,
+                    inntektClient.harInntekt(
+                        ident = packet["ident"].asText(),
+                        måned = YearMonth.from(nesteInntektsrapporteringsperiode.fom()),
                     )
                 }
 
-            val nyLøsning =
-                runCatching {
-                    runBlocking {
-                        inntektClient.harInntekt(
-                            ident = packet["ident"].asText(),
-                            måned = YearMonth.from(nesteInntektsrapporteringsperiode.fom()),
-                        )
-                    }
-                }
-
-            val harInntekt = inntekt.harInntektFor(inntektsrapporteringsperiode.fom())
-
-            if (nyLøsning.isSuccess && nyLøsning.getOrNull() == harInntekt) {
-                log.info { "Ny og gammel løsning for å sjekke inntekt i neste måned har likt svar: $harInntekt" }
-            } else {
-                log.warn {
-                    """
-                    Ny løsning for inntekt neste måned fikk ikke samme svar. 
-                    Ny=$nyLøsning, gammel=$harInntekt, exception=${nyLøsning.exceptionOrNull()}
-                    """.trimIndent()
-                }
-            }
-
-            val løsning =
-                packet["@behov"]
-                    .map { it.asText() }
-                    .filter { it in løserBehov }
-                    .associateWith { behov ->
-                        when (behov) {
-                            "HarRapportertInntektNesteMåned" -> {
-                                harInntekt
-                            }
-
-                            else -> throw IllegalArgumentException("Ukjent behov $behov")
-                        }
-                    }
-
-            packet["@løsning"] = løsning
+            packet["@løsning"] = mapOf("HarRapportertInntektNesteMåned" to harInntekt)
             log.info { "Løst behov $løserBehov" }
             context.publish(packet.toJson())
         }
     }
-
-    private fun Inntekt.harInntektFor(fom: LocalDate): Boolean =
-        inntektsListe.any {
-            it.årMåned == YearMonth.from(fom) && it.klassifiserteInntekter.isNotEmpty()
-        }
 
     override fun onError(
         problems: MessageProblems,

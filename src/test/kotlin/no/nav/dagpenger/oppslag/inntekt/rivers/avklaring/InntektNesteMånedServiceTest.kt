@@ -9,6 +9,7 @@ import no.nav.dagpenger.inntekt.v1.KlassifisertInntekt
 import no.nav.dagpenger.inntekt.v1.KlassifisertInntektMåned
 import no.nav.dagpenger.oppslag.inntekt.InntektClient
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -25,6 +26,7 @@ internal class InntektNesteMånedServiceTest {
         testRapid.reset()
     }
 
+    @Deprecated("Utgår når ny løsning fungerer sikkert")
     @Test
     fun `skal sjekke om det finnes inntekt for neste måned`() {
         val inntekt =
@@ -49,6 +51,23 @@ internal class InntektNesteMånedServiceTest {
                         callId = any(),
                     )
                 } returns inntekt
+            }
+
+        InntektNesteMånedService(testRapid, inntektClient)
+        testRapid.sendTestMessage(behovForInntektNesteMåned)
+
+        assertEquals(1, testRapid.inspektør.size)
+        assertEquals(true, testRapid.inspektør.message(0)["@løsning"]["HarRapportertInntektNesteMåned"].asBoolean())
+    }
+
+    @Test
+    @Disabled("Ny løsning er fortsatt i testfase")
+    fun `skal sjekke om bruker har inntekt for neste måned`() {
+        val inntektClient =
+            mockk<InntektClient>().also {
+                coEvery {
+                    it.harInntekt("12345678911", YearMonth.of(2021, 5))
+                } returns true
             }
 
         InntektNesteMånedService(testRapid, inntektClient)

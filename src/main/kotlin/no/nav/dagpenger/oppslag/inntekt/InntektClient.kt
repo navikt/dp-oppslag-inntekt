@@ -23,11 +23,15 @@ import java.time.LocalDate
 import java.time.YearMonth
 import java.util.UUID
 
+val inntektApiV2Klassifisert = "${Configuration.inntektApiUrlV2}/klassifisert"
+val inntektApiV3Klassifisert = "${Configuration.inntektApiUrlV3}/klassifisert"
+val inntektApiV3HarInntekt = "${Configuration.inntektApiUrlV3}/harInntekt"
+
 internal class InntektClient(
     private val httpKlient: HttpClient = httpClient(httpMetricsBasename = "ktor_client_inntekt_api_metrics"),
     private val tokenProvider: () -> String,
 ) {
-    private val sikkerLogg = KotlinLogging.logger("tjenestekall.InntektClient")
+    private val sikkerlogg = KotlinLogging.logger("tjenestekall.InntektClient")
 
     suspend fun hentKlassifisertInntektV2(
         behandlingId: UUID,
@@ -37,7 +41,7 @@ internal class InntektClient(
         callId: String? = null,
     ): Inntekt {
         val response =
-            httpKlient.post(Url(Configuration.inntektApiUrlV2)) {
+            httpKlient.post(Url(inntektApiV2Klassifisert)) {
                 header("Content-Type", "application/json")
                 header(HttpHeaders.Authorization, "Bearer ${tokenProvider.invoke()}")
                 callId?.let { header(HttpHeaders.XCorrelationId, it) }
@@ -54,7 +58,7 @@ internal class InntektClient(
             }
 
         val inntekt = hentInntekt(response)
-        sikkerLogg.info {
+        sikkerlogg.info {
             """
             |Hentet inntekt med id=${inntekt.inntektsId}, 
             |sisteAvsluttedeKalenderMåned=${inntekt.sisteAvsluttendeKalenderMåned}
@@ -63,9 +67,34 @@ internal class InntektClient(
         return inntekt
     }
 
+    suspend fun harInntekt(
+        ident: String,
+        måned: YearMonth,
+    ): Boolean {
+        val response =
+            httpKlient.post(Url(inntektApiV3HarInntekt)) {
+                accept(ContentType.Application.Json)
+
+                header("Content-Type", "application/json")
+                header(HttpHeaders.Authorization, "Bearer ${tokenProvider.invoke()}")
+
+                MDC.get("behovId")?.let {
+                    header(HttpHeaders.XCorrelationId, it)
+                    header(HttpHeaders.XRequestId, it)
+                }
+
+                setBody(HarInntektRequest(ident, måned))
+            }
+
+        val body = response.body<Boolean>()
+        sikkerlogg.info { " Sjekket om $ident hadde inntekt (svar=$body) i måend=$måned" }
+
+        return body
+    }
+
     suspend fun hentKlassifisertInntektV3(request: KlassifisertInntektRequestDto): Inntekt {
         val response =
-            httpKlient.post(Url(Configuration.inntektApiUrlV3)) {
+            httpKlient.post(Url(inntektApiV3Klassifisert)) {
                 header("Content-Type", "application/json")
                 header(HttpHeaders.Authorization, "Bearer ${tokenProvider.invoke()}")
                 accept(ContentType.Application.Json)
@@ -77,7 +106,7 @@ internal class InntektClient(
     }
 
     suspend fun hentInntekt(inntektId: String): Inntekt {
-        val url = URLBuilder(Configuration.inntektApiUrlV2).appendEncodedPathSegments(inntektId).build()
+        val url = URLBuilder(inntektApiV2Klassifisert).appendEncodedPathSegments(inntektId).build()
         val response =
             httpKlient.get(url) {
                 header(HttpHeaders.Authorization, "Bearer ${tokenProvider.invoke()}")
@@ -92,7 +121,7 @@ internal class InntektClient(
             response.body<Inntekt>()
         } catch (e: JsonConvertException) {
             val body = response.bodyAsText()
-            sikkerLogg.error { "Feil ved oppslag på inntekt. Respons: $body" }
+            sikkerlogg.error { "Feil ved oppslag på inntekt. Respons: $body" }
             throw e
         }
 }
@@ -117,6 +146,11 @@ internal data class InntektRequest(
         }
     }
 }
+
+data class HarInntektRequest(
+    val ident: String,
+    val måned: YearMonth,
+)
 
 data class RegelKontekst(
     val id: String,
