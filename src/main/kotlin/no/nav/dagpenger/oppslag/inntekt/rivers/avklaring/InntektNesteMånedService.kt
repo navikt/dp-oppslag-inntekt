@@ -22,7 +22,7 @@ internal class InntektNesteMånedService(
     private val inntektClient: InntektClient,
 ) : River.PacketListener {
     companion object {
-        private val log = KotlinLogging.logger {}
+        private val logger = KotlinLogging.logger {}
         private val løserBehov =
             listOf(
                 "HarRapportertInntektNesteMåned",
@@ -72,12 +72,19 @@ internal class InntektNesteMånedService(
                     )
                 }
 
+            val nesteMåned = YearMonth.from(nesteInntektsrapporteringsperiode.fom())
+            logger.info {
+                """Valgte nesteMåned=$nesteMåned av 
+                |fom=${nesteInntektsrapporteringsperiode.fom()}, 
+                |tom=${nesteInntektsrapporteringsperiode.tom()}
+                """.trimMargin()
+            }
             val nyLøsning =
                 runCatching {
                     runBlocking {
                         inntektClient.harInntekt(
                             ident = packet["ident"].asText(),
-                            måned = YearMonth.from(nesteInntektsrapporteringsperiode.fom()),
+                            måned = nesteMåned,
                         )
                     }
                 }
@@ -85,12 +92,12 @@ internal class InntektNesteMånedService(
             val harInntekt = inntekt.harInntektFor(inntektsrapporteringsperiode.fom())
 
             if (nyLøsning.isSuccess && nyLøsning.getOrNull() == harInntekt) {
-                log.info { "Ny og gammel løsning for å sjekke inntekt i neste måned har likt svar: $harInntekt" }
+                logger.info { "Ny og gammel løsning for å sjekke inntekt i neste måned($nesteMåned) har likt svar: $harInntekt" }
             } else {
-                log.warn {
+                logger.warn {
                     """
-                    Ny løsning for inntekt neste måned fikk ikke samme svar. 
-                    Ny=$nyLøsning, gammel=$harInntekt, exception=${nyLøsning.exceptionOrNull()}
+                    Ny løsning for inntekt neste måned($nesteMåned) fikk ikke samme svar. 
+                    Ny=${nyLøsning.getOrNull()}, gammel=$harInntekt, exception=${nyLøsning.exceptionOrNull()}
                     """.trimIndent()
                 }
             }
@@ -110,7 +117,7 @@ internal class InntektNesteMånedService(
                     }
 
             packet["@løsning"] = løsning
-            log.info { "Løst behov $løserBehov" }
+            logger.info { "Løst behov $løserBehov" }
             context.publish(packet.toJson())
         }
     }
@@ -125,6 +132,6 @@ internal class InntektNesteMånedService(
         context: MessageContext,
         metadata: MessageMetadata,
     ) {
-        log.trace { problems.toString() }
+        logger.trace { problems.toString() }
     }
 }
