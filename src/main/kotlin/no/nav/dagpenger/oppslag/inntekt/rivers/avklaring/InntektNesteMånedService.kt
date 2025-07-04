@@ -74,7 +74,7 @@ internal class InntektNesteMånedService(
 
             val nesteMåned = YearMonth.from(nesteInntektsrapporteringsperiode.fom())
             logger.info {
-                """Valgte nesteMåned=$nesteMåned av 
+                """For prøvingsdato=$prøvingsdato så ble nesteMåned=$nesteMåned av 
                 |fom=${nesteInntektsrapporteringsperiode.fom()}, 
                 |tom=${nesteInntektsrapporteringsperiode.tom()}
                 """.trimMargin()
