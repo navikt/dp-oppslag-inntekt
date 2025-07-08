@@ -5,16 +5,13 @@ import com.github.navikt.tbd_libs.rapids_and_rivers.River
 import com.github.navikt.tbd_libs.rapids_and_rivers.asLocalDate
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageContext
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageMetadata
-import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageProblems
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.RapidsConnection
 import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import mu.withLoggingContext
-import no.nav.dagpenger.inntekt.v1.Inntekt
 import no.nav.dagpenger.oppslag.inntekt.InntektClient
 import no.nav.dagpenger.oppslag.inntekt.asUUID
-import java.time.LocalDate
 import java.time.YearMonth
 
 internal class InntektNesteMånedService(
@@ -22,7 +19,7 @@ internal class InntektNesteMånedService(
     private val inntektClient: InntektClient,
 ) : River.PacketListener {
     companion object {
-        private val logger = KotlinLogging.logger {}
+        private val log = KotlinLogging.logger {}
         private val løserBehov =
             listOf(
                 "HarRapportertInntektNesteMåned",
@@ -51,7 +48,6 @@ internal class InntektNesteMånedService(
         meterRegistry: MeterRegistry,
     ) {
         val behovId = packet["@behovId"].asText()
-        val callId = "dp-oppslag-inntekt:$behovId"
         val behandlingId = packet["behandlingId"].asUUID()
 
         withLoggingContext(
@@ -61,77 +57,19 @@ internal class InntektNesteMånedService(
         ) {
             val prøvingsdato = packet["Virkningstidspunkt"].asLocalDate()
             val inntektsrapporteringsperiode = Inntektsrapporteringperiode(prøvingsdato)
-            val nesteInntektsrapporteringsperiode = inntektsrapporteringsperiode.neste()
-            val inntekt =
+            val nesteMåned = YearMonth.from(inntektsrapporteringsperiode.fom())
+
+            val harInntekt =
                 runBlocking {
-                    inntektClient.hentKlassifisertInntektV2(
-                        behandlingId = behandlingId,
-                        fødselsnummer = packet["ident"].asText(),
-                        prøvingsdato = nesteInntektsrapporteringsperiode.fom(),
-                        callId = callId,
+                    inntektClient.harInntekt(
+                        ident = packet["ident"].asText(),
+                        måned = YearMonth.from(nesteMåned),
                     )
                 }
 
-            val nesteMåned = YearMonth.from(inntektsrapporteringsperiode.fom())
-            logger.info {
-                """For prøvingsdato=$prøvingsdato så ble nesteMåned=$nesteMåned av 
-                |fom=${nesteInntektsrapporteringsperiode.fom()}, 
-                |tom=${nesteInntektsrapporteringsperiode.tom()}
-                """.trimMargin()
-            }
-            val nyLøsning =
-                runCatching {
-                    runBlocking {
-                        inntektClient.harInntekt(
-                            ident = packet["ident"].asText(),
-                            måned = nesteMåned,
-                        )
-                    }
-                }
-
-            val harInntekt = inntekt.harInntektFor(inntektsrapporteringsperiode.fom())
-
-            if (nyLøsning.isSuccess && nyLøsning.getOrNull() == harInntekt) {
-                logger.info { "Ny og gammel løsning for å sjekke inntekt i neste måned($nesteMåned) har likt svar: $harInntekt" }
-            } else {
-                logger.warn {
-                    """
-                    Ny løsning for inntekt neste måned($nesteMåned) fikk ikke samme svar. 
-                    Ny=${nyLøsning.getOrNull()}, gammel=$harInntekt, exception=${nyLøsning.exceptionOrNull()}
-                    """.trimIndent()
-                }
-            }
-
-            val løsning =
-                packet["@behov"]
-                    .map { it.asText() }
-                    .filter { it in løserBehov }
-                    .associateWith { behov ->
-                        when (behov) {
-                            "HarRapportertInntektNesteMåned" -> {
-                                harInntekt
-                            }
-
-                            else -> throw IllegalArgumentException("Ukjent behov $behov")
-                        }
-                    }
-
-            packet["@løsning"] = løsning
-            logger.info { "Løst behov $løserBehov" }
+            packet["@løsning"] = mapOf("HarRapportertInntektNesteMåned" to harInntekt)
+            log.info { "Løst behov $løserBehov" }
             context.publish(packet.toJson())
         }
-    }
-
-    private fun Inntekt.harInntektFor(fom: LocalDate): Boolean =
-        inntektsListe.any {
-            it.årMåned == YearMonth.from(fom) && it.klassifiserteInntekter.isNotEmpty()
-        }
-
-    override fun onError(
-        problems: MessageProblems,
-        context: MessageContext,
-        metadata: MessageMetadata,
-    ) {
-        logger.trace { problems.toString() }
     }
 }
