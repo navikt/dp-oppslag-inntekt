@@ -19,7 +19,7 @@ application {
 dependencies {
 
     implementation("no.nav.dagpenger:ktor-client-metrics:2025.04.26-14.51.bbf9ece5f5ec")
-    implementation("com.github.navikt:dp-inntekt-kontrakter:1_20231220.55a8a9")
+    implementation("com.github.navikt:dp-inntekt-kontrakter:1_20250716.63c57d")
 
     implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.17.1")
     implementation("io.opentelemetry:opentelemetry-api:1.52.0")
