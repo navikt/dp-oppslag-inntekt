@@ -193,6 +193,7 @@ private val inntektRespons: String =
             }
           ]
         }
-      ]
+      ],
+      "begrunnelseManueltRedigert": null
     }
     """.trimIndent()
