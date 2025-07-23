@@ -18,7 +18,7 @@ application {
 
 dependencies {
 
-    implementation("no.nav.dagpenger:ktor-client-metrics:2025.04.26-14.51.bbf9ece5f5ec")
+    implementation("no.nav.dagpenger:ktor-client-metrics:2025.07.23-08.30.31e64aee9725")
     implementation("com.github.navikt:dp-inntekt-kontrakter:1_20250716.854799")
 
     implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.18.1")
@@ -27,7 +27,7 @@ dependencies {
     implementation("no.bekk.bekkopen:nocommons:0.16.0")
 
     implementation(libs.konfig)
-    implementation("no.nav.dagpenger:oauth2-klient:2025.04.26-14.51.bbf9ece5f5ec")
+    implementation("no.nav.dagpenger:oauth2-klient:2025.07.23-08.30.31e64aee9725")
     implementation(libs.kotlin.logging)
     implementation(libs.bundles.ktor.client)
     implementation("io.ktor:ktor-serialization-jackson:${libs.versions.ktor.get()}")
