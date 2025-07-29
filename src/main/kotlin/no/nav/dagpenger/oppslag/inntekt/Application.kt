@@ -1,7 +1,6 @@
 package no.nav.dagpenger.oppslag.inntekt
 
 import no.nav.dagpenger.oppslag.inntekt.rivers.avklaring.InntektNesteMånedService
-import no.nav.dagpenger.oppslag.inntekt.rivers.avklaring.SykepengerLøsningService
 import no.nav.dagpenger.oppslag.inntekt.rivers.opplysning.InntektBehovløser
 import no.nav.helse.rapids_rivers.RapidApplication
 
@@ -17,7 +16,6 @@ fun main() {
         .create(Configuration.asMap())
         .also { rapidsConnection ->
             InntektNesteMånedService(rapidsConnection, inntektClient)
-            SykepengerLøsningService(rapidsConnection, inntektClient)
             InntektBehovløser(rapidsConnection, inntektClient)
         }.start()
 }
