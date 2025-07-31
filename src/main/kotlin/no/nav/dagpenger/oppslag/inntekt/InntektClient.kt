@@ -29,21 +29,18 @@ internal class InntektClient(
 
     private val baseUrl = URLBuilder(Configuration.inntektApiUrl)
     private val inntektV2 =
-        URLBuilder(baseUrl).apply {
-            appendPathSegments("v2", "inntekt")
-        }
+        URLBuilder(baseUrl).appendPathSegments("v2", "inntekt").build()
 
     private val inntektV3 =
-        URLBuilder(baseUrl).apply {
-            appendPathSegments("v3", "inntekt")
-        }
+        URLBuilder(baseUrl).appendPathSegments("v3", "inntekt").build()
 
     suspend fun harInntekt(
         ident: String,
         måned: YearMonth,
     ): Boolean {
+        val url = URLBuilder(inntektV3).appendPathSegments("harInntekt").build()
         val response =
-            httpKlient.post(inntektV3.appendPathSegments("harInntekt").build()) {
+            httpKlient.post(url) {
                 accept(ContentType.Application.Json)
 
                 header("Content-Type", "application/json")
@@ -64,8 +61,9 @@ internal class InntektClient(
     }
 
     suspend fun hentKlassifisertInntektV3(request: KlassifisertInntektRequestDto): Inntekt {
+        val url = URLBuilder(inntektV3).appendPathSegments("klassifisert").build()
         val response =
-            httpKlient.post(inntektV3.appendPathSegments("klassifisert").build()) {
+            httpKlient.post(url) {
                 header("Content-Type", "application/json")
                 header(HttpHeaders.Authorization, "Bearer ${tokenProvider.invoke()}")
                 accept(ContentType.Application.Json)
@@ -77,8 +75,9 @@ internal class InntektClient(
     }
 
     suspend fun hentInntekt(inntektId: String): Inntekt {
+        val url = URLBuilder(inntektV2).appendPathSegments("klassifisert", inntektId).build()
         val response =
-            httpKlient.get(inntektV2.appendPathSegments("klassifisert", inntektId).build()) {
+            httpKlient.get(url) {
                 header(HttpHeaders.Authorization, "Bearer ${tokenProvider.invoke()}")
                 accept(ContentType.Application.Json)
                 header(HttpHeaders.XCorrelationId, MDC.get("behovId"))
