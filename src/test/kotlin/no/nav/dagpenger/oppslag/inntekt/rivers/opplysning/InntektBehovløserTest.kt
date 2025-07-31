@@ -4,17 +4,21 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.navikt.tbd_libs.rapids_and_rivers.test_support.TestRapid
 import io.mockk.coEvery
 import io.mockk.mockk
+import io.mockk.slot
 import no.nav.dagpenger.inntekt.v1.Inntekt
 import no.nav.dagpenger.inntekt.v1.InntektKlasse
 import no.nav.dagpenger.inntekt.v1.KlassifisertInntekt
 import no.nav.dagpenger.inntekt.v1.KlassifisertInntektMåned
 import no.nav.dagpenger.oppslag.inntekt.InntektClient
 import no.nav.dagpenger.oppslag.inntekt.JsonMapper
+import no.nav.dagpenger.oppslag.inntekt.KlassifisertInntektRequestDto
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.YearMonth
+import kotlin.test.assertTrue
 
 internal class InntektBehovløserTest {
     val inntektId = "inntektId"
@@ -37,20 +41,12 @@ internal class InntektBehovløserTest {
                 ),
         )
 
+    private val requestParameter = slot<KlassifisertInntektRequestDto>()
+
     private val inntektClient =
         mockk<InntektClient>().also {
             coEvery {
-                it.hentKlassifisertInntektV2(
-                    behandlingId = any(),
-                    aktørId = any(),
-                    fødselsnummer = "12345678911",
-                    prøvingsdato = LocalDate.parse("2024-01-01"),
-                    callId = any(),
-                )
-            } returns inntekt
-
-            coEvery {
-                it.hentKlassifisertInntektV3(any())
+                it.hentKlassifisertInntektV3(capture(requestParameter))
             } returns inntekt
         }
 
@@ -67,6 +63,12 @@ internal class InntektBehovløserTest {
         inspektør.message(0).also { løsning ->
             val json = løsning["@løsning"]["Inntekt"]["verdi"]
             val behovet = JsonMapper.objectMapper.readValue<Inntekt>(json.toString())
+            assertTrue(requestParameter.isCaptured) { " Request parameter should be captured" }
+            val request = requestParameter.captured
+            assertEquals("12345678911", request.personIdentifikator)
+            assertEquals(LocalDate.of(2024, 1, 1), request.beregningsDato)
+            assertEquals(YearMonth.of(2021, 1), request.periodeFraOgMed)
+            assertEquals(YearMonth.of(2024, 1), request.periodeTilOgMed)
 
             assertEquals(inntektId, behovet.inntektsId)
             assertEquals(inntekt.sisteAvsluttendeKalenderMåned, behovet.sisteAvsluttendeKalenderMåned)

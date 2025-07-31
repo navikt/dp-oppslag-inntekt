@@ -19,8 +19,7 @@ internal object Configuration {
     private val defaultProperties =
         ConfigurationMap(
             mapOf(
-                "inntekt.api.url" to "http://dp-inntekt-api/v2/inntekt",
-                "inntekt.api.url.v3" to "http://dp-inntekt-api/v3/inntekt",
+                "inntekt.api.url" to "http://dp-inntekt-api/",
                 "RAPID_APP_NAME" to "dp-oppslag-inntekt",
                 "KAFKA_BROKERS" to "localhost:9092",
                 "KAFKA_CONSUMER_GROUP_ID" to "dp-oppslag-inntekt-v1",
@@ -31,8 +30,7 @@ internal object Configuration {
         )
 
     val properties = systemProperties() overriding EnvironmentVariables overriding defaultProperties
-    val inntektApiUrlV2 = properties[Key("inntekt.api.url", stringType)]
-    val inntektApiUrlV3 = properties[Key("inntekt.api.url.v3", stringType)]
+    val inntektApiUrl = properties[Key("inntekt.api.url", stringType)]
 
     fun asMap(): Map<String, String> =
         properties.list().reversed().fold(emptyMap()) { map, pair ->

@@ -20,51 +20,9 @@ import java.io.ByteArrayInputStream
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.YearMonth
-import java.util.UUID
 import kotlin.test.assertEquals
 
 class InntektClientTest {
-    @Test
-    fun `hent inntekt fra v2 endepunktet`() =
-        runBlocking {
-            val id = "41621ac0-f5ee-4cce-b1f5-88a79f25f1a5"
-            val response =
-                InntektClient(
-                    httpClient(
-                        engine =
-                            MockEngine { request ->
-                                assertEquals(HttpMethod.Post, request.method)
-                                assertEquals("application/json", request.body.contentType.toString())
-                                assertEquals(inntektApiV2Klassifisert, request.url.toString())
-                                assertEquals("Bearer token", request.headers[HttpHeaders.Authorization])
-
-                                val requestBody =
-                                    JsonMapper.objectMapper.readTree(ByteArrayInputStream((request.body.toByteArray())))
-                                assertEquals("123", requestBody["aktørId"].asText())
-                                assertEquals("fnr", requestBody["fødselsnummer"].asText())
-                                assertEquals(id, requestBody["regelkontekst"]["id"].asText())
-                                assertEquals("saksbehandling", requestBody["regelkontekst"]["type"].asText())
-                                assertEquals(LocalDate.now(), requestBody["beregningsDato"].asLocalDate())
-                                respond(inntektRespons, headers = headersOf("Content-Type", "application/json"))
-                            },
-                    ),
-                    tokenProvider = { "token" },
-                ).hentKlassifisertInntektV2(UUID.fromString(id), "123", "fnr", LocalDate.now())
-
-            val inntekter = response.splitIntoInntektsPerioder()
-            assertEquals(BigDecimal("0"), inntekter.first.sumInntekt(listOf(InntektKlasse.ARBEIDSINNTEKT)))
-            assertEquals(
-                BigDecimal("18900"),
-                summer36(inntekter),
-            )
-        }
-
-    private fun summer36(inntekter: InntektsPerioder) =
-        inntekter.second.sumInntekt(listOf(InntektKlasse.ARBEIDSINNTEKT)) +
-            inntekter.third.sumInntekt(
-                listOf(InntektKlasse.ARBEIDSINNTEKT),
-            )
-
     @Test
     fun `hent inntekt fra v3 endepunktet`() =
         runBlocking {
@@ -75,7 +33,7 @@ class InntektClientTest {
                             MockEngine { request ->
                                 assertEquals(HttpMethod.Post, request.method)
                                 assertEquals("application/json", request.body.contentType.toString())
-                                assertEquals(inntektApiV3Klassifisert, request.url.toString())
+                                assertEquals("http://dp-inntekt-api/v3/inntekt/klassifisert", request.url.toString())
                                 assertEquals("Bearer token", request.headers[HttpHeaders.Authorization])
 
                                 val requestBody =
@@ -128,7 +86,7 @@ class InntektClientTest {
                             engine =
                                 MockEngine { request ->
                                     assertEquals(HttpMethod.Get, request.method)
-                                    assertEquals("$inntektApiV2Klassifisert/$id", request.url.toString())
+                                    assertEquals("http://dp-inntekt-api/v2/inntekt/klassifisert/$id", request.url.toString())
                                     assertEquals("Bearer token", request.headers[HttpHeaders.Authorization])
                                     assertEquals("foobar", request.headers[HttpHeaders.XCorrelationId])
 
@@ -160,7 +118,7 @@ class InntektClientTest {
                                 MockEngine { request ->
                                     assertEquals(HttpMethod.Post, request.method)
                                     assertEquals(
-                                        inntektApiV3HarInntekt,
+                                        "http://dp-inntekt-api/v3/inntekt/harInntekt",
                                         request.url.toString(),
                                     )
                                     assertEquals("Bearer token", request.headers[HttpHeaders.Authorization])
@@ -175,6 +133,12 @@ class InntektClientTest {
                 assertTrue(response)
             }
         }
+
+    private fun summer36(inntekter: InntektsPerioder) =
+        inntekter.second.sumInntekt(listOf(InntektKlasse.ARBEIDSINNTEKT)) +
+            inntekter.third.sumInntekt(
+                listOf(InntektKlasse.ARBEIDSINNTEKT),
+            )
 }
 
 @Language("JSON")

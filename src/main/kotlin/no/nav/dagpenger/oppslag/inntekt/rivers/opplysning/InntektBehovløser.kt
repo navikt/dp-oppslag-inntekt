@@ -66,48 +66,31 @@ internal class InntektBehovløser(
             // @todo: Vi må hente ut inntekt basert på opptjeningsperiode
             val prøvingsdato = packet[behov]["Prøvingsdato"].asLocalDate()
             val inntekt =
-                if (System.getenv("NAIS_CLUSTER_NAME") != "prod-gcp") {
-                    log.info { "henter inntekt fra v3 endepunktet" }
-                    runBlocking {
-                        runCatching {
-                            inntektClient.hentKlassifisertInntektV3(
-                                KlassifisertInntektRequestDto(
-                                    personIdentifikator = packet["ident"].asText(),
-                                    regelkontekst =
-                                        RegelKontekst(
-                                            id = behandlingId.toString(),
-                                            type = "saksbehandling",
-                                        ),
-                                    beregningsDato = prøvingsdato,
-                                    periodeFraOgMed =
-                                        packet[behov]["OpptjeningsperiodeFraOgMed"]
-                                            .asLocalDate()
-                                            .toYearMonth(),
-                                    periodeTilOgMed =
-                                        packet[behov]["SisteAvsluttendeKalenderMåned"]
-                                            .asLocalDate()
-                                            .toYearMonth(),
-                                ),
-                            )
-                        }.onFailure {
-                            log.error(it) { "Feil ved henting av inntekt" }
-                            sikkerLogg.error(it) { "Feil ved henting av inntekt for pakke: ${packet.toJson()}" }
-                        }.getOrThrow()
-                    }
-                } else {
-                    runBlocking {
-                        runCatching {
-                            inntektClient.hentKlassifisertInntektV2(
-                                behandlingId = behandlingId,
-                                fødselsnummer = packet["ident"].asText(),
-                                prøvingsdato = prøvingsdato,
-                                callId = behovId,
-                            )
-                        }.onFailure {
-                            log.error(it) { "Feil ved henting av inntekt" }
-                            sikkerLogg.error(it) { "Feil ved henting av inntekt for pakke: ${packet.toJson()}" }
-                        }.getOrThrow()
-                    }
+                runBlocking {
+                    runCatching {
+                        inntektClient.hentKlassifisertInntektV3(
+                            KlassifisertInntektRequestDto(
+                                personIdentifikator = packet["ident"].asText(),
+                                regelkontekst =
+                                    RegelKontekst(
+                                        id = behandlingId.toString(),
+                                        type = "saksbehandling",
+                                    ),
+                                beregningsDato = prøvingsdato,
+                                periodeFraOgMed =
+                                    packet[behov]["OpptjeningsperiodeFraOgMed"]
+                                        .asLocalDate()
+                                        .toYearMonth(),
+                                periodeTilOgMed =
+                                    packet[behov]["SisteAvsluttendeKalenderMåned"]
+                                        .asLocalDate()
+                                        .toYearMonth(),
+                            ),
+                        )
+                    }.onFailure {
+                        log.error(it) { "Feil ved henting av inntekt" }
+                        sikkerLogg.error(it) { "Feil ved henting av inntekt for pakke: ${packet.toJson()}" }
+                    }.getOrThrow()
                 }
 
             packet["@løsning"] =
