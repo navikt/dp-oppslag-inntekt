@@ -1,9 +1,7 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id("common")
     application
-    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 repositories {
@@ -11,15 +9,10 @@ repositories {
     maven("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
 }
 
-application {
-    applicationName = "dp-oppslag-inntekt"
-    mainClass.set("no.nav.dagpenger.oppslag.inntekt.ApplicationKt")
-}
-
 dependencies {
 
     implementation("no.nav.dagpenger:ktor-client-metrics:2025.07.23-08.30.31e64aee9725")
-    implementation("com.github.navikt:dp-inntekt-kontrakter:1_20250716.854799")
+    implementation("com.github.navikt:dp-inntekt-kontrakter:1_20251210.114c62")
 
     implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.21.0")
     implementation("io.opentelemetry:opentelemetry-api:1.56.0")
@@ -38,8 +31,4 @@ dependencies {
 
     testImplementation("io.ktor:ktor-client-mock-jvm:${libs.versions.ktor.get()}")
     testImplementation(kotlin("test"))
-}
-
-tasks.withType<ShadowJar> {
-    mergeServiceFiles()
 }
