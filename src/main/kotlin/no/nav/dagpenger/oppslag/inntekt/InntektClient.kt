@@ -1,5 +1,6 @@
 package no.nav.dagpenger.oppslag.inntekt
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.accept
@@ -14,7 +15,6 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.URLBuilder
 import io.ktor.http.appendPathSegments
 import io.ktor.serialization.JsonConvertException
-import mu.KotlinLogging
 import no.nav.dagpenger.inntekt.v1.Inntekt
 import no.nav.dagpenger.oppslag.inntekt.http.httpClient
 import org.slf4j.MDC

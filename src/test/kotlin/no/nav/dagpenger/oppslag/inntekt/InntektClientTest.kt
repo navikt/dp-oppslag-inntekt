@@ -1,6 +1,7 @@
 package no.nav.dagpenger.oppslag.inntekt
 
 import com.github.navikt.tbd_libs.rapids_and_rivers.asLocalDate
+import io.github.oshai.kotlinlogging.withLoggingContext
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.engine.mock.toByteArray
@@ -8,7 +9,6 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.headersOf
 import kotlinx.coroutines.runBlocking
-import mu.withLoggingContext
 import no.nav.dagpenger.inntekt.v1.InntektKlasse
 import no.nav.dagpenger.inntekt.v1.InntektsPerioder
 import no.nav.dagpenger.inntekt.v1.sumInntekt
