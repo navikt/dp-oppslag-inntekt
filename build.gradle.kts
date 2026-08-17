@@ -15,7 +15,7 @@ dependencies {
     implementation("com.github.navikt:dp-inntekt-kontrakter:2_20251211.17f9d7")
 
     implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.30.0")
-    implementation("io.opentelemetry:opentelemetry-api:1.64.0")
+    implementation("io.opentelemetry:opentelemetry-api:1.65.0")
 
     implementation("no.bekk.bekkopen:nocommons:0.17.0")
 
