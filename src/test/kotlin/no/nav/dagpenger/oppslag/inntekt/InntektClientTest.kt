@@ -37,17 +37,17 @@ class InntektClientTest {
                                 assertEquals("Bearer token", request.headers[HttpHeaders.Authorization])
 
                                 val requestBody =
-                                    JsonMapper.objectMapper.readTree(ByteArrayInputStream((request.body.toByteArray())))
-                                assertEquals("123", requestBody["personIdentifikator"].asText())
+                                    ObjectMapper.objectMapper.readTree(ByteArrayInputStream((request.body.toByteArray())))
+                                assertEquals("123", requestBody["personIdentifikator"].asString())
                                 assertEquals(LocalDate.now(), requestBody["beregningsDato"].asLocalDate())
                                 assertEquals(
                                     "${YearMonth.now().minusMonths(36)}",
-                                    requestBody["periodeFraOgMed"].asText(),
+                                    requestBody["periodeFraOgMed"].asString(),
                                 )
-                                assertEquals("${YearMonth.now()}", requestBody["periodeTilOgMed"].asText())
+                                assertEquals("${YearMonth.now()}", requestBody["periodeTilOgMed"].asString())
                                 with(requestBody["regelkontekst"]) {
-                                    assertEquals("12345", this["id"].asText())
-                                    assertEquals("saksbehandling", this["type"].asText())
+                                    assertEquals("12345", this["id"].asString())
+                                    assertEquals("saksbehandling", this["type"].asString())
                                 }
                                 respond(inntektRespons, headers = headersOf("Content-Type", "application/json"))
                             },

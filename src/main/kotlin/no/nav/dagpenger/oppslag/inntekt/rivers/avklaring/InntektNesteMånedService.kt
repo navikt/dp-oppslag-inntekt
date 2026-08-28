@@ -3,6 +3,7 @@ package no.nav.dagpenger.oppslag.inntekt.rivers.avklaring
 import com.github.navikt.tbd_libs.rapids_and_rivers.JsonMessage
 import com.github.navikt.tbd_libs.rapids_and_rivers.River
 import com.github.navikt.tbd_libs.rapids_and_rivers.asLocalDate
+import com.github.navikt.tbd_libs.rapids_and_rivers.toUUID
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageContext
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageMetadata
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.RapidsConnection
@@ -11,7 +12,6 @@ import io.github.oshai.kotlinlogging.withLoggingContext
 import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.coroutines.runBlocking
 import no.nav.dagpenger.oppslag.inntekt.InntektClient
-import no.nav.dagpenger.oppslag.inntekt.asUUID
 import java.time.YearMonth
 
 internal class InntektNesteMånedService(
@@ -47,12 +47,12 @@ internal class InntektNesteMånedService(
         metadata: MessageMetadata,
         meterRegistry: MeterRegistry,
     ) {
-        val behovId = packet["@behovId"].asText()
-        val behandlingId = packet["behandlingId"].asUUID()
+        val behovId = packet["@behovId"].asString()
+        val behandlingId = packet["behandlingId"].asString().toUUID()
 
         withLoggingContext(
             "behovId" to behovId,
-            "avklaringId" to packet["avklaringId"].asText(),
+            "avklaringId" to packet["avklaringId"].asString(),
             "behandlingId" to behandlingId.toString(),
         ) {
             val prøvingsdato = packet["Virkningstidspunkt"].asLocalDate()
@@ -62,7 +62,7 @@ internal class InntektNesteMånedService(
             val harInntekt =
                 runBlocking {
                     inntektClient.harInntekt(
-                        ident = packet["ident"].asText(),
+                        ident = packet["ident"].asString(),
                         måned = YearMonth.from(nesteMåned),
                     )
                 }

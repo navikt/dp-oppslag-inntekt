@@ -3,6 +3,7 @@ package no.nav.dagpenger.oppslag.inntekt.rivers.opplysning
 import com.github.navikt.tbd_libs.rapids_and_rivers.JsonMessage
 import com.github.navikt.tbd_libs.rapids_and_rivers.River
 import com.github.navikt.tbd_libs.rapids_and_rivers.asLocalDate
+import com.github.navikt.tbd_libs.rapids_and_rivers.toUUID
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageContext
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageMetadata
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageProblems
@@ -15,7 +16,6 @@ import kotlinx.coroutines.runBlocking
 import no.nav.dagpenger.oppslag.inntekt.InntektClient
 import no.nav.dagpenger.oppslag.inntekt.KlassifisertInntektRequestDto
 import no.nav.dagpenger.oppslag.inntekt.RegelKontekst
-import no.nav.dagpenger.oppslag.inntekt.asUUID
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -56,8 +56,8 @@ internal class InntektBehovløser(
         metadata: MessageMetadata,
         meterRegistry: MeterRegistry,
     ) {
-        val behandlingId = packet["behandlingId"].asUUID()
-        val behovId = packet["@behovId"].asText()
+        val behandlingId = packet["behandlingId"].asString().toUUID()
+        val behovId = packet["@behovId"].asString()
 
         withLoggingContext(
             "behovId" to behovId,
@@ -70,7 +70,7 @@ internal class InntektBehovløser(
                     runCatching {
                         inntektClient.hentKlassifisertInntektV3(
                             KlassifisertInntektRequestDto(
-                                personIdentifikator = packet["ident"].asText(),
+                                personIdentifikator = packet["ident"].asString(),
                                 regelkontekst =
                                     RegelKontekst(
                                         id = behandlingId.toString(),

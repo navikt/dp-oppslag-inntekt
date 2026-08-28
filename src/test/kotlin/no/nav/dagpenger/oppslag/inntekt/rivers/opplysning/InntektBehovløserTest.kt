@@ -1,6 +1,5 @@
 package no.nav.dagpenger.oppslag.inntekt.rivers.opplysning
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.navikt.tbd_libs.rapids_and_rivers.test_support.TestRapid
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -10,15 +9,15 @@ import no.nav.dagpenger.inntekt.v1.InntektKlasse
 import no.nav.dagpenger.inntekt.v1.KlassifisertInntekt
 import no.nav.dagpenger.inntekt.v1.KlassifisertInntektMåned
 import no.nav.dagpenger.oppslag.inntekt.InntektClient
-import no.nav.dagpenger.oppslag.inntekt.JsonMapper
 import no.nav.dagpenger.oppslag.inntekt.KlassifisertInntektRequestDto
+import no.nav.dagpenger.oppslag.inntekt.ObjectMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import tools.jackson.module.kotlin.readValue
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.YearMonth
-import kotlin.test.assertTrue
 
 internal class InntektBehovløserTest {
     val inntektId = "inntektId"
@@ -62,8 +61,8 @@ internal class InntektBehovløserTest {
         assertEquals(1, inspektør.size)
         inspektør.message(0).also { løsning ->
             val json = løsning["@løsning"]["Inntekt"]["verdi"]
-            val behovet = JsonMapper.objectMapper.readValue<Inntekt>(json.toString())
-            assertTrue(requestParameter.isCaptured) { " Request parameter should be captured" }
+            val behovet = ObjectMapper.objectMapper.readValue<Inntekt>(json.toString())
+            assertTrue(requestParameter.isCaptured) { "Request parameter should be captured" }
             val request = requestParameter.captured
             assertEquals("12345678911", request.personIdentifikator)
             assertEquals(LocalDate.of(2024, 1, 1), request.beregningsDato)

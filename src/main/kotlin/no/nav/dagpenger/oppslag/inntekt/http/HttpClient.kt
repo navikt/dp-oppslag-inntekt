@@ -6,9 +6,9 @@ import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.http.ContentType
-import io.ktor.serialization.jackson.JacksonConverter
+import io.ktor.serialization.jackson3.JacksonConverter
 import no.nav.dagpenger.ktor.client.metrics.PrometheusMetricsPlugin
-import no.nav.dagpenger.oppslag.inntekt.JsonMapper
+import no.nav.dagpenger.oppslag.inntekt.ObjectMapper
 import java.time.Duration
 
 internal fun httpClient(
@@ -28,7 +28,7 @@ internal fun httpClient(
         }
 
         install(ContentNegotiation) {
-            register(ContentType.Application.Json, JacksonConverter(JsonMapper.objectMapper))
+            register(ContentType.Application.Json, JacksonConverter(ObjectMapper.objectMapper))
         }
         httpMetricsBasename?.let { basename ->
             install(PrometheusMetricsPlugin) {
