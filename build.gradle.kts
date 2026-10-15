@@ -20,7 +20,7 @@ dependencies {
     implementation("no.bekk.bekkopen:nocommons:0.17.0")
 
     implementation(libs.konfig)
-    implementation("no.nav.dagpenger:oauth2-klient:2026.10.13-18.23.d38287e82be2")
+    implementation("no.nav.dagpenger:oauth2-klient:2026.10.15-12.21.08e956f76dd5")
     implementation(libs.kotlin.logging)
     implementation(libs.bundles.ktor.client)
     implementation(libs.rapids.and.rivers)
