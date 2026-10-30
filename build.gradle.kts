@@ -11,7 +11,7 @@ repositories {
 
 dependencies {
 
-    implementation("no.nav.dagpenger:ktor-client-metrics:2026.10.22-06.22.e2d33d69479c")
+    implementation("no.nav.dagpenger:ktor-client-metrics:2026.10.30-06.16.f1d0628bf128")
     implementation("com.github.navikt:dp-inntekt-kontrakter:2_202609181789745424.d9cfdc")
 
     implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.33.1")
