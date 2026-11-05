@@ -19,7 +19,6 @@ jobs:
         with:
           distribution: temurin
           java-version: 25
-      - uses: gradle/wrapper-validation-action@v3.5.0
       - uses: gradle/gradle-build-action@v3.5.0
         env:
           # Eksluder test dependencies
